@@ -7,29 +7,27 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name= "client")
-public class ClientModel {
-
+@Table(name= "Roles")
+public class RolModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int Id;
     private String name;
-    private String phoneNumber;
 
-    public ClientModel() {
+    public RolModel() {
     }
 
-    public ClientModel(String name, String phoneNumber) {
+    public RolModel(int id, String name) {
+        Id = id;
         this.name = name;
-        this.phoneNumber = phoneNumber;
     }
 
     public int getId() {
-        return id;
+        return Id;
     }
 
     public void setId(int id) {
-        this.id = id;
+        Id = id;
     }
 
     public String getName() {
@@ -39,13 +37,4 @@ public class ClientModel {
     public void setName(String name) {
         this.name = name;
     }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
 }
-

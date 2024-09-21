@@ -12,34 +12,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.api.backend.model.ClientModel;
-import com.api.backend.services.ClientService;
+import com.api.backend.model.SubjectModel;
+import com.api.backend.services.SubjectService;
 
 @RestController
-@RequestMapping("/client")
-public class ClientControl {
-
+@RequestMapping("/subject")
+public class SubjectControl {
     @Autowired
-    private ClientService clientService;
+    private SubjectService subjectService;
 
     @GetMapping("/getAll")
-    public List<ClientModel> obtainClientList() {
-        return clientService.obtainClientList();
+    public List<SubjectModel> obtainSubjectList() {
+        return subjectService.obtainSubjectList();
     }
 
     @PostMapping("/create")
-    public ClientModel createClient(@RequestBody ClientModel client) {
-        return clientService.createClient(client);
+    public SubjectModel createSubject(@RequestBody SubjectModel subject) {
+        return subjectService.createSubject(subject);
     }
 
     @PutMapping("/edit/{id}")
-    public ClientModel updateClient(@PathVariable int id, @RequestBody ClientModel client) {
-        client.setId(id);
-        return clientService.updateClient(client);
+    public SubjectModel updateSubject(@PathVariable int id, @RequestBody SubjectModel subject) {
+        subject.setId(id);
+        return subjectService.updateSubject(subject);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteClient(@PathVariable int id) {
-        clientService.deleteClient(id);
+    public void deleteSubject(@PathVariable int id) {
+        subjectService.deleteSubject(id);
     }
 }

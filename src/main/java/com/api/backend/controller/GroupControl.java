@@ -1,0 +1,44 @@
+package com.api.backend.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.api.backend.model.GroupModel;
+import com.api.backend.services.GroupService;
+
+@RestController
+@RequestMapping("/group")
+public class GroupControl {
+    @Autowired
+    private GroupService groupService;
+
+    @GetMapping("/getAll")
+    public List<GroupModel> obtainGroupList() {
+        return groupService.obtainGroupList();
+    }
+
+    @PostMapping("/create")
+    public GroupModel createGroup(@RequestBody GroupModel group) {
+        return groupService.createGroup(group);
+    }
+
+    @PutMapping("/edit/{id}")
+    public GroupModel updateGroup(@PathVariable int id, @RequestBody GroupModel group) {
+        group.setId(id);
+        return groupService.updateGroup(group);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteGroup(@PathVariable int id) {
+        groupService.deleteGroup(id);
+    }
+}
