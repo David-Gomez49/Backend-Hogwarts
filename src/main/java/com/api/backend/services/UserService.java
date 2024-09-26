@@ -29,4 +29,8 @@ public class UserService {
     public void deleteUser(int id) {
         userRepo.deleteById(id);
     }
+    public boolean existsByEmail(String Email)
+    {
+        return userRepo.existsByEmail(Email);
+    }
 }

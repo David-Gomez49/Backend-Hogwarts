@@ -3,6 +3,7 @@ package com.api.backend.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,8 +28,15 @@ public class UserControl {
     }
 
     @PostMapping("/create")
-    public UserModel createUser(@RequestBody UserModel user) {
-        return userService.createUser(user);
+    public ResponseEntity<Boolean> createUser(@RequestBody UserModel user) {
+        // Verificar si el correo ya existe
+        if (userService.existsByEmail(user.getEmail())) {
+            return ResponseEntity.ok(false);
+        }
+
+        // Guardar el nuevo usuario
+        userService.createUser(user);
+        return ResponseEntity.ok(true);
     }
 
     @PutMapping("/edit/{id}")
