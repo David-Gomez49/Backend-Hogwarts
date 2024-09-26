@@ -28,15 +28,16 @@ public class UserControl {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createUser(@RequestBody UserModel user) {
-        // Verificar si el correo ya existe
-        if (userService.existsByEmail(user.getEmail())) {
-            return ResponseEntity.ok(false);
-        }
+    public UserModel createUser(@RequestBody UserModel user) {
+        return userService.createUser(user);
+    }
 
-        // Guardar el nuevo usuario
-        userService.createUser(user);
-        return ResponseEntity.ok(true);
+    @PostMapping("/validateEmail")
+    public ResponseEntity<Boolean> validateEmail(@RequestBody String Email) {
+        if (userService.existsByEmail(Email)) {
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.ok(false);
     }
 
     @PutMapping("/edit/{id}")
