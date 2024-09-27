@@ -18,6 +18,11 @@ public class UserService {
         return (List<UserModel>) userRepo.findAll();
     }
 
+    public UserModel obtainUserByEmail(String email) {
+        UserModel user = userRepo.findByEmail(email);
+        return user; 
+    }
+
     public UserModel createUser(UserModel user) {
         return userRepo.save(user);
     }

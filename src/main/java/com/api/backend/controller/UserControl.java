@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.backend.model.UserModel;
 import com.api.backend.services.UserService;
 
+
 @RestController
 @RequestMapping("/user")
 public class UserControl {
@@ -27,6 +28,18 @@ public class UserControl {
     public List<UserModel> obtainUserList() {
         return userService.obtainUserList();
     }
+
+    @GetMapping("/getByEmail")
+    public ResponseEntity<UserModel> obtainUserByEmail(@RequestBody Map<String, String> emailMap) {
+        String email = emailMap.get("email");
+        UserModel user = userService.obtainUserByEmail(email);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
 
     @PostMapping("/create")
 public ResponseEntity<?> createUser(@RequestBody UserModel user) {

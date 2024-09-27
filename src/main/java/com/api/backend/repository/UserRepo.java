@@ -6,4 +6,5 @@ import com.api.backend.model.UserModel;
 
 public interface UserRepo extends JpaRepository<UserModel, Integer>{
     boolean existsByEmail(String email);
+    UserModel findByEmail(String email);
 }
