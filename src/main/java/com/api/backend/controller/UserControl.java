@@ -30,7 +30,11 @@ public class UserControl {
 
     @PostMapping("/create")
     public UserModel createUser(@RequestBody UserModel user) {
-        return userService.createUser(user);
+        String Email = user.getEmail();
+        if (userService.existsByEmail(Email)){
+            return userService.createUser(user);
+        }
+        return null;
     }
 
     @PostMapping("/validateEmail")
