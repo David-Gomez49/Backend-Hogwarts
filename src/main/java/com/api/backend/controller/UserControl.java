@@ -29,13 +29,19 @@ public class UserControl {
     }
 
     @PostMapping("/create")
-    public UserModel createUser(@RequestBody UserModel user) {
-        String Email = user.getEmail();
-        if (userService.existsByEmail(Email)){
-            return userService.createUser(user);
-        }
-        return null;
+public ResponseEntity<?> createUser(@RequestBody UserModel user) {
+    String email = user.getEmail();
+    
+    // Validar si el correo ya existe
+    if (userService.existsByEmail(email)) {
+        // Si el correo ya existe, devolver un error 400 con un mensaje
+        return ResponseEntity.badRequest().body("El correo ya está en uso.");
     }
+
+    // Crear el usuario si el correo no existe
+    UserModel newUser = userService.createUser(user);
+    return ResponseEntity.ok(newUser);
+}
 
     @PostMapping("/validateEmail")
     public ResponseEntity<Boolean> validateEmail(@RequestBody Map<String, String> emailMap) {
