@@ -1,6 +1,7 @@
 package com.api.backend.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,12 +34,19 @@ public class UserControl {
     }
 
     @PostMapping("/validateEmail")
-    public ResponseEntity<Boolean> validateEmail(@RequestBody String Email) {
-        if (userService.existsByEmail(Email)) {
-            return ResponseEntity.ok(true);
+    public ResponseEntity<Boolean> validateEmail(@RequestBody Map<String, String> emailMap) {
+        String email = emailMap.get("email");
+
+        // Verifica si el email es recibido correctamente
+        if (email == null) {
+            return ResponseEntity.badRequest().body(false);
         }
-        return ResponseEntity.ok(false);
+
+        // Realiza la validación en la base de datos
+        boolean exists = userService.existsByEmail(email);
+        return ResponseEntity.ok(exists);
     }
+
 
     @PutMapping("/edit/{id}")
     public UserModel updateUser(@PathVariable int id, @RequestBody UserModel user) {
