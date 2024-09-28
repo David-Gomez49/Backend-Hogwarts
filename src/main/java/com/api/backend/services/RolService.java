@@ -29,4 +29,7 @@ public class RolService {
     public void deleteRol(int id) {
         rolRepo.deleteById(id);
     }
+    public List<RolModel> obtainPublicRolList() {
+        return rolRepo.findByAccessTrue(); 
+    }
 }

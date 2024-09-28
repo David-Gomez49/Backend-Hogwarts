@@ -13,12 +13,13 @@ public class RolModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
     private String name;
+    private boolean access;
 
     public RolModel() {
     }
-
-    public RolModel(int id, String name) {
-        Id = id;
+    public RolModel(int Id, boolean access, String name) {
+        this.Id = Id;
+        this.access = access;
         this.name = name;
     }
 
@@ -26,8 +27,8 @@ public class RolModel {
         return Id;
     }
 
-    public void setId(int id) {
-        Id = id;
+    public void setId(int Id) {
+        this.Id = Id;
     }
 
     public String getName() {
@@ -37,4 +38,14 @@ public class RolModel {
     public void setName(String name) {
         this.name = name;
     }
+
+    public boolean isAccess() {
+        return access;
+    }
+
+    public void setAccess(boolean access) {
+        this.access = access;
+    }
+
+    
 }

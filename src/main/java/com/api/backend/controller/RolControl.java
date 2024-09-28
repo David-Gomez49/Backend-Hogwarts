@@ -26,6 +26,11 @@ public class RolControl {
         return rolService.obtainRolList();
     }
 
+    @GetMapping("/getPublicRoles")
+    public List<RolModel> obtainPublicRolList() {
+        return rolService.obtainPublicRolList();
+    }
+
     @PostMapping("/create")
     public RolModel createRol(@RequestBody RolModel rol) {
         return rolService.createRol(rol);
