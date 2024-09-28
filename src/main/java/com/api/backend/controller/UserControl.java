@@ -1,7 +1,6 @@
 package com.api.backend.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.backend.model.UserModel;
@@ -29,46 +29,37 @@ public class UserControl {
         return userService.obtainUserList();
     }
 
-    @GetMapping("/getByEmail")
-    public ResponseEntity<UserModel> obtainUserByEmail(@RequestBody Map<String, String> emailMap) {
-        String email = emailMap.get("email");
-        UserModel user = userService.obtainUserByEmail(email);
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
     
+    @GetMapping("/getByEmail")
+    public ResponseEntity<UserModel> obtainUserByEmail(@RequestParam String email) {
+    UserModel user = userService.obtainUserByEmail(email);
+    if (user != null) {
+        return ResponseEntity.ok(user);
+    } else {
+        return ResponseEntity.notFound().build();
+    }
+    }
 
     @PostMapping("/create")
-public ResponseEntity<?> createUser(@RequestBody UserModel user) {
+    public ResponseEntity<?> createUser(@RequestBody UserModel user) {
     String email = user.getEmail();
-    
-    // Validar si el correo ya existe
     if (userService.existsByEmail(email)) {
-        // Si el correo ya existe, devolver un error 400 con un mensaje
         return ResponseEntity.badRequest().body("El correo ya está en uso.");
     }
 
     // Crear el usuario si el correo no existe
     UserModel newUser = userService.createUser(user);
     return ResponseEntity.ok(newUser);
-}
-
-    @PostMapping("/validateEmail")
-    public ResponseEntity<Boolean> validateEmail(@RequestBody Map<String, String> emailMap) {
-        String email = emailMap.get("email");
-
-        // Verifica si el email es recibido correctamente
-        if (email == null) {
+    }
+    @GetMapping("/validateEmail")
+    public ResponseEntity<Boolean> validateEmail(@RequestParam String email) {
+        if (email == null || email.isEmpty()) {
             return ResponseEntity.badRequest().body(false);
         }
-
-        // Realiza la validación en la base de datos
         boolean exists = userService.existsByEmail(email);
         return ResponseEntity.ok(exists);
     }
+    
 
 
     @PutMapping("/edit/{id}")
