@@ -1,13 +1,9 @@
 package com.api.backend.security;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 public class JwtService {
@@ -24,12 +20,15 @@ public class JwtService {
         System.out.println("----------------------------------------------------------------");
         System.out.println("SE LLAMO LA FUNCION");
         System.out.println("----------------------------------------------------------------");
-        return Jwts.builder()
+        /*return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
+                */
+        System.out.println("---------------dd-d-d-d-d-d-d--d-d--d-d-");
+        return email;
     }
 }
