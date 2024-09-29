@@ -30,12 +30,13 @@ public class UserModel {
     private String email;
     private String document_type;
     private String document_number;
+    private String picture;
 
     public UserModel() {
     }
 
     public UserModel(int id, String name, String lastname, Date birthday, String gender, String address, String phone,
-            String email, String document_type, String document_number,RolModel rol) {
+            String email, String document_type, String document_number, RolModel rol, String picture) {
         Id = id;
         this.name = name;
         this.lastname = lastname;
@@ -47,6 +48,7 @@ public class UserModel {
         this.document_type = document_type;
         this.document_number = document_number;
         this.rol = rol;
+        this.picture = picture;
     }
 
     public int getId() {
@@ -137,6 +139,13 @@ public class UserModel {
         this.rol = rol;
     }
 
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture){
+        this.picture = picture;
+    }
     
     
     

@@ -45,6 +45,7 @@ public class DataInitializer {
                 "CC", 
                 "1234567890",
                 rolService.obtainRolList().stream().filter(rol -> rol.getName().equals("Admin")).findFirst().orElse(null) // Asignar rol Admin
+                ,"noen"
             ));
         }
     }
