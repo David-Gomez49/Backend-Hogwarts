@@ -26,34 +26,52 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
     }
 
     @Override
-public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-        Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication) throws IOException, ServletException {
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------");
+   
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------");
 
-    OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-    String email = oAuth2User.getAttribute("email");
-    String name = oAuth2User.getAttribute("given_name");
-    String lastname = oAuth2User.getAttribute("family_name");
-    String profilePictureUrl = oAuth2User.getAttribute("picture");
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        String email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("given_name");
+        String lastname = oAuth2User.getAttribute("family_name");
+        String profilePictureUrl = oAuth2User.getAttribute("picture");
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("--------------------- LISTO Y CORRECTO -------------------------");
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------");
+        System.out.println(email);
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------");
+        String role = userService.GetRolByEmail(email).getName();
+        boolean userValid = userService.existsByEmail(email);
+        String token = jwtService.generateToken(email, name, lastname, profilePictureUrl, role);
 
-    String role = userService.GetRolByEmail(email).getName();
-    boolean userValid = userService.existsByEmail(email);
-    String token = jwtService.generateToken(email, name, lastname, profilePictureUrl, role);
+        String redirectUrl;
+        if (userValid) {
+            redirectUrl = "http://localhost:5173/classes?token=" + token;
+        } else {
+            redirectUrl = "http://localhost:5173/register?token=" + token;
+        }
 
-    String redirectUrl;
-    if (userValid) {
-        redirectUrl = "http://localhost:5173/classes?token=" + token;
-    } else {
-        redirectUrl = "http://localhost:5173/register?token=" + token;
+        // Agregar logs para depuración
+        System.out.println("Redirigiendo a: " + redirectUrl);
+        System.out.println("Token generado: " + token);
+
+        System.out.println("Redirect URL: " + redirectUrl);
+        response.setStatus(HttpStatus.OK.value());
+        response.sendRedirect(redirectUrl);
+        System.out.println("Redirect sent");
     }
-
-    // Agregar logs para depuración
-    System.out.println("Redirigiendo a: " + redirectUrl);
-    System.out.println("Token generado: " + token);
-
-    System.out.println("Redirect URL: " + redirectUrl);
-    response.setStatus(HttpStatus.OK.value());
-    response.sendRedirect(redirectUrl);
-    System.out.println("Redirect sent");
-}
 
 }

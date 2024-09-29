@@ -19,6 +19,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        
         http
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
             .requestMatchers("/", "/login**", "/error**", "/css/**", "/js/**", "/images/**").permitAll() // Permitir acceso a login, raíz y errores
