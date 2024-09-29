@@ -53,6 +53,27 @@ public class UserService {
         }
     }
 
+    public UserModel updateUserByEmail(String email, UserModel updatedUser) {
+        // Buscar el usuario actual por email
+        UserModel existingUser = userRepo.findByEmail(email);
+
+        if (existingUser == null) {
+            throw new RuntimeException("Usuario no encontrado con el email: " + email);
+        }
+
+        // Actualizar los campos restantes del usuario
+        existingUser.setRol(updatedUser.getRol());  // Ejemplo
+        existingUser.setPhone(updatedUser.getPhone());  // Ejemplo
+        existingUser.setBirthday(updatedUser.getBirthday());  // Ejemplo
+        existingUser.setAddress(updatedUser.getAddress());  // Ejemplo
+        existingUser.setGender(updatedUser.getGender());  // Ejemplo
+        existingUser.setDocument_type(updatedUser.getDocument_type());  // Ejemplo
+        existingUser.setDocument_number(updatedUser.getDocument_number());  // Ejemplo
+
+        // Guardar los cambios
+        return userRepo.save(existingUser);
+    }
+
     public boolean existsByEmail(String Email) {
         return userRepo.existsByEmail(Email);
     }
