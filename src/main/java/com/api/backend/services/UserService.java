@@ -21,7 +21,7 @@ public class UserService {
 
     public UserModel obtainUserByEmail(String email) {
         UserModel user = userRepo.findByEmail(email);
-        return user; 
+        return user;
     }
 
     public UserModel createUser(UserModel user) {
@@ -35,15 +35,30 @@ public class UserService {
     public void deleteUser(int id) {
         userRepo.deleteById(id);
     }
-    
-    public boolean existsByEmail(String Email)
-    {
+
+    public boolean InfoCompleteByEmail(String Email) {
+        UserModel user = userRepo.findByEmail(Email);
+        if (user.getName() == null || user.getName().isEmpty()
+                || user.getLastname() == null || user.getLastname().isEmpty()
+                || user.getPhone() == null || user.getPhone().isEmpty()
+                || user.getAddress() == null || user.getAddress().isEmpty()
+                || user.getBirthday() == null || user.getGender() == null
+                || user.getGender().isEmpty() || user.getPicture() == null
+                || user.getPicture().isEmpty() || user.getRol() == null
+                || user.getDocument_type() == null || user.getDocument_type().isEmpty()
+                || user.getDocument_number() == null || user.getDocument_number().isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean existsByEmail(String Email) {
         return userRepo.existsByEmail(Email);
     }
 
-    public RolModel GetRolByEmail(String Email)
-    {
+    public RolModel GetRolByEmail(String Email) {
         UserModel user = userRepo.findByEmail(Email);
-        return user.getRol(); 
+        return user.getRol();
     }
 }

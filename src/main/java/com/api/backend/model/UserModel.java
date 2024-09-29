@@ -50,7 +50,8 @@ public class UserModel {
         this.rol = rol;
         this.picture = picture;
     }
-
+    
+    
     public int getId() {
         return Id;
     }

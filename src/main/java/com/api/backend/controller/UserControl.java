@@ -46,20 +46,19 @@ public class UserControl {
     if (userService.existsByEmail(email)) {
         return ResponseEntity.badRequest().body("El correo ya está en uso.");
     }
-
     // Crear el usuario si el correo no existe
     UserModel newUser = userService.createUser(user);
     return ResponseEntity.ok(newUser);
     }
-    @GetMapping("/validateEmail")
-    public ResponseEntity<Boolean> validateEmail(@RequestParam String email) {
+
+    @GetMapping("/validateUser")
+    public ResponseEntity<Boolean> validateUser(@RequestParam String email) {
         if (email == null || email.isEmpty()) {
             return ResponseEntity.badRequest().body(false);
         }
         boolean exists = userService.existsByEmail(email);
         return ResponseEntity.ok(exists);
     }
-    
 
 
     @PutMapping("/edit/{id}")

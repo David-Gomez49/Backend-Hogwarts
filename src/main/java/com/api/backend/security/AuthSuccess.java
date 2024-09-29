@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.api.backend.model.UserModel;
 import com.api.backend.services.UserService;
 
 import jakarta.servlet.ServletException;
@@ -42,31 +43,25 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
         String lastname = oAuth2User.getAttribute("family_name");
         String profilePictureUrl = oAuth2User.getAttribute("picture");
         System.out.println("----------------------------------------------------------------");
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("--------------------- LISTO Y CORRECTO -------------------------");
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("----------------------------------------------------------------");
         System.out.println(email);
         System.out.println("----------------------------------------------------------------");
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("----------------------------------------------------------------");
         
+        UserModel user = new UserModel(0,name,lastname,null,null,null,null,email,null,null,null,profilePictureUrl);
         boolean userValid = userService.existsByEmail(email);
+
+        if (!userValid) {
+            userService.createUser(user);
+        } 
         String token = jwtService.generateToken(email);
         System.out.println("----------------------------------------------------------------");
         System.out.println("TOKEN " + token);
         System.out.println("----------------------------------------------------------------");
         String redirectUrl;
-        if (userValid) {
-            redirectUrl = "http://localhost:5173/classes";
+        if (userService.InfoCompleteByEmail(email)) {
+            redirectUrl = "http://localhost:5173/classes?token=" + token;
         } else {
             redirectUrl = "http://localhost:5173/register?token=" + token;
         }
-        System.out.println("/////////////////////////////////////////////////////7");
-        System.out.println("/////////////////////////////////////////////////////7");
         System.out.println("/////////////////////////////////////////////////////7");
         // Agregar logs para depuración
         System.out.println("Redirigiendo a: " + redirectUrl);
@@ -76,8 +71,6 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
         response.setStatus(HttpStatus.OK.value());
         response.sendRedirect(redirectUrl);
         System.out.println("Redirect sent");
-
-        System.out.println("/////////////////////////////////////////////////////7");
         System.out.println("/////////////////////////////////////////////////////7");
     }
 
