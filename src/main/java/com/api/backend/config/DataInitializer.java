@@ -1,4 +1,4 @@
-package com.api.backend.initializer;
+package com.api.backend.config;
 
 import java.sql.Date;
 
