@@ -61,14 +61,14 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
             response.setContentType("application/json");
             response.getWriter().write(new ObjectMapper().writeValueAsString(responseData));
             response.setStatus(HttpStatus.OK.value());
-            response.sendRedirect("http://localhost:5173/classes");
+            response.sendRedirect("http://localhost:5173/classes?token=" + token);
         } else {
 
             response.setContentType("application/json");
             response.getWriter().write(new ObjectMapper().writeValueAsString(responseData));
             response.setStatus(HttpStatus.OK.value());
 
-            response.sendRedirect("http://localhost:5173/register");
+            response.sendRedirect("http://localhost:5173/register?token=" + token);
         }
 
     }
