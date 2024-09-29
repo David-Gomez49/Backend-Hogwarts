@@ -63,7 +63,7 @@ public class UserControl {
         return ResponseEntity.ok(exists);
     }
 
-    @PutMapping("/updateByEmail/{email}")
+    @PutMapping("/updateByEmail/{TokeString}")
     public UserModel updateUserByEmail(@PathVariable String TokeString, @RequestBody UserModel user) {
         // Llamar al servicio para encontrar el usuario por email y actualizarlo
         String email = jwtService.extractEmailFromToken(TokeString);
