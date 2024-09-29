@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.backend.model.UserModel;
@@ -32,8 +31,8 @@ public class UserControl {
         return userService.obtainUserList();
     }
 
-    @GetMapping("/getByEmail")
-    public ResponseEntity<UserModel> obtainUserByEmail(@RequestParam String TokeString) {
+    @GetMapping("/getByEmail/{TokeString}")
+    public ResponseEntity<UserModel> obtainUserByEmail(@PathVariable String TokeString) {
         String email = jwtService.extractEmailFromToken(TokeString);
         UserModel user = userService.obtainUserByEmail(email);
         if (user != null) {
@@ -54,8 +53,10 @@ public class UserControl {
         return ResponseEntity.ok(newUser);
     }
 
-    @GetMapping("/validateUser")
-    public ResponseEntity<Boolean> validateUser(@RequestParam String email) {
+    @GetMapping("/validateUser/{token}")
+    public ResponseEntity<Boolean> validateUser(@PathVariable String token) {
+        String email = jwtService.extractEmailFromToken(token);
+
         if (email == null || email.isEmpty()) {
             return ResponseEntity.badRequest().body(false);
         }
