@@ -32,9 +32,9 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
 
         // Verificar si el usuario ya está registrado en la base de datos
         if (userService.existsByEmail(email)) {
-            response.sendRedirect("/classes");
+            response.sendRedirect("http://localhost:5173/classes");
         } else {
-            response.sendRedirect("/register");
+            response.sendRedirect("http://localhost:5173/register");
         }
     }
 }
