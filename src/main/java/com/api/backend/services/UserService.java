@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.api.backend.model.RolModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.repository.UserRepo;
 
@@ -37,5 +38,11 @@ public class UserService {
     public boolean existsByEmail(String Email)
     {
         return userRepo.existsByEmail(Email);
+    }
+
+    public RolModel GetRolByEmail(String Email)
+    {
+        UserModel user = userRepo.findByEmail(Email);
+        return user.getRol(); 
     }
 }
