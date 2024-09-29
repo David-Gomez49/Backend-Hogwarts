@@ -53,9 +53,9 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
         System.out.println("----------------------------------------------------------------");
         System.out.println("----------------------------------------------------------------");
         System.out.println("----------------------------------------------------------------");
-        String role = userService.GetRolByEmail(email).getName();
+        
         boolean userValid = userService.existsByEmail(email);
-        String token = jwtService.generateToken(email, name, lastname, profilePictureUrl, role);
+        String token = jwtService.generateToken(email);
         System.out.println("----------------------------------------------------------------");
         System.out.println("TOKEN " + token);
         System.out.println("----------------------------------------------------------------");
