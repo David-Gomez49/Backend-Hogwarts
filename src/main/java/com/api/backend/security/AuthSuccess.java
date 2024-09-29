@@ -56,14 +56,18 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
         String role = userService.GetRolByEmail(email).getName();
         boolean userValid = userService.existsByEmail(email);
         String token = jwtService.generateToken(email, name, lastname, profilePictureUrl, role);
-
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("TOKEN " + token);
+        System.out.println("----------------------------------------------------------------");
         String redirectUrl;
         if (userValid) {
-            redirectUrl = "http://localhost:5173/classes?token=" + token;
+            redirectUrl = "http://localhost:5173/classes";
         } else {
             redirectUrl = "http://localhost:5173/register?token=" + token;
         }
-
+        System.out.println("/////////////////////////////////////////////////////7");
+        System.out.println("/////////////////////////////////////////////////////7");
+        System.out.println("/////////////////////////////////////////////////////7");
         // Agregar logs para depuración
         System.out.println("Redirigiendo a: " + redirectUrl);
         System.out.println("Token generado: " + token);
@@ -72,6 +76,9 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
         response.setStatus(HttpStatus.OK.value());
         response.sendRedirect(redirectUrl);
         System.out.println("Redirect sent");
+
+        System.out.println("/////////////////////////////////////////////////////7");
+        System.out.println("/////////////////////////////////////////////////////7");
     }
 
 }

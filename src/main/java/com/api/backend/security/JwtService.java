@@ -1,12 +1,13 @@
 package com.api.backend.security;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 public class JwtService {
@@ -20,7 +21,9 @@ public class JwtService {
         claims.put("lastname", lastname);
         claims.put("picture", picture);
         claims.put("role", role);
-
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("SE LLAMO LA FUNCION");
+        System.out.println("----------------------------------------------------------------");
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(email)
