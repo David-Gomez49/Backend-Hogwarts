@@ -41,7 +41,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Origen permitido
+        configuration.setAllowedOrigins(List.of("http://localhost:5173","https://backend-hogwarts.onrender.com")); // Origen permitido
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // Métodos permitidos
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Encabezados permitidos
 
