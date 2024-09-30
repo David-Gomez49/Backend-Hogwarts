@@ -30,8 +30,7 @@ public class SecurityConfig {
                 .csrf().disable() // Deshabilitar CSRF (opcional, depende de tu caso)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Rutas públicas
-                .requestMatchers("/login").permitAll() // Rutas públicas
-                .requestMatchers("/rol/getPublicRoles").permitAll()
+                .requestMatchers("/login").permitAll() // Rutas públicas .requestMatchers("/rol/getPublicRoles").permitAll()()
                 .requestMatchers("/user/*").permitAll() // Rutas públicas
                 .requestMatchers("/rol/*").permitAll() // Rutas públicas
                 .anyRequest().authenticated() // Las demás rutas requieren autenticación
