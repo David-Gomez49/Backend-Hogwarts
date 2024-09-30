@@ -24,21 +24,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors().and()
-            .csrf().disable() // Habilitar CORS y deshabilitar CSRF
-            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                .cors().and().csrf().disable() // Habilitar CORS y deshabilitar CSRF
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers("/", "/login**", "/error**", "/css/**", "/js/**", "/images/**").permitAll() // Rutas públicas
-                .anyRequest().authenticated() // Todas las demás rutas requieren autenticación
-            )
-            .oauth2Login(oauth2Login -> oauth2Login
-                .successHandler(successHandler) // Usar el handler personalizado para el éxito del login OAuth2
-            )
-            .headers(headers -> headers
-                .httpStrictTransportSecurity(hsts -> hsts
-                    .includeSubDomains(true) // Incluir subdominios
-                    .maxAgeInSeconds(31536000) // Tiempo de vida de 1 año en segundos
+                .anyRequest().authenticated() // Las demás rutas requieren autenticación
                 )
-            );
+                .oauth2Login(oauth2Login
+                        -> oauth2Login
+                        .successHandler(successHandler) // Usar el handler personalizado para el éxito del login OAuth2
+                );
 
         return http.build();
     }
@@ -48,7 +42,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Especifica los orígenes permitidos (frontend)
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://backend-hogwarts.onrender.com"));
+        configuration.setAllowedOrigins(List.of("*"));
         // Especifica los métodos HTTP permitidos
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         // Especifica los encabezados permitidos
