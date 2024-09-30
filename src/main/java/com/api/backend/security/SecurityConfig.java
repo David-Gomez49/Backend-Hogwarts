@@ -44,7 +44,6 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Origen permitido
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // Métodos permitidos
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Encabezados permitidos
-        configuration.setAllowCredentials(true); // Permitir cookies/autenticación
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // Aplicar CORS a todas las rutas

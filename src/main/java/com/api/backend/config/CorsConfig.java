@@ -16,8 +16,7 @@ public class CorsConfig implements WebMvcConfigurer {
                 registry.addMapping("/**")  // Permite CORS en todas las rutas
                         .allowedOrigins("http://localhost:5173","https://backend-hogwarts.onrender.com") // Dominios permitidos
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos HTTP permitidos
-                        .allowedHeaders("*") // Headers permitidos
-                        .allowCredentials(true); // Permitir envío de cookies
+                        .allowedHeaders("*"); // Headers permitidos
             }
         };
     }
