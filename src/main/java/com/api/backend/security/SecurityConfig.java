@@ -31,8 +31,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Rutas públicas
                 .requestMatchers("/login").permitAll() // Rutas públicas .requestMatchers("/rol/getPublicRoles").permitAll()()
-                .requestMatchers("/user/*").permitAll() // Rutas públicas
-                //.requestMatchers("/rol/*").permitAll() // Rutas públicas
+                //.requestMatchers("/user/*").permitAll() // Rutas públicas
+                .requestMatchers("/*").permitAll() // Rutas públicas
                 .anyRequest().authenticated() // Las demás rutas requieren autenticación
                 )
                 .oauth2Login(oauth2Login
