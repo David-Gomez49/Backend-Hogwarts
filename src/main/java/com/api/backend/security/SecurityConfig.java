@@ -24,14 +24,20 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors().and().csrf().disable() // Habilitar CORS y deshabilitar CSRF
+            .cors().and()
+            .csrf().disable() // Habilitar CORS y deshabilitar CSRF
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers("/", "/login**", "/error**", "/css/**", "/js/**", "/images/**").permitAll() // Rutas públicas
-                .anyRequest().authenticated() // Las demás rutas requieren autenticación
+                .anyRequest().authenticated() // Todas las demás rutas requieren autenticación
             )
-            .oauth2Login(oauth2Login -> 
-                oauth2Login
-                    .successHandler(successHandler) // Usar el handler personalizado para el éxito del login OAuth2
+            .oauth2Login(oauth2Login -> oauth2Login
+                .successHandler(successHandler) // Usar el handler personalizado para el éxito del login OAuth2
+            )
+            .headers(headers -> headers
+                .httpStrictTransportSecurity(hsts -> hsts
+                    .includeSubDomains(true) // Incluir subdominios
+                    .maxAgeInSeconds(31536000) // Tiempo de vida de 1 año en segundos
+                )
             );
 
         return http.build();
@@ -41,12 +47,17 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173","https://backend-hogwarts.onrender.com")); // Origen permitido
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // Métodos permitidos
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // Encabezados permitidos
+        // Especifica los orígenes permitidos (frontend)
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://backend-hogwarts.onrender.com"));
+        // Especifica los métodos HTTP permitidos
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        // Especifica los encabezados permitidos
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        // Activa la inclusión de credenciales
+        configuration.setAllowCredentials(true); // Esto establece el encabezado Access-Control-Allow-Credentials: true
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Aplicar CORS a todas las rutas
+        source.registerCorsConfiguration("/**", configuration); // Aplica la configuración a todas las rutas
 
         return source;
     }
