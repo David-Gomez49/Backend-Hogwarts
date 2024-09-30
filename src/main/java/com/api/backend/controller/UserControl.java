@@ -35,9 +35,16 @@ public class UserControl {
     public ResponseEntity<UserModel> obtainUserByEmail(@PathVariable String TokeString) {
         String email = jwtService.extractEmailFromToken(TokeString);
         UserModel user = userService.obtainUserByEmail(email);
+        System.out.println("--------------------");
+        System.out.println(user);
+        System.out.println("--------------------");
         if (user != null) {
+            System.out.println("----------------(if)-----------------");
             return ResponseEntity.ok(user);
+            
+            
         } else {
+            System.out.println("----------------(else)----------------");
             return ResponseEntity.notFound().build();
         }
     }
