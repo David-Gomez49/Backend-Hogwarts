@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,13 +32,15 @@ public class UserControl {
         return userService.obtainUserList();
     }
 
-    @GetMapping("/getByEmail/{TokeString}")
-    public ResponseEntity<UserModel> obtainUserByEmail(@PathVariable String TokeString) {
-        String email = jwtService.extractEmailFromToken(TokeString);
+    @GetMapping("/getByEmail")
+    public ResponseEntity<UserModel> obtainUserByEmail(@RequestHeader("Authorization") String token) {
+        String actualToken = token.substring(7); 
+        String email = jwtService.extractEmailFromToken(actualToken);
         UserModel user = userService.obtainUserByEmail(email);
         System.out.println("--------------------");
         System.out.println(user);
         System.out.println("--------------------");
+
         if (user != null) {
             System.out.println("----------------(if)-----------------");
             return ResponseEntity.ok(user);
@@ -60,9 +63,10 @@ public class UserControl {
         return ResponseEntity.ok(newUser);
     }
 
-    @GetMapping("/validateUser/{token}")
-    public ResponseEntity<Boolean> validateUser(@PathVariable String token) {
-        String email = jwtService.extractEmailFromToken(token);
+    @GetMapping("/validateUser")
+    public ResponseEntity<Boolean> validateUser(@RequestHeader("Authorization") String token) {
+        String actualToken = token.substring(7); 
+        String email = jwtService.extractEmailFromToken(actualToken);
 
         if (email == null || email.isEmpty()) {
             return ResponseEntity.badRequest().body(false);
@@ -71,10 +75,11 @@ public class UserControl {
         return ResponseEntity.ok(exists);
     }
 
-    @PutMapping("/updateByEmail/{TokeString}")
-    public UserModel updateUserByEmail(@PathVariable String TokeString, @RequestBody UserModel user) {
+    @PutMapping("/updateByEmail")
+    public UserModel updateUserByEmail(@RequestHeader("Authorization") String token, @RequestBody UserModel user) {
+        String actualToken = token.substring(7); 
         // Llamar al servicio para encontrar el usuario por email y actualizarlo
-        String email = jwtService.extractEmailFromToken(TokeString);
+        String email = jwtService.extractEmailFromToken(actualToken);
         return userService.updateUserByEmail(email, user);
     }
 
