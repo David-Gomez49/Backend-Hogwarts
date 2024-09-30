@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Rutas públicas
                 .requestMatchers("/login").permitAll() // Rutas públicas .requestMatchers("/rol/getPublicRoles").permitAll()()
-                .requestMatchers("/user/*","/rol/*","/assesment/*","/attendance/*","/calification/*","/group/*","/class/*","/message/*","/studentXParent/*","/subject/*","/userXGroup/*","").permitAll() // Rutas públicas
+                .requestMatchers("/**").permitAll() // Rutas públicas
                 .anyRequest().authenticated() // Las demás rutas requieren autenticación
                 )
                 .oauth2Login(oauth2Login
@@ -43,6 +43,7 @@ public class SecurityConfig {
     }
 
     // Definir configuración global de CORS
+    //"/user/**","/rol/**","/assesment/**","/attendance/**","/calification/**","/group/**","/class/**","/message/**","/studentXParent/**","/subject/**","/userXGroup/**"
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();

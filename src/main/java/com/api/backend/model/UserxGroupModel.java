@@ -4,7 +4,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.*;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name= "UsersxGroups")
@@ -14,7 +17,7 @@ public class UserxGroupModel {
     private int Id;
 
     @OneToOne
-    @JoinColumn(name = "id_studeent", referencedColumnName = "Id")
+    @JoinColumn(name = "id_student", referencedColumnName = "Id")
     private UserModel student;
 
     @ManyToOne
