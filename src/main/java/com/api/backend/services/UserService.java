@@ -19,6 +19,10 @@ public class UserService {
         return (List<UserModel>) userRepo.findAll();
     }
 
+    public List<UserModel> obtainUserListWithSpecificFields() {
+        return (List<UserModel>) userRepo.findAllUsersWithSpecificFields();
+    }
+
     public UserModel obtainUserByEmail(String email) {
         UserModel user = userRepo.findByEmail(email);
         return user;
@@ -78,6 +82,9 @@ public class UserService {
         return userRepo.existsByEmail(Email);
     }
 
+    public UserModel getInfoByEmail(String Email){
+        return userRepo.getInfoByEmail(Email);
+    }
     public RolModel GetRolByEmail(String Email) {
         UserModel user = userRepo.findByEmail(Email);
         return user.getRol();

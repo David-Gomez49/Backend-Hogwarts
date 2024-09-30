@@ -1,6 +1,7 @@
 package com.api.backend.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.backend.model.RolModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.UserService;
@@ -34,7 +36,7 @@ public class UserControl {
 
     @GetMapping("/getByEmail")
     public ResponseEntity<UserModel> obtainUserByEmail(@RequestHeader("Authorization") String token) {
-        String actualToken = token.substring(7); 
+        String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
         UserModel user = userService.obtainUserByEmail(email);
         System.out.println("--------------------");
@@ -44,8 +46,7 @@ public class UserControl {
         if (user != null) {
             System.out.println("----------------(if)-----------------");
             return ResponseEntity.ok(user);
-            
-            
+
         } else {
             System.out.println("----------------(else)----------------");
             return ResponseEntity.notFound().build();
@@ -65,7 +66,7 @@ public class UserControl {
 
     @GetMapping("/validateUser")
     public ResponseEntity<Boolean> validateUser(@RequestHeader("Authorization") String token) {
-        String actualToken = token.substring(7); 
+        String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
 
         if (email == null || email.isEmpty()) {
@@ -77,10 +78,29 @@ public class UserControl {
 
     @PutMapping("/updateByEmail")
     public UserModel updateUserByEmail(@RequestHeader("Authorization") String token, @RequestBody UserModel user) {
-        String actualToken = token.substring(7); 
+        String actualToken = token.substring(7);
         // Llamar al servicio para encontrar el usuario por email y actualizarlo
         String email = jwtService.extractEmailFromToken(actualToken);
         return userService.updateUserByEmail(email, user);
+    }
+
+    @PutMapping("/infoCompleteByEmail")
+    public ResponseEntity<Boolean> infoCompleteByEmail(@RequestHeader("Authorization") String token) {
+        String actualToken = token.substring(7);
+        String email = jwtService.extractEmailFromToken(actualToken);
+        return ResponseEntity.ok(userService.InfoCompleteByEmail(email));
+    }
+
+    @PutMapping("/getInfoByEmail")
+    public UserModel getInfoByEmail(@RequestHeader("Authorization") String token) {
+        String actualToken = token.substring(7);
+        String email = jwtService.extractEmailFromToken(actualToken);
+        return userService.getInfoByEmail(email);
+    }
+
+    @GetMapping("/listUserInfo")
+    public List<UserModel> getUsersWithSpecificFields() {
+        return userService.obtainUserListWithSpecificFields();
     }
 
     @PutMapping("/edit/{id}")
