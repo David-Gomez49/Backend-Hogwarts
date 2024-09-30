@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,11 +24,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
-                // Habilitar CORS y deshabilitar CSRF
+                .cors().and() // Asegurarse de habilitar CORS explícitamente
+                .csrf().disable() // Deshabilitar CSRF (opcional, depende de tu caso)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/", "/login**", "/error**", "/css/**", "/js/**", "/images/**").permitAll() // Rutas públicas
+                .requestMatchers(HttpMethod.OPTIONS, "/", "/login**", "/error**", "/css/**", "/js/**", "/images/**").permitAll() // Rutas públicas
                 .anyRequest().authenticated() // Las demás rutas requieren autenticación
                 )
                 .oauth2Login(oauth2Login
@@ -42,10 +43,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*")); // Permite todos los orígenes
+
+        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Permitir solo este origen
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(List.of("*")); // Permitir todos los encabezados
+        configuration.setAllowCredentials(true); // Permitir credenciales
+        configuration.addAllowedOrigin("http://localhost:5173");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
