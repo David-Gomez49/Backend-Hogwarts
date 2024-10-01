@@ -47,18 +47,19 @@ public class DataInitializer {
                 rolService.obtainRolList().stream().filter(rol -> rol.getName().equals("Admin")).findFirst().orElse(null) // Asignar rol Admin
                 ,"noen"
             ));
-            for (int i = 1; i <= 10; i++) {
+            for (int i = 1; i <= 15; i++) {
+                String email="usuario" + i + "@ejemplo.com";
                 userService.createUser(new UserModel(
                     0, // ID se genera automáticamente
                     "Usuario" + i, 
                     "Apellido" + i, 
-                    Date.valueOf("1990-01-0" + i), // Fechas de ejemplo
+                    Date.valueOf("1990-01-06"), // Fechas de ejemplo
                     "Masculino", 
                     "Calle " + (100 + i), 
                     "123456789" + i, 
-                    "usuario", 
+                    email, 
                     "CC", 
-                    "1234567890" + i, 
+                    ""+(1234567890 + i), 
                     rolService.obtainRolList().stream().filter(rol -> rol.getName().equals("Student")).findFirst().orElse(null), // Asignar rol Admin
                     "picture"
                 ));
