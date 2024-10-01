@@ -84,14 +84,14 @@ public class UserControl {
         return userService.updateUserByEmail(email, user);
     }
 
-    @PutMapping("/infoCompleteByEmail")
+    @GetMapping("/infoCompleteByEmail")
     public ResponseEntity<Boolean> infoCompleteByEmail(@RequestHeader("Authorization") String token) {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
         return ResponseEntity.ok(userService.InfoCompleteByEmail(email));
     }
 
-    @PutMapping("/getInfoByEmail")
+    @GetMapping("/getInfoByEmail")
     public UserModel getInfoByEmail(@RequestHeader("Authorization") String token) {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);

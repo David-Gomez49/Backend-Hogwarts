@@ -20,11 +20,18 @@ public class UserService {
     }
 
     public List<UserModel> obtainUserListWithSpecificFields() {
-        return (List<UserModel>) userRepo.findAllUsersWithSpecificFields();
+        List<UserModel> a = (List<UserModel> )userRepo.findAllUsersWithSpecificFields();
+        System.out.println("-----------list--------");
+        System.out.println(a);
+        System.out.println("-----------list--------");
+        return a ;
     }
 
     public UserModel obtainUserByEmail(String email) {
         UserModel user = userRepo.findByEmail(email);
+        System.out.println("-----------user--------");
+        System.out.println(user);
+        System.out.println("-----------user--------");
         return user;
     }
 
