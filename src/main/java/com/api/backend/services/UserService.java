@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.api.backend.model.AuxiliarUserModel;
 import com.api.backend.model.RolModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.repository.UserRepo;
@@ -19,8 +20,8 @@ public class UserService {
         return (List<UserModel>) userRepo.findAll();
     }
 
-    public List<UserModel> obtainUserListWithSpecificFields() {
-        List<UserModel> a = (List<UserModel> )userRepo.findAllUsersWithSpecificFields();
+    public List<AuxiliarUserModel> obtainUserListWithSpecificFields() {
+        List<AuxiliarUserModel> a = (List<AuxiliarUserModel> )userRepo.findAllUsersWithSpecificFields();
         System.out.println("-----------list--------");
         System.out.println(a);
         System.out.println("-----------list--------");
@@ -89,11 +90,21 @@ public class UserService {
         return userRepo.existsByEmail(Email);
     }
 
-    public UserModel getInfoByEmail(String Email){
+    public AuxiliarUserModel getInfoByEmail(String Email){
         return userRepo.getInfoByEmail(Email);
     }
+    
     public RolModel GetRolByEmail(String Email) {
         UserModel user = userRepo.findByEmail(Email);
         return user.getRol();
     }
+
+    public boolean  validateAdmin(String Email) {
+        UserModel user = userRepo.findByEmail(Email);
+        return user.getRol().getName().equals("Admin");
+    }    
+    public boolean  validateTeacher(String Email) {
+        UserModel user = userRepo.findByEmail(Email);
+        return user.getRol().getName().equals("Teacher");
+    }    
 }

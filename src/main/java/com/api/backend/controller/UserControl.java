@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.backend.model.AuxiliarUserModel;
 import com.api.backend.model.RolModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.security.JwtService;
@@ -92,14 +93,14 @@ public class UserControl {
     }
 
     @GetMapping("/getInfoByEmail")
-    public UserModel getInfoByEmail(@RequestHeader("Authorization") String token) {
+    public AuxiliarUserModel getInfoByEmail(@RequestHeader("Authorization") String token) {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
         return userService.getInfoByEmail(email);
     }
 
     @GetMapping("/listUserInfo")
-    public List<UserModel> getUsersWithSpecificFields() {
+    public List<AuxiliarUserModel> getUsersWithSpecificFields() {
         return userService.obtainUserListWithSpecificFields();
     }
 
