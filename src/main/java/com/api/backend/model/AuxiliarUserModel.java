@@ -15,15 +15,16 @@ public class AuxiliarUserModel {
     public AuxiliarUserModel(){
     }
 
-    public AuxiliarUserModel(String document_number, String document_type, String email, String lastname, String name, String picture, RolModel rol) {
-        this.document_number = document_number;
-        this.document_type = document_type;
-        this.email = email;
-        this.lastname = lastname;
+    public AuxiliarUserModel(String name, String lastname, String email, String document_number, String picture, String document_type, RolModel rol) {
         this.name = name;
+        this.lastname = lastname;
+        this.email = email;
+        this.document_number = document_number;
         this.picture = picture;
+        this.document_type = document_type;
         this.rol = rol;
     }
+    
 
     public RolModel getRol() {
         return rol;
