@@ -56,11 +56,11 @@ public class DataInitializer {
                     "Masculino", 
                     "Calle " + (100 + i), 
                     "123456789" + i, 
-                    "usuario" + i + "@ejemplo.com", 
+                    "usuario", 
                     "CC", 
                     "1234567890" + i, 
                     rolService.obtainRolList().stream().filter(rol -> rol.getName().equals("Student")).findFirst().orElse(null), // Asignar rol Admin
-                    "password" + i // Password de ejemplo
+                    "picture"
                 ));
             }
             
