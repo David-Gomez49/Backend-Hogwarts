@@ -161,7 +161,7 @@ public class UserControl {
                 return ResponseEntity.ok(false); // No tienes permisos
             }
           
-            userService.updateUserRoleByEmail(email, newrole);
+            userService.editRolByEmail(email, newrole);
             return ResponseEntity.ok(true); // Usuario eliminado exitosamente
     
         } catch (Exception e) {

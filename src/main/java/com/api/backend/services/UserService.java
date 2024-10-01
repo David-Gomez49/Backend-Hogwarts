@@ -59,7 +59,7 @@ public class UserService {
         userRepo.deleteByEmail(email);
     }
 
-    public UserModel updateUserRoleByEmail(String email, String roleName) {
+    public UserModel editRolByEmail(String email, String roleName) {
         
         UserModel user = userRepo.findByEmail(email);
 
