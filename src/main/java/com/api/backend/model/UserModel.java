@@ -2,6 +2,7 @@ package com.api.backend.model;
 
 import java.sql.Date;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,6 +28,8 @@ public class UserModel {
     private String gender;
     private String address;
     private String phone;
+    
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
     private String document_type;
     private String document_number;

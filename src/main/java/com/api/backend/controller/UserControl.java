@@ -76,6 +76,18 @@ public class UserControl {
         return ResponseEntity.ok(exists);
     }
 
+    @GetMapping("/validateAdmin")
+    public ResponseEntity<Boolean> validateAdmin(@RequestHeader("Authorization") String token) {
+        String actualToken = token.substring(7);
+        String email = jwtService.extractEmailFromToken(actualToken);
+        if (email == null || email.isEmpty()) {
+            return ResponseEntity.badRequest().body(false);
+        }
+        boolean valid = userService.validateAdmin(email);
+        return ResponseEntity.ok(valid);
+    }
+
+
     @PutMapping("/updateByEmail")
     public UserModel updateUserByEmail(@RequestHeader("Authorization") String token, @RequestBody UserModel user) {
         String actualToken = token.substring(7);
@@ -132,6 +144,7 @@ public class UserControl {
                 System.out.println("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"); 
                 return ResponseEntity.ok(false); // No tienes permisos
             }
+            System.out.println("<><><><><><>ANTES DE LLAMAR<><><><><><><>");
             userService.deleteByEmail(email);
             return ResponseEntity.ok(true); // Usuario eliminado exitosamente
     

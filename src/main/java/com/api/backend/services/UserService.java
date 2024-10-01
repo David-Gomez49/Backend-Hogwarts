@@ -10,6 +10,8 @@ import com.api.backend.model.RolModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.repository.UserRepo;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class UserService {
 
@@ -48,6 +50,7 @@ public class UserService {
         userRepo.deleteById(id);
     }
 
+    @Transactional
     public void deleteByEmail(String email) {
         userRepo.deleteByEmail(email);
     }
