@@ -110,26 +110,30 @@ public class UserControl {
         return null;
     }
 
-  @DeleteMapping("/deleteUserByEmail")
-    public ResponseEntity<String> deleteUserByEmail( @RequestHeader("Authorization") String token,  @RequestHeader("user") String email) {
+    @DeleteMapping("/deleteUserByEmail")
+    public ResponseEntity<Boolean> deleteUserByEmail(
+        @RequestHeader("Authorization") String token, 
+        @RequestHeader("user") String email) {
     
-    try {
-        String actualToken = token.substring(7);
-        String emailAdmin = jwtService.extractEmailFromToken(actualToken);
-
-        boolean valid = userService.validateAdmin(emailAdmin);
-        if (!valid) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para eliminar usuarios.");
+        try {
+            String actualToken = token.substring(7); // Elimina el "Bearer " del token
+            String emailAdmin = jwtService.extractEmailFromToken(actualToken);
+    
+            boolean valid = userService.validateAdmin(emailAdmin);
+            if (!valid) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(false); // No tienes permisos
+            }
+    
+            userService.deleteByEmail(email);
+            return ResponseEntity.ok(true); // Usuario eliminado exitosamente
+    
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false); // Usuario no encontrado
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false); // Error del servidor
         }
-        userService.deleteByEmail(email);
-        return ResponseEntity.ok("Usuario eliminado exitosamente.");
-        
-    } catch (UsernameNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar el usuario.");
     }
-}
+    
 
 
 }
