@@ -21,24 +21,4 @@ public class GroupControl {
     @Autowired
     private GroupService groupService;
 
-    @GetMapping("/getAll")
-    public List<GroupModel> obtainGroupList() {
-        return groupService.obtainGroupList();
-    }
-
-    @PostMapping("/create")
-    public GroupModel createGroup(@RequestBody GroupModel group) {
-        return groupService.createGroup(group);
-    }
-
-    @PutMapping("/edit/{id}")
-    public GroupModel updateGroup(@PathVariable int id, @RequestBody GroupModel group) {
-        group.setId(id);
-        return groupService.updateGroup(group);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public void deleteGroup(@PathVariable int id) {
-        groupService.deleteGroup(id);
-    }
 }

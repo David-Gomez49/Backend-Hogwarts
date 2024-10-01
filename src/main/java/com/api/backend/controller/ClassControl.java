@@ -20,25 +20,4 @@ import com.api.backend.services.ClassService;
 public class ClassControl {
     @Autowired
     private ClassService classService;
-
-    @GetMapping("/getAll")
-    public List<ClassModel> obtainClassList() {
-        return classService.obtainClassList();
-    }
-
-    @PostMapping("/create")
-    public ClassModel createClass(@RequestBody ClassModel classes) {
-        return classService.createClass(classes);
-    }
-
-    @PutMapping("/edit/{id}")
-    public ClassModel updateClass(@PathVariable int id, @RequestBody ClassModel classes) {
-        classes.setId(id);
-        return classService.updateClass(classes);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public void deleteClass(@PathVariable int id) {
-        classService.deleteClass(id);
-    }
 }

@@ -21,24 +21,4 @@ public class SubjectControl {
     @Autowired
     private SubjectService subjectService;
 
-    @GetMapping("/getAll")
-    public List<SubjectModel> obtainSubjectList() {
-        return subjectService.obtainSubjectList();
-    }
-
-    @PostMapping("/create")
-    public SubjectModel createSubject(@RequestBody SubjectModel subject) {
-        return subjectService.createSubject(subject);
-    }
-
-    @PutMapping("/edit/{id}")
-    public SubjectModel updateSubject(@PathVariable int id, @RequestBody SubjectModel subject) {
-        subject.setId(id);
-        return subjectService.updateSubject(subject);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public void deleteSubject(@PathVariable int id) {
-        subjectService.deleteSubject(id);
-    }
 }

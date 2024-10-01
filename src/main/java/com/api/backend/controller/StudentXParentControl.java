@@ -21,24 +21,4 @@ public class StudentXParentControl {
     @Autowired
     private StudentXParentService studentXParentService;
 
-    @GetMapping("/getAll")
-    public List<StudentsXParentsModel> obtainStudentXParentList() {
-        return studentXParentService.obtainStudentXParentList();
-    }
-
-    @PostMapping("/create")
-    public StudentsXParentsModel createStudentXParent(@RequestBody StudentsXParentsModel studentXParent) {
-        return studentXParentService.createStudentXParent(studentXParent);
-    }
-
-    @PutMapping("/edit/{id}")
-    public StudentsXParentsModel updateStudentXParent(@PathVariable int id, @RequestBody StudentsXParentsModel studentXParent) {
-        studentXParent.setId(id);
-        return studentXParentService.updateStudentXParent(studentXParent);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public void deleteStudentXParent(@PathVariable int id) {
-        studentXParentService.deleteStudentXParent(id);
-    }
 }

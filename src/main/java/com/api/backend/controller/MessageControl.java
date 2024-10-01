@@ -21,24 +21,4 @@ public class MessageControl {
     @Autowired
     private MessageService messageService;
 
-    @GetMapping("/getAll")
-    public List<MessageModel> obtainMessageList() {
-        return messageService.obtainMessageList();
-    }
-
-    @PostMapping("/create")
-    public MessageModel createMessage(@RequestBody MessageModel message) {
-        return messageService.createMessage(message);
-    }
-
-    @PutMapping("/edit/{id}")
-    public MessageModel updateMessage(@PathVariable int id, @RequestBody MessageModel message) {
-        message.setId(id);
-        return messageService.updateMessage(message);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public void deleteMessage(@PathVariable int id) {
-        messageService.deleteMessage(id);
-    }
 }

@@ -21,25 +21,5 @@ public class AttendanceControl {
     @Autowired
     private AttendanceService attendanceService;
 
-    @GetMapping("/getAll")
-    public List<AttendanceModel> obtainAttendanceList() {
-        return attendanceService.obtainAttendanceList();
-    }
-
-    @PostMapping("/create")
-    public AttendanceModel createAttendance(@RequestBody AttendanceModel attendance) {
-        return attendanceService.createAttendance(attendance);
-    }
-
-    @PutMapping("/edit/{id}")
-    public AttendanceModel updateAttendance(@PathVariable int id, @RequestBody AttendanceModel attendance) {
-        attendance.setId(id);
-        return attendanceService.updateAttendance(attendance);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public void deleteAttendance(@PathVariable int id) {
-        attendanceService.deleteAttendance(id);
-    }
 }
 

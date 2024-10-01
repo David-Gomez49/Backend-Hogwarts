@@ -36,15 +36,6 @@ public class RolControl {
         return rolService.createRol(rol);
     }
 
-    @PutMapping("/edit/{id}")
-    public RolModel updateRol(@PathVariable int id, @RequestBody RolModel rol) {
-        rol.setId(id);
-        return rolService.updateRol(rol);
-    }
 
-    @DeleteMapping("/delete/{id}")
-    public void deleteRol(@PathVariable int id) {
-        rolService.deleteRol(id);
-    }
 }
 

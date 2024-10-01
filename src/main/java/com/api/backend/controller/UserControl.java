@@ -31,8 +31,14 @@ public class UserControl {
     private JwtService jwtService;
 
     @GetMapping("/getAll")
-    public List<UserModel> obtainUserList() {
-        return userService.obtainUserList();
+    public List<UserModel> obtainUserList(@RequestHeader("Authorization") String token) {
+        String actualToken = token.substring(7);
+        String email = jwtService.extractEmailFromToken(actualToken);
+        boolean valid = userService.validateAdmin(email);
+        if (valid) {
+            return userService.obtainUserList();
+        }
+        return null;
     }
 
     @GetMapping("/getByEmail")
@@ -40,16 +46,11 @@ public class UserControl {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
         UserModel user = userService.obtainUserByEmail(email);
-        System.out.println("--------------------");
-        System.out.println(user);
-        System.out.println("--------------------");
 
         if (user != null) {
-            System.out.println("----------------(if)-----------------");
             return ResponseEntity.ok(user);
 
         } else {
-            System.out.println("----------------(else)----------------");
             return ResponseEntity.notFound().build();
         }
     }
@@ -100,19 +101,14 @@ public class UserControl {
     }
 
     @GetMapping("/listUserInfo")
-    public List<AuxiliarUserModel> getUsersWithSpecificFields() {
-        return userService.obtainUserListWithSpecificFields();
-    }
-
-    @PutMapping("/edit/{id}")
-    public UserModel updateUser(@PathVariable int id, @RequestBody UserModel user) {
-        user.setId(id);
-        return userService.updateUser(user);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public void deleteUser(@PathVariable int id) {
-        userService.deleteUser(id);
+    public List<AuxiliarUserModel> getUsersWithSpecificFields(@RequestHeader("Authorization") String token) {
+        String actualToken = token.substring(7);
+        String email = jwtService.extractEmailFromToken(actualToken);
+        boolean valid = userService.validateAdmin(email);
+        if (valid) {
+            return userService.obtainUserListWithSpecificFields();
+        }
+        return null;
     }
 
 }

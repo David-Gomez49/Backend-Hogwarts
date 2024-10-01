@@ -16,7 +16,7 @@ public interface UserRepo extends JpaRepository<UserModel, Integer>{
     @Query(value="SELECT new com.api.backend.model.AuxiliarUserModel(u.name, u.lastname, u.email, u.document_number, u.picture, u.document_type, u.rol) FROM UserModel u")
     List<AuxiliarUserModel> findAllUsersWithSpecificFields();
 
-    @Query(value="SELECT u.name, u.lastname, u.email, u.document_number, u.picture, u.document_type, u.rol FROM UserModel u WHERE u.email = :email")
+    @Query(value="SELECT new com.api.backend.model.AuxiliarUserModel(u.name, u.lastname, u.email, u.document_number, u.picture, u.document_type, u.rol) FROM UserModel u WHERE u.email = :email")
     AuxiliarUserModel getInfoByEmail(@Param("email") String email);
 
 }

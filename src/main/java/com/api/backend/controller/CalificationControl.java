@@ -21,24 +21,5 @@ public class CalificationControl {
     @Autowired
     private CalificationService calificationService;
 
-    @GetMapping("/getAll")
-    public List<CalificationModel> obtainCalificationList() {
-        return calificationService.obtainCalificationList();
-    }
-
-    @PostMapping("/create")
-    public CalificationModel createCalification(@RequestBody CalificationModel calification) {
-        return calificationService.createCalification(calification);
-    }
-
-    @PutMapping("/edit/{id}")
-    public CalificationModel updateCalification(@PathVariable int id, @RequestBody CalificationModel calification) {
-        calification.setId(id);
-        return calificationService.updateCalification(calification);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public void deleteCalification(@PathVariable int id) {
-        calificationService.deleteCalification(id);
-    }
+    
 }

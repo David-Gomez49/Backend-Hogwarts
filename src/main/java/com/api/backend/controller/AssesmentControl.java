@@ -21,24 +21,4 @@ public class AssesmentControl {
     @Autowired
     private AssesmentService assesmentService;
 
-    @GetMapping("/getAll")
-    public List<AssesmentModel> obtainAssesmentList() {
-        return assesmentService.obtainAssesmentList();
-    }
-
-    @PostMapping("/create")
-    public AssesmentModel createCalification(@RequestBody AssesmentModel assesment) {
-        return assesmentService.createAssesment(assesment);
-    }
-
-    @PutMapping("/edit/{id}")
-    public AssesmentModel updateCalification(@PathVariable int id, @RequestBody AssesmentModel assesment) {
-        assesment.setId(id);
-        return assesmentService.updateAssesment(assesment);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public void deleteCalification(@PathVariable int id) {
-        assesmentService.deleteAssesment(id);
-    }
 }
