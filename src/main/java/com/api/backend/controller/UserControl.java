@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -120,15 +119,13 @@ public class UserControl {
             String emailAdmin = jwtService.extractEmailFromToken(actualToken);
     
             boolean valid = userService.validateAdmin(emailAdmin);
-            if (!valid) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(false); // No tienes permisos
+            boolean userValid = userService.existsByEmail(email);
+            if (!valid || !userValid) {
+                return ResponseEntity.ok(false); // No tienes permisos
             }
-    
             userService.deleteByEmail(email);
             return ResponseEntity.ok(true); // Usuario eliminado exitosamente
     
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false); // Usuario no encontrado
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false); // Error del servidor
         }
