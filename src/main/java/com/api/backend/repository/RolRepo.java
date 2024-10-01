@@ -9,6 +9,8 @@ import com.api.backend.model.RolModel;
 
 public interface RolRepo extends JpaRepository<RolModel, Integer>{
     
+        RolModel findByName(String name);
+        
         @Query("SELECT r FROM RolModel r WHERE r.access = TRUE")
         List<RolModel> findByAccessTrue();
 }

@@ -19,6 +19,7 @@ import com.api.backend.model.UserModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.UserService;
 
+
 @RestController
 @RequestMapping("/user")
 public class UserControl {
@@ -125,32 +126,45 @@ public class UserControl {
     public ResponseEntity<Boolean> deleteUserByEmail(
         @RequestHeader("Authorization") String token, 
         @RequestHeader("user") String email) {
-    
-
-    
-            System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-            System.out.println("email: "+email+",  token"+ token); 
-            System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkk");     
+ 
         try {
             String actualToken = token.substring(7); // Elimina el "Bearer " del token
             String emailAdmin = jwtService.extractEmailFromToken(actualToken);
             
             boolean valid = userService.validateAdmin(emailAdmin);
             boolean userValid = userService.existsByEmail(email);
-            if (!valid || !userValid) {
-                System.out.println("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"); 
-                System.out.println("usuario no valido, admin o normal");
-                System.out.println("Admin: "+valid+", Usuario: "+userValid); 
-                System.out.println("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"); 
+            if ((!valid || !userValid )|| emailAdmin.equals(email)) {
                 return ResponseEntity.ok(false); // No tienes permisos
             }
-            System.out.println("<><><><><><>ANTES DE LLAMAR<><><><><><><>");
+          
             userService.deleteByEmail(email);
             return ResponseEntity.ok(true); // Usuario eliminado exitosamente
     
         } catch (Exception e) {
-            System.out.println("mmmmmmmmmmmmmm"); 
-            System.out.println("ERORO TOTaL"); 
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false); // Error del servidor
+        }
+    }
+
+    @PutMapping("/editRolByEmail")
+    public ResponseEntity<Boolean> EditRolByEmail(
+        @RequestHeader("Authorization") String token, 
+        @RequestHeader("user") String email,
+        @RequestHeader("role") String newrole) {
+ 
+        try {
+            String actualToken = token.substring(7); // Elimina el "Bearer " del token
+            String emailAdmin = jwtService.extractEmailFromToken(actualToken);
+            
+            boolean valid = userService.validateAdmin(emailAdmin);
+            boolean userValid = userService.existsByEmail(email);
+            if ((!valid || !userValid )|| emailAdmin.equals(email)) {
+                return ResponseEntity.ok(false); // No tienes permisos
+            }
+          
+            userService.updateUserRoleByEmail(email, newrole);
+            return ResponseEntity.ok(true); // Usuario eliminado exitosamente
+    
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false); // Error del servidor
         }
     }

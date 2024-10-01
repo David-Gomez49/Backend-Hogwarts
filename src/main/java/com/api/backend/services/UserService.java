@@ -3,11 +3,13 @@ package com.api.backend.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.api.backend.model.AuxiliarUserModel;
 import com.api.backend.model.RolModel;
 import com.api.backend.model.UserModel;
+import com.api.backend.repository.RolRepo;
 import com.api.backend.repository.UserRepo;
 
 import jakarta.transaction.Transactional;
@@ -17,6 +19,8 @@ public class UserService {
 
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private RolRepo rolRepo;
 
     public List<UserModel> obtainUserList() {
         return (List<UserModel>) userRepo.findAll();
@@ -55,6 +59,22 @@ public class UserService {
         userRepo.deleteByEmail(email);
     }
 
+    public UserModel updateUserRoleByEmail(String email, String roleName) {
+        
+        UserModel user = userRepo.findByEmail(email);
+
+        if (user == null) {
+            throw new UsernameNotFoundException("Usuario no encontrado con el email: " + email);
+        }
+
+        RolModel newRole = rolRepo.findByName(roleName);
+        if (newRole == null) {
+            throw new IllegalArgumentException("Rol no encontrado con el nombre: " + roleName);
+        }
+
+        user.setRol(newRole);
+        return userRepo.save(user); 
+    }
     public boolean InfoCompleteByEmail(String Email) {
         UserModel user = userRepo.findByEmail(Email);
         if (user.getName() == null || user.getName().isEmpty()
