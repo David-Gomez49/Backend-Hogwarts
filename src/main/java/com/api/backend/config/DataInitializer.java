@@ -47,6 +47,23 @@ public class DataInitializer {
                 rolService.obtainRolList().stream().filter(rol -> rol.getName().equals("Admin")).findFirst().orElse(null) // Asignar rol Admin
                 ,"noen"
             ));
+            for (int i = 1; i <= 10; i++) {
+                userService.createUser(new UserModel(
+                    0, // ID se genera automáticamente
+                    "Usuario" + i, 
+                    "Apellido" + i, 
+                    Date.valueOf("1990-01-0" + i), // Fechas de ejemplo
+                    "Masculino", 
+                    "Calle " + (100 + i), 
+                    "123456789" + i, 
+                    "usuario" + i + "@ejemplo.com", 
+                    "CC", 
+                    "1234567890" + i, 
+                    rolService.obtainRolList().stream().filter(rol -> rol.getName().equals("Student")).findFirst().orElse(null), // Asignar rol Admin
+                    "password" + i // Password de ejemplo
+                ));
+            }
+            
         }
     }
 }

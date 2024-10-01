@@ -1,13 +1,13 @@
 package com.api.backend.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.backend.model.AuxiliarUserModel;
-import com.api.backend.model.RolModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.UserService;
@@ -110,5 +109,27 @@ public class UserControl {
         }
         return null;
     }
+
+  @DeleteMapping("/deleteUserByEmail")
+    public ResponseEntity<String> deleteUserByEmail( @RequestHeader("Authorization") String token,  @RequestHeader("user") String email) {
+    
+    try {
+        String actualToken = token.substring(7);
+        String emailAdmin = jwtService.extractEmailFromToken(actualToken);
+
+        boolean valid = userService.validateAdmin(emailAdmin);
+        if (!valid) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para eliminar usuarios.");
+        }
+        userService.deleteByEmail(email);
+        return ResponseEntity.ok("Usuario eliminado exitosamente.");
+        
+    } catch (UsernameNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar el usuario.");
+    }
+}
+
 
 }

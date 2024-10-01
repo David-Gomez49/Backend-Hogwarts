@@ -48,6 +48,10 @@ public class UserService {
         userRepo.deleteById(id);
     }
 
+    public void deleteByEmail(String email) {
+        userRepo.deleteByEmail(email);
+    }
+
     public boolean InfoCompleteByEmail(String Email) {
         UserModel user = userRepo.findByEmail(Email);
         if (user.getName() == null || user.getName().isEmpty()
