@@ -150,32 +150,16 @@ public class UserControl {
         @RequestHeader("Authorization") String token, 
         @RequestHeader("user") String email,
         @RequestHeader("role") String newrole) {
- 
 
-            System.out.println("---------------------");
-            System.out.println("USer: "+email);
-            System.out.println("token: "+token);
-            System.out.println("new rol: "+newrole);
-            System.out.println("---------------------");
         try {
             String actualToken = token.substring(7); // Elimina el "Bearer " del token
             String emailAdmin = jwtService.extractEmailFromToken(actualToken);
             
             boolean valid = userService.validateAdmin(emailAdmin);
             boolean userValid = userService.existsByEmail(email);
-            System.out.println("--------------------------------------------------------");
-            System.out.println("actualtoken: "+actualToken);
-            System.out.println("emailAdmin: "+emailAdmin);
-            System.out.println("-------------------------------------------------------");
             if ((!valid || !userValid )|| emailAdmin.equals(email)) {
-                System.out.println("---------------------");
-            System.out.println("-------invalido------");
-            System.out.println("valid: "+valid);
-            System.out.println("userValid: "+userValid);
-            System.out.println("---------------------");
                 return ResponseEntity.ok(false);
             }
-            System.out.println("---LLAMando sevice----");
             userService.editRolByEmail(email, newrole);
             return ResponseEntity.ok(true); // Usuario eliminado exitosamente
     
