@@ -61,8 +61,13 @@ public class UserService {
 
     public UserModel editRolByEmail(String email, String roleName) {
         System.out.println("--LLEgando sevice----");
+        System.out.println("--LLEgando sevice----");
+        System.out.println("--LLEgando sevice----");
         UserModel user = userRepo.findByEmail(email);
 
+        System.out.println("--NOMbre----"+user.getName());
+        System.out.println("--rolVIEJO----"+user.getRol().getName());
+        
         if (user == null) {
             System.out.println("--usser no existe----");
             System.out.println("--usser no existe----");
@@ -71,6 +76,8 @@ public class UserService {
         }
 
         RolModel newRole = rolRepo.findByName(roleName);
+
+        System.out.println("--rolNUEVO----"+newRole.getName());
         if (newRole == null) {
             System.out.println("-------rol no existe--------");
             System.out.println("-------rol no existe--------");
@@ -81,9 +88,13 @@ public class UserService {
         user.setRol(newRole);
         System.out.println("-------Nuevo user--------");
         System.out.println("---------Nuevo user--------");
-        System.out.println(user);
+        System.out.println("--NOMbre----"+user.getName());
+        System.out.println("--rol----"+user.getRol().getName());
+        
         return userRepo.save(user); 
     }
+
+
     public boolean InfoCompleteByEmail(String Email) {
         UserModel user = userRepo.findByEmail(Email);
         if (user.getName() == null || user.getName().isEmpty()
