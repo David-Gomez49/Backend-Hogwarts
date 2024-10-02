@@ -60,19 +60,28 @@ public class UserService {
     }
 
     public UserModel editRolByEmail(String email, String roleName) {
-        
+        System.out.println("--LLEgando sevice----");
         UserModel user = userRepo.findByEmail(email);
 
         if (user == null) {
+            System.out.println("--usser no existe----");
+            System.out.println("--usser no existe----");
+            System.out.println("----usser no existe----");
             throw new UsernameNotFoundException("Usuario no encontrado con el email: " + email);
         }
 
         RolModel newRole = rolRepo.findByName(roleName);
         if (newRole == null) {
+            System.out.println("-------rol no existe--------");
+            System.out.println("-------rol no existe--------");
+            System.out.println("-------rol no existe--------");
             throw new IllegalArgumentException("Rol no encontrado con el nombre: " + roleName);
         }
 
         user.setRol(newRole);
+        System.out.println("-------Nuevo user--------");
+        System.out.println("---------Nuevo user--------");
+        System.out.println(user);
         return userRepo.save(user); 
     }
     public boolean InfoCompleteByEmail(String Email) {
