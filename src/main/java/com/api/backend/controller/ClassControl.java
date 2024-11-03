@@ -36,7 +36,7 @@ public class ClassControl {
         String email = jwtService.extractEmailFromToken(actualToken);
         boolean valid = userService.validateAdmin(email);
         if (valid) {
-            classService.obtainClassList();
+            return classService.obtainClassList();
         }
         return null;
     }
