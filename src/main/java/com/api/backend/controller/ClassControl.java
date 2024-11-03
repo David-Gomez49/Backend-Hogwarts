@@ -31,7 +31,7 @@ public class ClassControl {
     private UserService userService;
 
     @GetMapping("/getAll")
-    public List<ClassModel> obtainClasstList(@RequestHeader("Authorization") String token) {
+    public List<ClassModel> obtainClassList(@RequestHeader("Authorization") String token) {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
         boolean valid = userService.validateAdmin(email);
