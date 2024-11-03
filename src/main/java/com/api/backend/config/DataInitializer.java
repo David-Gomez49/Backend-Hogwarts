@@ -170,18 +170,18 @@ public class DataInitializer {
 
         if (subjectService.obtainSubjectList().isEmpty()) {
                 // Crear materias
-                subjectService.createSubject(new SubjectModel(0, "Dark Arts", "Study of dark creatures, curses, and spells"));
-                subjectService.createSubject(new SubjectModel(0, "Potions", "Learning potion-making techniques and ingredients"));
-                subjectService.createSubject(new SubjectModel(0, "Herbology", "Study of magical plants and fungi"));
-                subjectService.createSubject(new SubjectModel(0, "Transfiguration", "Transformation of objects and living beings"));
-                subjectService.createSubject(new SubjectModel(0, "Charms", "Casting and understanding various charms"));
-                subjectService.createSubject(new SubjectModel(0, "Defense Against the Dark Arts", "Protection against dark magic and creatures"));
-                subjectService.createSubject(new SubjectModel(0, "Astronomy", "Study of stars, planets, and magical constellations"));
-                subjectService.createSubject(new SubjectModel(0, "History of Magic", "Exploration of magical history and significant events"));
-                subjectService.createSubject(new SubjectModel(0, "Divination", "Learning techniques to foresee the future"));
-                subjectService.createSubject(new SubjectModel(0, "Care of Magical Creatures", "Handling and caring for magical creatures"));
-                subjectService.createSubject(new SubjectModel(0, "Ancient Runes", "Study of magical runes and symbols"));
-                subjectService.createSubject(new SubjectModel(0, "Arithmancy", "Magical interpretation of numbers and their meanings"));
+                subjectService.createSubject(new SubjectModel(0, "Dark Arts", "Study of dark creatures, curses, and spells",""));
+                subjectService.createSubject(new SubjectModel(0, "Potions", "Learning potion-making techniques and ingredients",""));
+                subjectService.createSubject(new SubjectModel(0, "Herbology", "Study of magical plants and fungi",""));
+                subjectService.createSubject(new SubjectModel(0, "Transfiguration", "Transformation of objects and living beings",""));
+                subjectService.createSubject(new SubjectModel(0, "Charms", "Casting and understanding various charms",""));
+                subjectService.createSubject(new SubjectModel(0, "Defense Against the Dark Arts", "Protection against dark magic and creatures",""));
+                subjectService.createSubject(new SubjectModel(0, "Astronomy", "Study of stars, planets, and magical constellations",""));
+                subjectService.createSubject(new SubjectModel(0, "History of Magic", "Exploration of magical history and significant events",""));
+                subjectService.createSubject(new SubjectModel(0, "Divination", "Learning techniques to foresee the future",""));
+                subjectService.createSubject(new SubjectModel(0, "Care of Magical Creatures", "Handling and caring for magical creatures",""));
+                subjectService.createSubject(new SubjectModel(0, "Ancient Runes", "Study of magical runes and symbols",""));
+                subjectService.createSubject(new SubjectModel(0, "Arithmancy", "Magical interpretation of numbers and their meanings",""));
                         }
 
 

@@ -25,6 +25,10 @@ public class UserService {
     public List<UserModel> obtainUserList() {
         return (List<UserModel>) userRepo.findAll();
     }
+    public List<UserModel> obtainTeacherList() {
+        //solo roles de teahcer o admin
+        return (List<UserModel>) userRepo.findTeachersAndAdmins();
+    }
 
     public List<AuxiliarUserModel> obtainUserListWithSpecificFields() {
         List<AuxiliarUserModel> a = (List<AuxiliarUserModel> )userRepo.findAllUsersWithSpecificFields();
@@ -75,6 +79,8 @@ public class UserService {
         
         return userRepo.save(user); 
     }
+
+
 
 
     public boolean InfoCompleteByEmail(String Email) {

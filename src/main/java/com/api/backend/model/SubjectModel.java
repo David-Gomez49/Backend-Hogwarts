@@ -14,11 +14,12 @@ public class SubjectModel {
     private int Id;
     private String name;
     private String description;
+    private String picture;
 
     public SubjectModel() {
     }
 
-    public SubjectModel(int id, String name, String description) {
+    public SubjectModel(int id, String name, String description,String picture) {
         Id = id;
         this.name = name;
         this.description = description;
@@ -30,6 +31,14 @@ public class SubjectModel {
 
     public void setId(int id) {
         Id = id;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     public String getName() {

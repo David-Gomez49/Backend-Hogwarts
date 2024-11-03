@@ -40,6 +40,17 @@ public class UserControl {
         return null;
     }
 
+    @GetMapping("/getTeachers")
+    public List<UserModel> obtainTeacherList(@RequestHeader("Authorization") String token) {
+        String actualToken = token.substring(7);
+        String email = jwtService.extractEmailFromToken(actualToken);
+        boolean valid = userService.validateAdmin(email);
+        if (valid) {
+            return userService.obtainTeacherList();
+        }
+        return null;
+    }
+
     @GetMapping("/getByEmail")
     public ResponseEntity<UserModel> obtainUserByEmail(@RequestHeader("Authorization") String token) {
         String actualToken = token.substring(7);
