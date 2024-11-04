@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.backend.model.ClassModel;
-import com.api.backend.model.UserModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.ClassService;
 import com.api.backend.services.UserService;
@@ -54,24 +53,26 @@ public class ClassControl {
     }
 
     @PutMapping("/update")
-    public List<UserModel> updateSubject(@RequestHeader("Authorization") String token, @RequestBody ClassModel classes) {
+    public ResponseEntity<Boolean> updateSubject(@RequestHeader("Authorization") String token, @RequestBody ClassModel classes) {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
         boolean valid = userService.validateAdmin(email);
         if (valid) {
             classService.updateClass(classes);
+            return ResponseEntity.ok(true);
         }
-        return null;
+        return ResponseEntity.ok(false);
     }
 
     @DeleteMapping("/delete")
-    public List<UserModel> deleSubject(@RequestHeader("Authorization") String token,  @RequestHeader("id") int id) {
+    public ResponseEntity<Boolean> deleSubject(@RequestHeader("Authorization") String token,  @RequestHeader("id") int id) {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
         boolean valid = userService.validateAdmin(email);
         if (valid) {
             classService.deleteClass(id);
+            return ResponseEntity.ok(true);
         }
-        return null;
+        return ResponseEntity.ok(false);
     }
 }

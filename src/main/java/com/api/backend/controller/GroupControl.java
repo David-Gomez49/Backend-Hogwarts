@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.api.backend.model.ClassModel;
+import com.api.backend.model.GroupModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.GroupService;
 import com.api.backend.services.UserService;
@@ -24,12 +24,12 @@ public class GroupControl {
     private UserService userService;
 
     @GetMapping("/getAll")
-    public List<ClassModel> obtainClasstList(@RequestHeader("Authorization") String token) {
+    public List<GroupModel> obtainClasstList(@RequestHeader("Authorization") String token) {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
         boolean valid = userService.validateAdmin(email);
         if (valid) {
-            groupService.obtainGroupList();
+            return groupService.obtainGroupList();
         }
         return null;
     }
