@@ -14,10 +14,10 @@ public interface UserXGroupRepo extends JpaRepository<UserxGroupModel, Integer>{
         UserxGroupModel findByStudent(UserModel student);
 
         @Query("SELECT new com.api.backend.model.StudentWithGroupModel(u, ug.group) " +
-       "FROM UserModel u " +
-       "LEFT JOIN UserxGroupModel ug ON u.id = ug.student.id " +
-       "WHERE u.rol.name = 'Student'")
+        "FROM UserModel u " +
+        "LEFT JOIN UserxGroupModel ug ON u.id = ug.student.id AND u.rol.name = 'Student'")
         List<StudentWithGroupModel> findAllStudentsWithGroup();
+ 
 
         Optional<UserxGroupModel> findByStudentId(int studentId);
 

@@ -106,10 +106,10 @@ public class DataInitializer {
 
             if (groupService.obtainGroupList().isEmpty()) {
                 for (int i = 1; i < 8; i++) {
-                    groupService.createGroup(new GroupModel(0, i, i + "-G"));
-                    groupService.createGroup(new GroupModel(0, i, i + "-S"));
-                    groupService.createGroup(new GroupModel(0, i, i + "-H"));
-                    groupService.createGroup(new GroupModel(0, i, i + "-R"));
+                    groupService.createGroup(new GroupModel(0, i, "G"));
+                    groupService.createGroup(new GroupModel(0, i,  "S"));
+                    groupService.createGroup(new GroupModel(0, i, "H"));
+                    groupService.createGroup(new GroupModel(0, i, "R"));
                 }
             }
 
