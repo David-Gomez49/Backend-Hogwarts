@@ -41,7 +41,7 @@ public class UserXGroupControl {
         return null;
     }
 
-    @GetMapping("/updateGroupById")
+    @PutMapping("/updateGroupById")
     public ResponseEntity<Boolean> getStudentsWithGroups(@RequestHeader("Authorization") String token,@RequestHeader("StudentId")int studentId,@RequestHeader("GroupId")int groupId) {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
