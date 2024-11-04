@@ -14,9 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.backend.model.ClassModel;
+import com.api.backend.model.GroupModel;
+import com.api.backend.model.RolModel;
+import com.api.backend.model.UserxGroupModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.ClassService;
+import com.api.backend.services.RolService;
 import com.api.backend.services.UserService;
+import com.api.backend.services.UserXGroupService;
 
 @RestController
 @RequestMapping("/class")
@@ -29,6 +34,9 @@ public class ClassControl {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserXGroupService userGroupService;
+
     @GetMapping("/getAll")
     public List<ClassModel> obtainClassList(@RequestHeader("Authorization") String token) {
         String actualToken = token.substring(7);
@@ -40,8 +48,28 @@ public class ClassControl {
         return null;
     }
 
+    @GetMapping("/getMyClasses")
+    public List<ClassModel> obtainMyClassList(@RequestHeader("Authorization") String token) {
+        String actualToken = token.substring(7);
+        String email = jwtService.extractEmailFromToken(actualToken);
+        RolModel rol = userService.GetRolByEmail(email);
+        if ((rol.getName().equals("Admin")) || (rol.getName().equals("Teacher"))) {
+            return classService.obtainClassByTeacher(email);
+        }
+        if (rol.getName().equals("Student")){
+            
+            UserxGroupModel userGroup = userGroupService.findByStudent(userService.obtainUserByEmail(email));
+             if (userGroup != null) {
+                GroupModel group = userGroup.getGroup();
+                return classService.obtainClassByGroup(group);
+            }
+
+        }
+            return null;
+    }
+
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createSubject(@RequestHeader("Authorization") String token, @RequestBody ClassModel classes) {
+    public ResponseEntity<Boolean> createClass(@RequestHeader("Authorization") String token, @RequestBody ClassModel classes) {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
         boolean valid = userService.validateAdmin(email);
@@ -53,7 +81,7 @@ public class ClassControl {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Boolean> updateSubject(@RequestHeader("Authorization") String token, @RequestBody ClassModel classes) {
+    public ResponseEntity<Boolean> updateClass(@RequestHeader("Authorization") String token, @RequestBody ClassModel classes) {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
         boolean valid = userService.validateAdmin(email);
@@ -65,7 +93,7 @@ public class ClassControl {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> deleSubject(@RequestHeader("Authorization") String token,  @RequestHeader("id") int id) {
+    public ResponseEntity<Boolean> deleteClass(@RequestHeader("Authorization") String token,  @RequestHeader("id") int id) {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
         boolean valid = userService.validateAdmin(email);

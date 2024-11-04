@@ -37,6 +37,10 @@ public class UserService {
         System.out.println("-----------list--------");
         return a ;
     }
+    public UserModel obtainUserById(int studentId) {
+        return userRepo.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado con ID: " + studentId));
+    }
 
     public UserModel obtainUserByEmail(String email) {
         UserModel user = userRepo.findByEmail(email);

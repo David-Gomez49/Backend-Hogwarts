@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.api.backend.model.ClassModel;
+import com.api.backend.model.GroupModel;
 import com.api.backend.repository.ClassRepo;
 
 @Service
@@ -18,6 +19,14 @@ public class ClassService {
         return (List<ClassModel>) classRepo.findAll();
     }
 
+    public List<ClassModel> obtainClassByTeacher(String email) {
+        return classRepo.findByTeacherEmail(email);
+    }
+
+    public List<ClassModel> obtainClassByGroup(GroupModel group) {
+    return classRepo.findByGroup(group);
+}
+    
     public ClassModel createClass(ClassModel classes) {
         return classRepo.save(classes);
     }
@@ -29,5 +38,7 @@ public class ClassService {
     public void deleteClass(int id) {
         classRepo.deleteById(id);
     }
+
+    
 }
 

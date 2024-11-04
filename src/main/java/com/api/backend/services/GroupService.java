@@ -18,6 +18,11 @@ public class GroupService {
         return (List<GroupModel>) groupRepo.findAll();
     }
 
+    public GroupModel obtainById(int id) {
+        return groupRepo.findById(id)
+            .orElseThrow(() -> new RuntimeException("Grupo no encontrado con ID: " + id));
+    }
+
     public GroupModel createGroup(GroupModel group) {
         return groupRepo.save(group);
     }
