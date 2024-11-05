@@ -153,7 +153,7 @@ public class DataInitializer {
                         userService.createUser(student);
                     
                         // Obtener el grupo correspondiente a la casa y el año del estudiante
-                        String groupName = años[i] + "-" + casas[i].charAt(0); // Ejemplo: "1-G" para Gryffindor, "2-S" para Slytherin
+                        String groupName =""+casas[i].charAt(0); // Ejemplo: "1-G" para Gryffindor, "2-S" para Slytherin
                         GroupModel group = groupService.obtainGroupList().stream()
                                           .filter(g -> g.getVariant().equals(groupName))
                                           .findFirst().orElse(null);

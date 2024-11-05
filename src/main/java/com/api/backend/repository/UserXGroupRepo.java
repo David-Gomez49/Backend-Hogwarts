@@ -13,9 +13,10 @@ import com.api.backend.model.UserxGroupModel;
 public interface UserXGroupRepo extends JpaRepository<UserxGroupModel, Integer>{
         UserxGroupModel findByStudent(UserModel student);
 
-        @Query("SELECT new com.api.backend.model.StudentWithGroupModel(u, ug.group) " +
-        "FROM UserModel u " +
-        "LEFT JOIN UserxGroupModel ug ON u.id = ug.student.id AND u.rol.name = 'Student'")
+        @Query("SELECT new com.api.backend.model.StudentWithGroupModel(u, COALESCE(ug.group, null)) " +
+       "FROM UserModel u " +
+       "LEFT JOIN UserxGroupModel ug ON u.id = ug.student.id " +
+       "WHERE u.rol.name = 'Student'")
         List<StudentWithGroupModel> findAllStudentsWithGroup();
  
 
