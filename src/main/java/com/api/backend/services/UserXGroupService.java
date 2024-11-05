@@ -39,7 +39,8 @@ public class UserXGroupService {
     }
 
     public List<StudentWithGroupModel> getAllStudentsWithGroup() {
-        return userxgroupRepo.findAllStudentsWithGroup();
+        
+        return (List<StudentWithGroupModel>) userxgroupRepo.findAllStudentsWithGroup();
     }
 
     public UserxGroupModel createUserXGroup(UserxGroupModel userxgroup) {

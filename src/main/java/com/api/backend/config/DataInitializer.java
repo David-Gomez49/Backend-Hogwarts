@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.api.backend.model.GroupModel;
 import com.api.backend.model.RolModel;
+import com.api.backend.model.StudentWithGroupModel;
 import com.api.backend.model.SubjectModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.model.UserxGroupModel;
@@ -159,7 +160,7 @@ public class DataInitializer {
             
                 userService.createUser(student);
             
-                // Find the group matching the student's house and year
+                
                 String groupVariant = String.valueOf(casas[i].charAt(0)); // First letter of house (G, S, H, R)
                 int studentYear = años[i];
             
@@ -191,6 +192,8 @@ public class DataInitializer {
                 subjectService.createSubject(new SubjectModel(0, "Care of Magical Creatures", "Handling and caring for magical creatures",""));
                 subjectService.createSubject(new SubjectModel(0, "Ancient Runes", "Study of magical runes and symbols",""));
                 subjectService.createSubject(new SubjectModel(0, "Arithmancy", "Magical interpretation of numbers and their meanings",""));
+
+
                         }
 
 
