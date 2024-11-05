@@ -1,6 +1,7 @@
 package com.api.backend.config;
 
 import java.sql.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -105,64 +106,72 @@ public class DataInitializer {
             }
 
             if (groupService.obtainGroupList().isEmpty()) {
-                for (int i = 1; i < 8; i++) {
-                    groupService.createGroup(new GroupModel(0, i, "G"));
-                    groupService.createGroup(new GroupModel(0, i,  "S"));
-                    groupService.createGroup(new GroupModel(0, i, "H"));
-                    groupService.createGroup(new GroupModel(0, i, "R"));
+                String[] variants = {"G", "S", "H", "R"};
+                for (int i = 1; i <= 7; i++) {
+                    for (String variant : variants) {
+                        groupService.createGroup(new GroupModel(0, i, variant));
+                    }
                 }
             }
-
+            
+            // Define student data
             String[] nombresstd = { "Harry", "Hermione", "Ron", "Ginny", "Neville", // Gryffindor
                     "Draco", "Pansy", "Blaise", "Crabbe", "Goyle", // Slytherin
                     "Luna", "Cho", "Padma", "Terry", "Michael", // Ravenclaw
                     "Cedric", "Hannah", "Ernie", "Susan", "Justin" }; // Hufflepuff
-
+            
             String[] apellidosstd = { "Potter", "Granger", "Weasley", "Weasley", "Longbottom", // Gryffindor
                     "Malfoy", "Parkinson", "Zabini", "Crabbe", "Goyle", // Slytherin
                     "Lovegood", "Chang", "Patil", "Boot", "Corner", // Ravenclaw
                     "Diggory", "Abbott", "Macmillan", "Bones", "Finch-Fletchley" }; // Hufflepuff
-
+            
             String[] casas = { "Gryffindor", "Gryffindor", "Gryffindor", "Gryffindor", "Gryffindor", // Gryffindor
                     "Slytherin", "Slytherin", "Slytherin", "Slytherin", "Slytherin", // Slytherin
                     "Ravenclaw", "Ravenclaw", "Ravenclaw", "Ravenclaw", "Ravenclaw", // Ravenclaw
                     "Hufflepuff", "Hufflepuff", "Hufflepuff", "Hufflepuff", "Hufflepuff" }; // Hufflepuff
-
-            int[] años = { 1, 1, 2, 3, 4, // Gryffindor - Estudiantes en distintos años
-                    2, 3, 4, 5, 6, // Slytherin
-                    1, 2, 3, 4, 5, // Ravenclaw
-                    6, 7, 7, 5, 4 }; // Hufflepuff
-
-                    for (int i = 0; i < 20; i++) {
-                        String email = nombresstd[i].toLowerCase() + "." + apellidosstd[i].toLowerCase() + "@hogwarts.com";
-                        UserModel student = new UserModel(
-                                0, // ID generado automáticamente
-                                nombresstd[i],
-                                apellidosstd[i],
-                                Date.valueOf("2005-09-01"), // Fecha de nacimiento de ejemplo
-                                (i % 2 == 0) ? "Masculino" : "Femenino", // Alternar género para simplificar
-                                "Hogwarts Castle " + (i + 1),
-                                "1234567890" + (i + 1),
-                                email,
-                                "CC",
-                                "" + (1234567890 + i),
-                                rolService.obtainRolList().stream().filter(rol -> rol.getName().equals("Student")).findFirst().orElse(null), // Asignar rol Student
-                                "picture"
-                        );
-                        
-                        userService.createUser(student);
-                    
-                        // Obtener el grupo correspondiente a la casa y el año del estudiante
-                        String groupName =""+casas[i].charAt(0); // Ejemplo: "1-G" para Gryffindor, "2-S" para Slytherin
-                        GroupModel group = groupService.obtainGroupList().stream()
-                                          .filter(g -> g.getVariant().equals(groupName))
-                                          .findFirst().orElse(null);
-                        
-                        if (group != null) {
-                            // Asignar el estudiante al grupo
-                            userXGroupService.createUserXGroup(new UserxGroupModel(0, student, group));
-                        }
-                    }
+            
+            int[] años = { 1, 1, 2, 3, 4, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 7, 7, 5, 4 }; // Student years
+            
+            // Retrieve the "Student" role
+            RolModel studentRole = rolService.obtainRolList().stream()
+                                             .filter(rol -> "Student".equals(rol.getName()))
+                                             .findFirst().orElse(null);
+            
+            // Retrieve all groups once to avoid redundant calls in the loop
+            List<GroupModel> allGroups = groupService.obtainGroupList();
+            
+            for (int i = 0; i < nombresstd.length; i++) {
+                String email = nombresstd[i].toLowerCase() + "." + apellidosstd[i].toLowerCase() + "@hogwarts.com";
+                UserModel student = new UserModel(
+                        0, // Auto-generated ID
+                        nombresstd[i],
+                        apellidosstd[i],
+                        Date.valueOf("2005-09-01"),
+                        (i % 2 == 0) ? "Masculino" : "Femenino",
+                        "Hogwarts Castle " + (i + 1),
+                        "1234567890" + (i + 1),
+                        email,
+                        "CC",
+                        String.valueOf(1234567890 + i),
+                        studentRole,
+                        "picture"
+                );
+            
+                userService.createUser(student);
+            
+                // Find the group matching the student's house and year
+                String groupVariant = String.valueOf(casas[i].charAt(0)); // First letter of house (G, S, H, R)
+                int studentYear = años[i];
+            
+                GroupModel group = allGroups.stream()
+                                            .filter(g -> g.getVariant().equals(groupVariant) && g.getGrade() == studentYear)
+                                            .findFirst().orElse(null);
+            
+                if (group != null) {
+                    // Assign the student to the group
+                    userXGroupService.createUserXGroup(new UserxGroupModel(0, student, group));
+                }
+            }
                    
                     
 
