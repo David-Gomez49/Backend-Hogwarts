@@ -193,12 +193,13 @@ public class DataInitializer {
                 subjectService.createSubject(new SubjectModel(0, "Ancient Runes", "Study of magical runes and symbols",""));
                 subjectService.createSubject(new SubjectModel(0, "Arithmancy", "Magical interpretation of numbers and their meanings",""));
 
-
+                
+                
                         }
 
 
 
-
+               
 
     }
 }

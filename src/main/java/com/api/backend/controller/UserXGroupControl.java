@@ -3,6 +3,7 @@ package com.api.backend.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,14 +32,21 @@ public class UserXGroupControl {
     private JwtService jwtService;
 
     @GetMapping("/student-groups")
-    public List<StudentWithGroupModel> getStudentsWithGroups(@RequestHeader("Authorization") String token) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
-        boolean valid = userService.validateAdmin(email);
-        if (valid) {
-        return userXGroupService.getAllStudentsWithGroup();
+    public ResponseEntity<?> getStudentsWithGroups(@RequestHeader("Authorization") String token) {
+        try {
+            String actualToken = token.substring(7);
+            String email = jwtService.extractEmailFromToken(actualToken);
+            boolean valid = userService.validateAdmin(email);
+            if (valid) {
+                List<StudentWithGroupModel> studentsWithGroups = userXGroupService.getAllStudentsWithGroup();
+                return ResponseEntity.ok(studentsWithGroups);
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener los estudiantes con grupo");
         }
-        return null;
     }
 
     @PutMapping("/updateGroupById")
