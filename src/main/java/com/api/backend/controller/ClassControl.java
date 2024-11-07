@@ -19,7 +19,6 @@ import com.api.backend.model.RolModel;
 import com.api.backend.model.UserxGroupModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.ClassService;
-import com.api.backend.services.RolService;
 import com.api.backend.services.UserService;
 import com.api.backend.services.UserXGroupService;
 
@@ -53,11 +52,13 @@ public class ClassControl {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
         RolModel rol = userService.GetRolByEmail(email);
-        if ((rol.getName().equals("Admin")) || (rol.getName().equals("Teacher"))) {
+        if ((rol.getName().equals("Admin"))) {
+            return classService.obtainClassList();
+        }
+        if (( (rol.getName().equals("Teacher")))){
             return classService.obtainClassByTeacher(email);
         }
         if (rol.getName().equals("Student")){
-            
             UserxGroupModel userGroup = userGroupService.findByStudent(userService.obtainUserByEmail(email));
              if (userGroup != null) {
                 GroupModel group = userGroup.getGroup();

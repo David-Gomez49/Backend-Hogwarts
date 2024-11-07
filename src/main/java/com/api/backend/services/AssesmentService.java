@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.api.backend.model.AssesmentModel;
+import com.api.backend.model.GroupModel;
 import com.api.backend.repository.AssesmentRepo;
 
 @Service
@@ -29,6 +30,19 @@ public class AssesmentService  {
 
     public void deleteAssesment(int id) {
         assesmentRepo.deleteById(id);
+    }
+
+    public List<AssesmentModel> obtainAssestmentsByTeacher(String email) {
+        return assesmentRepo.findByClasses_Teacher_Email(email);
+    }
+
+    public List<AssesmentModel> obtainAssestmentsByGroup(GroupModel group) {
+        return assesmentRepo.findAssessmentsByGroup(group);
+}
+    
+
+    public List<AssesmentModel> obtainAssestmentsByClass(int classId) {
+        return assesmentRepo.findByClasses_Id(classId);
     }
 }
 

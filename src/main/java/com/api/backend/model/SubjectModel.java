@@ -23,6 +23,7 @@ public class SubjectModel {
         Id = id;
         this.name = name;
         this.description = description;
+        this.picture = picture;
     }
 
     public int getId() {

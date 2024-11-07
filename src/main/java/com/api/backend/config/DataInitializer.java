@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.api.backend.model.GroupModel;
 import com.api.backend.model.RolModel;
-import com.api.backend.model.StudentWithGroupModel;
 import com.api.backend.model.SubjectModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.model.UserxGroupModel;
@@ -180,18 +179,16 @@ public class DataInitializer {
 
         if (subjectService.obtainSubjectList().isEmpty()) {
                 // Crear materias
-                subjectService.createSubject(new SubjectModel(0, "Dark Arts", "Study of dark creatures, curses, and spells",""));
-                subjectService.createSubject(new SubjectModel(0, "Potions", "Learning potion-making techniques and ingredients",""));
-                subjectService.createSubject(new SubjectModel(0, "Herbology", "Study of magical plants and fungi",""));
-                subjectService.createSubject(new SubjectModel(0, "Transfiguration", "Transformation of objects and living beings",""));
-                subjectService.createSubject(new SubjectModel(0, "Charms", "Casting and understanding various charms",""));
-                subjectService.createSubject(new SubjectModel(0, "Defense Against the Dark Arts", "Protection against dark magic and creatures",""));
-                subjectService.createSubject(new SubjectModel(0, "Astronomy", "Study of stars, planets, and magical constellations",""));
-                subjectService.createSubject(new SubjectModel(0, "History of Magic", "Exploration of magical history and significant events",""));
-                subjectService.createSubject(new SubjectModel(0, "Divination", "Learning techniques to foresee the future",""));
-                subjectService.createSubject(new SubjectModel(0, "Care of Magical Creatures", "Handling and caring for magical creatures",""));
-                subjectService.createSubject(new SubjectModel(0, "Ancient Runes", "Study of magical runes and symbols",""));
-                subjectService.createSubject(new SubjectModel(0, "Arithmancy", "Magical interpretation of numbers and their meanings",""));
+                subjectService.createSubject(new SubjectModel(0, "Dark Arts", "Study of dark creatures, curses, and spells","https://img.pikbest.com/wp/202347/fog-forest-enchanted-nightfall-dark-tree-silhouettes-amid-mysterious-glow-and-3d-digital-art_9767148.jpg!w700wp"));
+                subjectService.createSubject(new SubjectModel(0, "Potions", "Learning potion-making techniques and ingredients","https://cdn.pixabay.com/photo/2023/02/23/22/45/ai-generated-7809734_1280.jpg"));
+                subjectService.createSubject(new SubjectModel(0, "Herbology", "Study of magical plants and fungi","https://www.gob.mx/cms/uploads/image/file/612568/herbolaria.jpeg"));
+                subjectService.createSubject(new SubjectModel(0, "Defense Against the Dark Arts", "Protection against dark magic and creatures","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGFCZZFdnmejz86-ROteZbZgU22VK9-Vt2wyncLMBtEQix6rz5ZaF0J5RFKRDHCrtTXwY&usqp=CAU"));
+                subjectService.createSubject(new SubjectModel(0, "Astronomy", "Study of stars, planets, and magical constellations","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCUUeAy0U7iC2fZEoa6a3sASmRXLo5dswl6Q&s"));
+                subjectService.createSubject(new SubjectModel(0, "History of Magic", "Exploration of magical history and significant events","https://m.media-amazon.com/images/I/91IOmSR775L._AC_UF1000,1000_QL80_.jpg"));
+                subjectService.createSubject(new SubjectModel(0, "Divination", "Learning techniques to foresee the future","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQSz22ZOEcmDOrc5IiYn00Ni1UDOqbvreV_Q&s"));
+                subjectService.createSubject(new SubjectModel(0, "Care of Magical Creatures", "Handling and caring for magical creatures","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3llsRTRpRtfoEeywMvFXOh1jDOk1oC37k8Q&s"));
+                subjectService.createSubject(new SubjectModel(0, "Ancient Runes", "Study of magical runes and symbols","https://thumbs.dreamstime.com/b/ancient-scandinavian-ornament-shield-viking-scandinavian-runes-isolated-black-vector-illustration-93015755.jpg"));
+                subjectService.createSubject(new SubjectModel(0, "Arithmancy", "Magical interpretation of numbers and their meanings","https://static1.srcdn.com/wordpress/wp-content/uploads/2024/06/arithmancy-worksheets-harry-potter.jpg"));
 
                 
                 

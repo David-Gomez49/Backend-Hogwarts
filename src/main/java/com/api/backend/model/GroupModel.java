@@ -14,7 +14,7 @@ public class GroupModel {
     private int Id;
     private int grade;
     private String variant;
-
+    
     public GroupModel() {
     }
 
@@ -37,7 +37,7 @@ public class GroupModel {
     }
 
     public void setGrade(int grade) {
-        this.grade = grade;
+        this.grade = grade; 
     }
 
     public String getVariant() {
