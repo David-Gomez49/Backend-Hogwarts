@@ -7,7 +7,10 @@ import java.util.Map;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.api.backend.services.UserService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -16,6 +19,9 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
+
+    @Autowired
+    private UserService userService;
 
     private final String SECRET_KEY = "Xx_ElPalacioDelVandolero_xX_xx_MuchoMasSegura_xx";
     private final long EXPIRATION_TIME = 86400000; // 1 día
@@ -74,6 +80,12 @@ public class JwtService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public boolean ValidateTokenAdmin(String token){
+        String actualToken = token.substring(7);
+        String email = extractEmailFromToken(actualToken);
+        return userService.validateTeacher(email);
     }
 
 }

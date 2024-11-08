@@ -35,10 +35,8 @@ public class SubjectControl {
 
     @PostMapping("/create")
     public ResponseEntity<Boolean> createSubject(@RequestHeader("Authorization") String token, @RequestBody SubjectModel subject) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
-        boolean valid = userService.validateAdmin(email);
-        if (valid) {
+
+        if (jwtService.ValidateTokenAdmin(token)) {
             subjectService.createSubject(subject);
             return ResponseEntity.ok(true);
         }
@@ -47,10 +45,7 @@ public class SubjectControl {
 
     @PutMapping("/update")
     public ResponseEntity<Boolean> updateSubject(@RequestHeader("Authorization") String token, @RequestBody SubjectModel subject) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
-        boolean valid = userService.validateAdmin(email);
-        if (valid) {
+        if (jwtService.ValidateTokenAdmin(token)) {
             subjectService.updateSubject(subject);
             return ResponseEntity.ok(true);
         }
@@ -59,10 +54,8 @@ public class SubjectControl {
 
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> deleSubject(@RequestHeader("Authorization") String token,  @RequestHeader("id") int id) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
-        boolean valid = userService.validateAdmin(email);
-        if (valid) {
+
+        if (jwtService.ValidateTokenAdmin(token)) {
             subjectService.deleteSubject(id);
             return ResponseEntity.ok(true); 
         }

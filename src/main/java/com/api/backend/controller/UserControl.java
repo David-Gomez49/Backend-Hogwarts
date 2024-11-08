@@ -31,10 +31,8 @@ public class UserControl {
 
     @GetMapping("/getAll")
     public List<UserModel> obtainUserList(@RequestHeader("Authorization") String token) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
-        boolean valid = userService.validateAdmin(email);
-        if (valid) {
+      
+        if (jwtService.ValidateTokenAdmin(token)) {
             return userService.obtainUserList();
         }
         return null;
@@ -42,10 +40,8 @@ public class UserControl {
 
     @GetMapping("/getTeachers")
     public List<UserModel> obtainTeacherList(@RequestHeader("Authorization") String token) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
-        boolean valid = userService.validateAdmin(email);
-        if (valid) {
+
+        if (jwtService.ValidateTokenAdmin(token)) {
             return userService.obtainTeacherList();
         }
         return null;
@@ -124,10 +120,8 @@ public class UserControl {
 
     @GetMapping("/listUserInfo")
     public List<AuxiliarUserModel> getUsersWithSpecificFields(@RequestHeader("Authorization") String token) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
-        boolean valid = userService.validateAdmin(email);
-        if (valid) {
+
+        if (jwtService.ValidateTokenAdmin(token)) {
             return userService.obtainUserListWithSpecificFields();
         }
         return null;

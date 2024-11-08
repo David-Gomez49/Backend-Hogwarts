@@ -3,7 +3,10 @@ package com.api.backend.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,5 +63,18 @@ public class AssesmentControl {
             return assesmentService.obtainAssestmentsByClass(id); // 3
         }
             return null;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<Boolean> createClass(@RequestHeader("Authorization") String token, @RequestBody AssesmentModel assesment) {
+        String actualToken = token.substring(7);
+        String email = jwtService.extractEmailFromToken(actualToken);
+        boolean valid_teacher = userService.validateTeacher(email);
+        boolean valid_admin = userService.validateAdmin(email);
+        if (valid_teacher||valid_admin) {
+            assesmentService.createAssesment(assesment);
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.ok(false);
     }
 }

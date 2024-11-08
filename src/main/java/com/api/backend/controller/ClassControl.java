@@ -38,10 +38,7 @@ public class ClassControl {
 
     @GetMapping("/getAll")
     public List<ClassModel> obtainClassList(@RequestHeader("Authorization") String token) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
-        boolean valid = userService.validateAdmin(email);
-        if (valid) {
+        if (jwtService.ValidateTokenAdmin(token)) {
             return classService.obtainClassList();
         }
         return null;
@@ -71,10 +68,8 @@ public class ClassControl {
 
     @PostMapping("/create")
     public ResponseEntity<Boolean> createClass(@RequestHeader("Authorization") String token, @RequestBody ClassModel classes) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
-        boolean valid = userService.validateAdmin(email);
-        if (valid) {
+     
+        if (jwtService.ValidateTokenAdmin(token)) {
             classService.createClass(classes);
             return ResponseEntity.ok(true);
         }
@@ -83,10 +78,8 @@ public class ClassControl {
 
     @PutMapping("/update")
     public ResponseEntity<Boolean> updateClass(@RequestHeader("Authorization") String token, @RequestBody ClassModel classes) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
-        boolean valid = userService.validateAdmin(email);
-        if (valid) {
+
+        if (jwtService.ValidateTokenAdmin(token)) {
             classService.updateClass(classes);
             return ResponseEntity.ok(true);
         }
@@ -95,10 +88,8 @@ public class ClassControl {
 
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> deleteClass(@RequestHeader("Authorization") String token,  @RequestHeader("id") int id) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
-        boolean valid = userService.validateAdmin(email);
-        if (valid) {
+
+        if (jwtService.ValidateTokenAdmin(token)) {
             classService.deleteClass(id);
             return ResponseEntity.ok(true);
         }
