@@ -44,6 +44,29 @@ public class ClassControl {
         return null;
     }
 
+    @GetMapping("/getClassById")
+    public ClassModel obtainClassList(@RequestHeader("Authorization") String token, @RequestHeader("ClassId") int Id) {
+        String actualToken = token.substring(7);
+        String email = jwtService.extractEmailFromToken(actualToken);
+        RolModel rol = userService.GetRolByEmail(email);
+        ClassModel classes= classService.getClassById(Id);
+        if ((rol.getName().equals("Admin"))) {
+            return classes;
+        }
+        if (( (rol.getName().equals("Teacher")))){
+            return classes;
+        }
+        if (rol.getName().equals("Student")){
+            UserxGroupModel userGroup = userGroupService.findByStudent(userService.obtainUserByEmail(email));
+             if (userGroup.getGroup() == classes.getGroup()) {
+                return classes;
+            }
+
+        }
+            return null;
+        
+    }
+
     @GetMapping("/getMyClasses")
     public List<ClassModel> obtainMyClassList(@RequestHeader("Authorization") String token) {
         String actualToken = token.substring(7);

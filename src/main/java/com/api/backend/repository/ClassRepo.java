@@ -12,4 +12,5 @@ public interface ClassRepo extends JpaRepository<ClassModel, Integer>{
     
     List<ClassModel> findByGroup(GroupModel group);
 
+    ClassModel findById(int id);
 }

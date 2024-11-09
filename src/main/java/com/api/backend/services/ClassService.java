@@ -19,6 +19,10 @@ public class ClassService {
         return (List<ClassModel>) classRepo.findAll();
     }
 
+    public ClassModel getClassById(int id) {
+        return classRepo.findById(id); 
+    }
+
     public List<ClassModel> obtainClassByTeacher(String email) {
         return classRepo.findByTeacherEmail(email);
     }

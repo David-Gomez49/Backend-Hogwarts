@@ -20,6 +20,7 @@ import com.api.backend.security.JwtService;
 import com.api.backend.services.UserService;
 
 
+
 @RestController
 @RequestMapping("/user")
 public class UserControl {
@@ -94,6 +95,19 @@ public class UserControl {
         boolean valid = userService.validateAdmin(email);
         return ResponseEntity.ok(valid);
     }
+
+    @GetMapping("/validateTeachersAdmins")
+    public ResponseEntity<Boolean> validateTeachersAdmins(@RequestHeader("Authorization") String token) {
+        String actualToken = token.substring(7);
+        String email = jwtService.extractEmailFromToken(actualToken);
+        if (email == null || email.isEmpty()) {
+            return ResponseEntity.badRequest().body(false);
+        }
+        boolean valid = userService.validateAdmin(email);
+        boolean validteacher=userService.validateTeacher(email);
+        return ResponseEntity.ok(valid||validteacher);
+    }
+    
 
 
     @PutMapping("/updateByEmail")
