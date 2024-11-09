@@ -88,4 +88,10 @@ public class JwtService {
         return userService.validateAdmin(email);
     }
 
+    public boolean ValidateTokenAdminTeacher(String token){
+        String actualToken = token.substring(7);
+        String email = extractEmailFromToken(actualToken);
+        return userService.validateAdmin(email) ||  userService.validateTeacher(email);
+    }
+
 }

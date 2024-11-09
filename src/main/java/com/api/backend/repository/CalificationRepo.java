@@ -1,8 +1,14 @@
 package com.api.backend.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.api.backend.model.CalificationModel;
 
 public interface CalificationRepo extends JpaRepository<CalificationModel, Integer>{
+
+    public List<CalificationModel> findByAssesment_Classes_Id(int Id);
+
+    public List<CalificationModel> findByStudent_Email(String Email);
 }

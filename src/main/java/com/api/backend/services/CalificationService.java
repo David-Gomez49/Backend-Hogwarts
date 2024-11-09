@@ -18,6 +18,30 @@ public class CalificationService {
         return (List<CalificationModel>) calificationRepo.findAll();
     }
 
+    public List<CalificationModel> getCalificationsListByClass(int Id) {
+        return (List<CalificationModel>) calificationRepo.findByAssesment_Classes_Id(Id);
+    }
+
+    public List<CalificationModel> getCalificationsByEmail(String Email) {
+        return (List<CalificationModel>) calificationRepo.findByStudent_Email(Email);
+    }
+
+    public void saveOrUpdateCalifications(List<CalificationModel> califications) {
+        for (CalificationModel calification : califications) {
+            if ( (calificationRepo.existsById(calification.getId()))) {
+                CalificationModel existingCalification = calificationRepo.findById(calification.getId()).orElse(null);
+                if (existingCalification != null) {
+                    existingCalification.setCalification(calification.getCalification());
+                    existingCalification.setAssesment(calification.getAssesment());
+                    existingCalification.setStudent(calification.getStudent());
+                    calificationRepo.save(existingCalification);
+                }
+            } else {
+                calificationRepo.save(calification);
+            }
+        }
+    }
+
     public CalificationModel createCalification(CalificationModel calification) {
         return calificationRepo.save(calification);
     }
