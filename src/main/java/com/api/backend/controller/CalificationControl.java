@@ -3,9 +3,10 @@ package com.api.backend.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.backend.model.CalificationModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.CalificationService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -33,7 +32,7 @@ public class CalificationControl {
         return null;
     }
 
-    @GetMapping("/getCalificationsListByClass")
+    @GetMapping("/getCalificationsByEmail")
     public List<CalificationModel> getCalificationsByEmail(@RequestHeader("Authorization") String token) {
         String actualToken = token.substring(7);
         String email = jwtService.extractEmailFromToken(actualToken);
@@ -45,9 +44,9 @@ public class CalificationControl {
     public ResponseEntity<Boolean> CreateUpdateCalifications(@RequestHeader("Authorization") String token,@RequestBody List<CalificationModel> califications) {
         try {
             calificationService.saveOrUpdateCalifications(califications);
-            return new ResponseEntity<>(true, HttpStatus.OK);
+            return ResponseEntity.ok(true);
         } catch (Exception e) {
-            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.ok(false);
         }
     }
     
