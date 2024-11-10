@@ -96,8 +96,8 @@ public void saveOrUpdateCalifications(List<CalificationModel> califications) {
         try {
             // Buscar calificación existente basada en estudiante y evaluación
             CalificationModel existingCalification = calificationRepo
-                .findByStudent_EmailAndAssesment_Id(
-                    calification.getStudent().getEmail(),
+                .findByStudent_IdAndAssesment_Id(
+                    calification.getStudent().getId(),
                     calification.getAssesment().getId()
                 );
 
@@ -111,7 +111,7 @@ public void saveOrUpdateCalifications(List<CalificationModel> califications) {
             }
         } catch (Exception e) {
             System.err.println("Error procesando calificación para el estudiante: " 
-                + calification.getStudent().getEmail() 
+                + calification.getStudent().getId() 
                 + " y evaluación: " + calification.getAssesment().getId());
             e.printStackTrace();
         }

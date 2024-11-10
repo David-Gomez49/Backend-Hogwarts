@@ -16,7 +16,7 @@ public interface CalificationRepo extends JpaRepository<CalificationModel, Integ
 
     public List<CalificationModel> findByStudent_EmailAndAssesment_Classes_Id(String Email, int Id);
 
-    public CalificationModel findByStudent_EmailAndAssesment_Id(String Email, int Id);
+    public CalificationModel findByStudent_IdAndAssesment_Id(int Student_Id, int Assesment_Id);
 
     public boolean existsById(int Id);
 }
