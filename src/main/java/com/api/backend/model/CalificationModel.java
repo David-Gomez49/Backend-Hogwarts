@@ -1,5 +1,6 @@
 package com.api.backend.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,13 +23,15 @@ public class CalificationModel {
     @ManyToOne
     @JoinColumn(name = "id_assesment", referencedColumnName = "Id")
     private AssesmentModel assesment;
-    private boolean state;
+    @Column(name = "state")
+    private String state ; 
 
     public CalificationModel() {
     }
 
-    public CalificationModel(int id, float calification, UserModel student, AssesmentModel assesment, boolean state) {
+    public CalificationModel(int id, float calification, UserModel student, AssesmentModel assesment, String state) {
         this.id = id;
+
         this.calification = calification;
         this.student = student;
         this.assesment = assesment;
@@ -67,11 +70,11 @@ public class CalificationModel {
         this.assesment = assesment;
     }
 
-    public boolean getState() {
+    public String getState() {
         return state;
     }
 
-    public void setState(boolean state) {
+    public void setState(String state) {
         this.state = state;
     }
 }
