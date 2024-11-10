@@ -91,21 +91,34 @@ public class CalificationService {
 }
 
 
-    public void saveOrUpdateCalifications(List<CalificationModel> califications) {
-        for (CalificationModel calification : califications) {
-            if ( (calificationRepo.existsById(calification.getId()))) {
-                CalificationModel existingCalification = calificationRepo.findById(calification.getId()).orElse(null);
-                if (existingCalification != null) {
-                    existingCalification.setCalification(calification.getCalification());
-                    existingCalification.setAssesment(calification.getAssesment());
-                    existingCalification.setStudent(calification.getStudent());
-                    calificationRepo.save(existingCalification);
-                }
+public void saveOrUpdateCalifications(List<CalificationModel> califications) {
+    for (CalificationModel calification : califications) {
+        try {
+            // Buscar calificación existente basada en estudiante y evaluación
+            CalificationModel existingCalification = calificationRepo
+                .findByStudent_EmailAndAssesment_Id(
+                    calification.getStudent().getEmail(),
+                    calification.getAssesment().getId()
+                );
+
+            if (existingCalification != null) {
+                // Si existe, actualiza la calificación
+                existingCalification.setCalification(calification.getCalification());
+                calificationRepo.save(existingCalification);
             } else {
+                // Si no existe, crea una nueva entrada
                 calificationRepo.save(calification);
             }
+        } catch (Exception e) {
+            System.err.println("Error procesando calificación para el estudiante: " 
+                + calification.getStudent().getEmail() 
+                + " y evaluación: " + calification.getAssesment().getId());
+            e.printStackTrace();
         }
     }
+}
+
+
 
     public CalificationModel createCalification(CalificationModel calification) {
         return calificationRepo.save(calification);

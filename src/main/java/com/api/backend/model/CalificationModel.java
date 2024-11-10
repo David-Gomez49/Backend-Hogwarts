@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name= "Califications")
-public class CalificationModel{
+public class CalificationModel {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,48 +22,56 @@ public class CalificationModel{
     @ManyToOne
     @JoinColumn(name = "id_assesment", referencedColumnName = "Id")
     private AssesmentModel assesment;
-    private Boolean state;
+    private boolean state;
 
     public CalificationModel() {
     }
-    public CalificationModel(int id, float calification, UserModel student, AssesmentModel assesment, Boolean state) {
+
+    public CalificationModel(int id, float calification, UserModel student, AssesmentModel assesment, boolean state) {
         this.id = id;
         this.calification = calification;
         this.student = student;
         this.assesment = assesment;
         this.state = state;
     }
+
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
+
     public float getCalification() {
         return calification;
     }
+
     public void setCalification(float calification) {
         this.calification = calification;
     }
+
     public UserModel getStudent() {
         return student;
     }
+
     public void setStudent(UserModel student) {
         this.student = student;
     }
+
     public AssesmentModel getAssesment() {
         return assesment;
     }
+
     public void setAssesment(AssesmentModel assesment) {
         this.assesment = assesment;
     }
-    public Boolean isState() {
+
+    public boolean getState() {
         return state;
     }
-    public void setState(Boolean state) {
+
+    public void setState(boolean state) {
         this.state = state;
     }
-
-    
 }
-
