@@ -22,11 +22,11 @@ public class CalificationModel{
     @ManyToOne
     @JoinColumn(name = "id_assesment", referencedColumnName = "Id")
     private AssesmentModel assesment;
-    private boolean state;
+    private Boolean state;
 
     public CalificationModel() {
     }
-    public CalificationModel(int id, float calification, UserModel student, AssesmentModel assesment, boolean state) {
+    public CalificationModel(int id, float calification, UserModel student, AssesmentModel assesment, Boolean state) {
         this.id = id;
         this.calification = calification;
         this.student = student;
@@ -57,10 +57,10 @@ public class CalificationModel{
     public void setAssesment(AssesmentModel assesment) {
         this.assesment = assesment;
     }
-    public boolean isState() {
+    public Boolean isState() {
         return state;
     }
-    public void setState(boolean state) {
+    public void setState(Boolean state) {
         this.state = state;
     }
 
