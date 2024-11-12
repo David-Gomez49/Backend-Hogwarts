@@ -1,6 +1,7 @@
 package com.api.backend.model;
 
-import java.sql.Timestamp;
+import java.time.Instant;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,17 +22,18 @@ public class MessageModel {
     private UserModel sender;
     @ManyToOne
     @JoinColumn(name = "id_reply", referencedColumnName = "Id")
+    @JsonBackReference 
     private MessageModel reply;
     @ManyToOne
     @JoinColumn(name = "id_class", referencedColumnName = "Id")
     private ClassModel classes;
     private String content;
-    private Timestamp send_date;
+    private Instant send_date;
 
     public MessageModel() {
     }
 
-    public MessageModel(int id, UserModel sender, MessageModel reply, ClassModel classes, String content, Timestamp send_date) {
+    public MessageModel(int id, UserModel sender, MessageModel reply, ClassModel classes, String content, Instant send_date) {
         Id = id;
         this.sender = sender;
         this.reply = reply;
@@ -80,11 +82,11 @@ public class MessageModel {
         this.content = content;
     }
 
-    public Timestamp getSend_date() {
+    public Instant getSend_date() {
         return send_date;
     }
 
-    public void setSend_date(Timestamp send_date) {
+    public void setSend_date(Instant send_date) {
         this.send_date = send_date;
     }
     
