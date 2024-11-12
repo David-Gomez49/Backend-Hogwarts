@@ -1,6 +1,9 @@
 package com.api.backend.controller;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +16,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.backend.model.AssesmentModel;
 import com.api.backend.model.ClassModel;
 import com.api.backend.model.GroupModel;
 import com.api.backend.model.RolModel;
+import com.api.backend.model.StudentsXParentsModel;
 import com.api.backend.model.UserxGroupModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.ClassService;
+import com.api.backend.services.StudentXParentService;
 import com.api.backend.services.UserService;
 import com.api.backend.services.UserXGroupService;
 
@@ -32,6 +38,8 @@ public class ClassControl {
     private JwtService jwtService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private StudentXParentService studentXParentService;
 
     @Autowired
     private UserXGroupService userGroupService;
@@ -50,19 +58,26 @@ public class ClassControl {
         String email = jwtService.extractEmailFromToken(actualToken);
         RolModel rol = userService.GetRolByEmail(email);
         ClassModel classes= classService.getClassById(Id);
-        if ((rol.getName().equals("Admin"))) {
+        if ("Admin".equals(rol.getName()) || "Teacher".equals(rol.getName())) {
+        return classes;
+    }
+    
+    
+    if ("Student".equals(rol.getName())) {
+        UserxGroupModel userGroup = userGroupService.findByStudent(userService.obtainUserByEmail(email));
+        if (userGroup != null && userGroup.getGroup().equals(classes.getGroup())) {
             return classes;
         }
-        if (( (rol.getName().equals("Teacher")))){
-            return classes;
-        }
-        if (rol.getName().equals("Student")){
-            UserxGroupModel userGroup = userGroupService.findByStudent(userService.obtainUserByEmail(email));
-             if (userGroup.getGroup() == classes.getGroup()) {
+    }
+    if ("Parent".equals(rol.getName())) {
+        List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
+        for (StudentsXParentsModel son : sons) {
+            UserxGroupModel userGroup = userGroupService.findByStudent(son.getStudent());
+            if (userGroup != null && userGroup.getGroup().equals(classes.getGroup())) {
                 return classes;
             }
-
         }
+    }
             return null;
         
     }
@@ -86,6 +101,22 @@ public class ClassControl {
             }
 
         }
+        if ("Parent".equals(rol.getName())) {
+        List<ClassModel> classes = new ArrayList<>();
+        List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
+        
+        for (StudentsXParentsModel son : sons) {
+            UserxGroupModel userGroup = userGroupService.findByStudent(son.getStudent());
+            if (userGroup != null) {
+                GroupModel group = userGroup.getGroup();
+                List<ClassModel> classesByGroup = classService.obtainClassByGroup(group);
+                classes.addAll(classesByGroup);
+            }
+        }
+        return classes;
+    }
+
+    
             return null;
     }
 

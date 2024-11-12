@@ -17,6 +17,12 @@ public class StudentXParentService {
     public List<StudentsXParentsModel> obtainStudentXParentList() {
         return (List<StudentsXParentsModel>) studentxparentRepo.findAll();
     }
+    public List<StudentsXParentsModel> obtainSonsList(String email) {
+        return (List<StudentsXParentsModel>) studentxparentRepo.findByParent_Email(email);
+    }
+    public List<StudentsXParentsModel> obtainParentList(String email) {
+        return (List<StudentsXParentsModel>) studentxparentRepo.findByStudent_Email(email);
+    }
 
     public StudentsXParentsModel createStudentXParent(StudentsXParentsModel studentxparent) {
         return studentxparentRepo.save(studentxparent);

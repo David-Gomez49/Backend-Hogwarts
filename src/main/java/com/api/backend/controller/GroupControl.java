@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.backend.model.GroupModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.GroupService;
-import com.api.backend.services.UserService;
 
 @RestController
 @RequestMapping("/group")
@@ -23,8 +22,6 @@ public class GroupControl {
     private GroupService groupService;
     @Autowired
     private JwtService jwtService;
-    @Autowired
-    private UserService userService;
 
     @GetMapping("/getAll")
     public List<GroupModel> obtainClasstList(@RequestHeader("Authorization") String token) {

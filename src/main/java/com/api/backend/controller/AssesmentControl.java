@@ -1,6 +1,9 @@
 package com.api.backend.controller;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.backend.model.AssesmentModel;
 import com.api.backend.model.GroupModel;
 import com.api.backend.model.RolModel;
+import com.api.backend.model.StudentsXParentsModel;
 import com.api.backend.model.UserxGroupModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.AssesmentService;
+import com.api.backend.services.StudentXParentService;
 import com.api.backend.services.UserService;
 import com.api.backend.services.UserXGroupService;
 
@@ -32,28 +37,48 @@ public class AssesmentControl {
     private UserService userService;
     @Autowired
     private UserXGroupService userGroupService;
+    @Autowired
+    private StudentXParentService studentXParentService;
+
 
     @GetMapping("/getMyAssesments")
-    public List<AssesmentModel> obtainMyAssesmentsList(@RequestHeader("Authorization") String token) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
-        RolModel rol = userService.GetRolByEmail(email);
-        if ((rol.getName().equals("Admin"))) {
-            return assesmentService.obtainAssesmentList();
-        }
-        if (( (rol.getName().equals("Teacher")))){
-            return assesmentService.obtainAssestmentsByTeacher(email);  // 1
-        }
-        if (rol.getName().equals("Student")){
-            UserxGroupModel userGroup = userGroupService.findByStudent(userService.obtainUserByEmail(email));
-             if (userGroup != null) {
-                GroupModel group = userGroup.getGroup();
-                return assesmentService.obtainAssestmentsByGroup(group); // 2
-            }
-
-        }
-            return null;
+public List<AssesmentModel> obtainMyAssesmentsList(@RequestHeader("Authorization") String token) {
+    String actualToken = token.substring(7);
+    String email = jwtService.extractEmailFromToken(actualToken);
+    RolModel rol = userService.GetRolByEmail(email);
+    
+    if ("Admin".equals(rol.getName())) {
+        return assesmentService.obtainAssesmentList();
     }
+    
+    if ("Teacher".equals(rol.getName())) {
+        return assesmentService.obtainAssestmentsByTeacher(email);
+    }
+    
+    if ("Student".equals(rol.getName())) {
+        UserxGroupModel userGroup = userGroupService.findByStudent(userService.obtainUserByEmail(email));
+        if (userGroup != null) {
+            GroupModel group = userGroup.getGroup();
+            return assesmentService.obtainAssestmentsByGroup(group);
+        }
+    }
+    
+    if ("Parent".equals(rol.getName())) {
+        Set<AssesmentModel> assesments = new HashSet<>(); 
+        List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
+        for (StudentsXParentsModel son : sons) {
+            UserxGroupModel userGroup = userGroupService.findByStudent(son.getStudent());
+            if (userGroup != null) {
+                GroupModel group = userGroup.getGroup();
+                assesments.addAll(assesmentService.obtainAssestmentsByGroup(group));
+            }
+        }
+        return new ArrayList<>(assesments);
+    }
+    
+    return new ArrayList<>();
+}
+
 
     @GetMapping("/getAssesmentsByClass")
     public List<AssesmentModel> obtainAssesmentsListByClass(@RequestHeader("Authorization") String token,@RequestHeader("ClassId") int id) {
