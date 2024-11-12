@@ -18,6 +18,14 @@ public class MessageService {
         return (List<MessageModel>) messageRepo.findAll();
     }
 
+    public MessageModel saveMessage(MessageModel message) {
+        return messageRepo.save(message);
+    }
+
+    public List<MessageModel> getMessagesByClass(int classId) {
+        return messageRepo.findByClasses_Id(classId);
+    }
+
     public MessageModel createMessage(MessageModel message) {
         return messageRepo.save(message);
     }

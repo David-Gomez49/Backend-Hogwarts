@@ -1,19 +1,36 @@
 package com.api.backend.controller;
 
-import com.api.backend.model.MessageModel;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Instant;
+import com.api.backend.model.MessageModel;
+import com.api.backend.services.MessageService;
 
 @RestController
+@RequestMapping("/messages")
 public class MessageControl {
+    
+    @Autowired
+    private MessageService messageService;
 
-    @MessageMapping("/send") // El frontend enviará mensajes aquí
-    @SendTo("/topic/group") // Los mensajes serán enviados a todos los suscriptores de "/topic/group"
-    public MessageModel sendMessage(MessageModel message) {
-        message.setSend_date(Instant.now()); // Establecer la fecha de envío
-        return message; // Enviar mensaje a todos los suscriptores
+    @PostMapping
+    public ResponseEntity<MessageModel> sendMessage(@RequestBody MessageModel message) {
+        MessageModel savedMessage = messageService.saveMessage(message);
+        return new ResponseEntity<>(savedMessage, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/chat/{classId}")
+    public List<MessageModel> getMessages(@PathVariable int classId) {
+        return messageService.getMessagesByClass(classId);
     }
 }
+
