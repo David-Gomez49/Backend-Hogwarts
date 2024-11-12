@@ -22,7 +22,7 @@ public class MessageControl {
     @Autowired
     private MessageService messageService;
 
-    @PostMapping
+    @PostMapping("/send")
     public ResponseEntity<MessageModel> sendMessage(@RequestBody MessageModel message) {
         MessageModel savedMessage = messageService.saveMessage(message);
         return new ResponseEntity<>(savedMessage, HttpStatus.CREATED);
