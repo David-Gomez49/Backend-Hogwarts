@@ -21,10 +21,6 @@ public class MessageModel {
     @JoinColumn(name = "id_sender", referencedColumnName = "Id")
     private UserModel sender;
     @ManyToOne
-    @JoinColumn(name = "id_reply", referencedColumnName = "Id")
-    @JsonBackReference 
-    private MessageModel reply;
-    @ManyToOne
     @JoinColumn(name = "id_class", referencedColumnName = "Id")
     private ClassModel classes;
     private String content;
@@ -33,10 +29,9 @@ public class MessageModel {
     public MessageModel() {
     }
 
-    public MessageModel(int id, UserModel sender, MessageModel reply, ClassModel classes, String content, Instant send_date) {
+    public MessageModel(int id, UserModel sender, ClassModel classes, String content, Instant send_date) {
         Id = id;
         this.sender = sender;
-        this.reply = reply;
         this.classes = classes;
         this.content = content;
         this.send_date = send_date;
@@ -57,15 +52,7 @@ public class MessageModel {
     public void setSender(UserModel sender) {
         this.sender = sender;
     }
-
-    public MessageModel getReply() {
-        return reply;
-    }
-
-    public void setReply(MessageModel reply) {
-        this.reply = reply;
-    }
-
+    
     public ClassModel getClasses() {
         return classes;
     }
