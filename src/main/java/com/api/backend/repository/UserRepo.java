@@ -25,4 +25,9 @@ public interface UserRepo extends JpaRepository<UserModel, Integer>{
     @Query(value="SELECT u FROM UserModel u JOIN u.rol r WHERE r.name = 'Teacher' OR r.name = 'Admin'")
     List<UserModel> findTeachersAndAdmins();
 
+    @Query(value="SELECT u FROM UserModel u JOIN u.rol r WHERE r.name = 'Student'")
+    List<UserModel> findStudents();
+    
+    @Query(value="SELECT u FROM UserModel u JOIN u.rol r WHERE r.name = 'Parent'")
+    List<UserModel> findParents();
 }

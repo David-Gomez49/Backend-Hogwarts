@@ -29,7 +29,13 @@ public class UserService {
         //solo roles de teahcer o admin
         return (List<UserModel>) userRepo.findTeachersAndAdmins();
     }
-
+    public List<UserModel> obtainStudentsList() {
+        return (List<UserModel>) userRepo.findStudents();
+    }
+    public List<UserModel> obtainParentsList() {
+        return (List<UserModel>) userRepo.findParents();
+    }
+    
     public List<AuxiliarUserModel> obtainUserListWithSpecificFields() {
         List<AuxiliarUserModel> a = (List<AuxiliarUserModel> )userRepo.findAllUsersWithSpecificFields();
         System.out.println("-----------list--------");

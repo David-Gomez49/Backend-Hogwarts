@@ -48,6 +48,24 @@ public class UserControl {
         return null;
     }
 
+    @GetMapping("/getParents")
+    public List<UserModel> obtainParentsList(@RequestHeader("Authorization") String token) {
+
+        if (jwtService.ValidateTokenAdmin(token)) {
+            return userService.obtainParentsList();
+        }
+        return null;
+    }
+
+    @GetMapping("/getStudents")
+    public List<UserModel> obtainStudentsList(@RequestHeader("Authorization") String token) {
+
+        if (jwtService.ValidateTokenAdmin(token)) {
+            return userService.obtainStudentsList();
+        }
+        return null;
+    }
+
     @GetMapping("/getByEmail")
     public ResponseEntity<UserModel> obtainUserByEmail(@RequestHeader("Authorization") String token) {
         String actualToken = token.substring(7);
