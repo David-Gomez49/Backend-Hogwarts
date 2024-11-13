@@ -61,7 +61,6 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
             return;
         }
 
-        //COOKIE----
         // Ajuste para permitir cookies cross-site
         Cookie jwtCookie = new Cookie("token", token);
         jwtCookie.setHttpOnly(true);  
@@ -71,8 +70,6 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
         jwtCookie.setDomain("backend-hogwarts.onrender.com"); // Especifica tu dominio
         jwtCookie.setAttribute("SameSite", "None"); // Esta es la forma correcta en Java >= 11
         response.addCookie(jwtCookie);
-        //----------
-
 
         // Determinar la URL de redirección dependiendo de si el usuario tiene su perfil completo
         String redirectUrl;

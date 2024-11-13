@@ -27,11 +27,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors().and()
-            .csrf().disable() // Deshabilitar CSRF (opcional, según tu caso de uso)
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Usar JWT en lugar de sesiones
-            .and()
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF (opcional, según tu caso de uso)
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Usar JWT en lugar de sesiones
+            )
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Permitir preflight requests de CORS
                 .requestMatchers("/login").permitAll() // Rutas públicas específicas
@@ -41,13 +41,14 @@ public class SecurityConfig {
             .oauth2Login(oauth2Login -> oauth2Login
                 .successHandler(successHandler) // Usar el handler personalizado para el éxito del login OAuth2
             );
+
         return http.build();
     }
 
     // Definir configuración global de CORS
     //"/user/**","/rol/**","/assesment/**","/attendance/**","/calification/**","/group/**","/class/**","/message/**","/studentXParent/**","/subject/**","/userXGroup/**"
     @Bean
-    public CorsFilter corsFilter() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.addAllowedOrigin("http://localhost:5173"); // Permitir tu frontend
         corsConfiguration.addAllowedHeader("*"); // Permitir todos los headers
@@ -56,6 +57,6 @@ public class SecurityConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
-        return new CorsFilter(source);
+        return source;
     }
 }
