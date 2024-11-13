@@ -1,7 +1,5 @@
 package com.api.backend.security;
 
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,10 +7,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.NullSecurityContextRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -27,19 +25,32 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            // Configurar CORS
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF (opcional, según tu caso de uso)
+            
+            // Deshabilitar CSRF
+            .csrf(csrf -> csrf.disable())
+            
+            // No utilizar sesiones (completamente stateless)
             .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Usar JWT en lugar de sesiones
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
+            
+            // Configuración para evitar que Spring Security use HttpSession
+            .securityContext(securityContext -> securityContext
+                .securityContextRepository(new NullSecurityContextRepository())
+            )
+            
+            // Configuración de autorización de rutas
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Permitir preflight requests de CORS
-                .requestMatchers("/login").permitAll() // Rutas públicas específicas
-                .requestMatchers("/**").permitAll() // Permitir todas las rutas públicas
-                .anyRequest().authenticated() // Las demás rutas requieren autenticación
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Preflight requests
+                .requestMatchers("/login").permitAll() // Rutas públicas
+                .anyRequest().authenticated() // Todas las demás rutas requieren autenticación
             )
+            
+            // Configuración de OAuth2 Login
             .oauth2Login(oauth2Login -> oauth2Login
-                .successHandler(successHandler) // Usar el handler personalizado para el éxito del login OAuth2
+                .successHandler(successHandler) // Handler personalizado para login exitoso
             );
 
         return http.build();
