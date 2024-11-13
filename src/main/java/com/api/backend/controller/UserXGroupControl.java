@@ -1,35 +1,32 @@
-package com.api.backend.controller;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.api.backend.model.StudentWithGroupModel;
-import com.api.backend.security.JwtService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import com.api.backend.services.UserService;
+import com.api.backend.security.JwtService;
 import com.api.backend.services.UserXGroupService;
+import java.util.List;
+import com.api.backend.model.StudentWithGroupModel;
 
 @RestController
-@RequestMapping("/userXGroup")
 public class UserXGroupControl {
+
     @Autowired
     private UserXGroupService userXGroupService;
+
     @Autowired
     private UserService userService;
+
     @Autowired
     private JwtService jwtService;
 
     @GetMapping("/student-groups")
-    public ResponseEntity<?> getStudentsWithGroups(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> getStudentsWithGroups(@CookieValue("token") String token) {
         try {
-   
             if (jwtService.ValidateTokenAdmin(token)) {
                 List<StudentWithGroupModel> studentsWithGroups = userXGroupService.getAllStudentsWithGroup();
                 return ResponseEntity.ok(studentsWithGroups);
@@ -43,16 +40,11 @@ public class UserXGroupControl {
     }
 
     @PutMapping("/updateGroupById")
-    public ResponseEntity<Boolean> getStudentsWithGroups(@RequestHeader("Authorization") String token,@RequestHeader("StudentId")int studentId,@RequestHeader("GroupId")int groupId) {
-    
+    public ResponseEntity<Boolean> updateGroupById(@CookieValue("token") String token, @RequestHeader("StudentId")int studentId,@RequestHeader("GroupId")int groupId) {
         if (jwtService.ValidateTokenAdmin(token)) {
             userXGroupService.assignOrUpdateGroup(studentId, groupId);
             return ResponseEntity.ok(true);
         }
         return ResponseEntity.ok(false);
     }
-
-    
-
-
 }

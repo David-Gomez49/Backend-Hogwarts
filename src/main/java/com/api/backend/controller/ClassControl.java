@@ -1,12 +1,10 @@
 package com.api.backend.controller;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.api.backend.model.AssesmentModel;
 import com.api.backend.model.ClassModel;
 import com.api.backend.model.GroupModel;
@@ -31,13 +28,16 @@ import com.api.backend.services.UserXGroupService;
 @RestController
 @RequestMapping("/class")
 public class ClassControl {
+
     @Autowired
     private ClassService classService;
-    
+
     @Autowired
     private JwtService jwtService;
+
     @Autowired
     private UserService userService;
+
     @Autowired
     private StudentXParentService studentXParentService;
 
@@ -45,7 +45,7 @@ public class ClassControl {
     private UserXGroupService userGroupService;
 
     @GetMapping("/getAll")
-    public List<ClassModel> obtainClassList(@RequestHeader("Authorization") String token) {
+    public List<ClassModel> obtainClassList(@CookieValue("token") String token) {
         if (jwtService.ValidateTokenAdmin(token)) {
             return classService.obtainClassList();
         }
@@ -53,76 +53,68 @@ public class ClassControl {
     }
 
     @GetMapping("/getClassById")
-    public ClassModel obtainClassList(@RequestHeader("Authorization") String token, @RequestHeader("ClassId") int Id) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
+    public ClassModel obtainClassList(@CookieValue("token") String token, @RequestHeader("ClassId") int Id) {
+        String email = jwtService.extractEmailFromToken(token);
         RolModel rol = userService.GetRolByEmail(email);
-        ClassModel classes= classService.getClassById(Id);
+        ClassModel classes = classService.getClassById(Id);
         if ("Admin".equals(rol.getName()) || "Teacher".equals(rol.getName())) {
-        return classes;
-    }
-    
-    
-    if ("Student".equals(rol.getName())) {
-        UserxGroupModel userGroup = userGroupService.findByStudent(userService.obtainUserByEmail(email));
-        if (userGroup != null && userGroup.getGroup().equals(classes.getGroup())) {
             return classes;
         }
-    }
-    if ("Parent".equals(rol.getName())) {
-        List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
-        for (StudentsXParentsModel son : sons) {
-            UserxGroupModel userGroup = userGroupService.findByStudent(son.getStudent());
+
+        if ("Student".equals(rol.getName())) {
+            UserxGroupModel userGroup = userGroupService.findByStudent(userService.obtainUserByEmail(email));
             if (userGroup != null && userGroup.getGroup().equals(classes.getGroup())) {
                 return classes;
             }
         }
-    }
-            return null;
-        
+        if ("Parent".equals(rol.getName())) {
+            List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
+            for (StudentsXParentsModel son : sons) {
+                UserxGroupModel userGroup = userGroupService.findByStudent(son.getStudent());
+                if (userGroup != null && userGroup.getGroup().equals(classes.getGroup())) {
+                    return classes;
+                }
+            }
+        }
+        return null;
     }
 
     @GetMapping("/getMyClasses")
-    public List<ClassModel> obtainMyClassList(@RequestHeader("Authorization") String token) {
-        String actualToken = token.substring(7);
-        String email = jwtService.extractEmailFromToken(actualToken);
+    public List<ClassModel> obtainMyClassList(@CookieValue("token") String token) {
+        String email = jwtService.extractEmailFromToken(token);
         RolModel rol = userService.GetRolByEmail(email);
         if ((rol.getName().equals("Admin"))) {
             return classService.obtainClassList();
         }
-        if (( (rol.getName().equals("Teacher")))){
+        if ((rol.getName().equals("Teacher"))) {
             return classService.obtainClassByTeacher(email);
         }
-        if (rol.getName().equals("Student")){
+        if (rol.getName().equals("Student")) {
             UserxGroupModel userGroup = userGroupService.findByStudent(userService.obtainUserByEmail(email));
-             if (userGroup != null) {
+            if (userGroup != null) {
                 GroupModel group = userGroup.getGroup();
                 return classService.obtainClassByGroup(group);
             }
-
         }
         if ("Parent".equals(rol.getName())) {
-        List<ClassModel> classes = new ArrayList<>();
-        List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
-        
-        for (StudentsXParentsModel son : sons) {
-            UserxGroupModel userGroup = userGroupService.findByStudent(son.getStudent());
-            if (userGroup != null) {
-                GroupModel group = userGroup.getGroup();
-                List<ClassModel> classesByGroup = classService.obtainClassByGroup(group);
-                classes.addAll(classesByGroup);
-            }
-        }
-        return classes;
-    }
+            List<ClassModel> classes = new ArrayList<>();
+            List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
 
-    
-            return null;
+            for (StudentsXParentsModel son : sons) {
+                UserxGroupModel userGroup = userGroupService.findByStudent(son.getStudent());
+                if (userGroup != null) {
+                    GroupModel group = userGroup.getGroup();
+                    List<ClassModel> classesByGroup = classService.obtainClassByGroup(group);
+                    classes.addAll(classesByGroup);
+                }
+            }
+            return classes;
+        }
+        return null;
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createClass(@RequestHeader("Authorization") String token, @RequestBody ClassModel classes) {
-     
+    public ResponseEntity<Boolean> createClass(@CookieValue("token") String token, @RequestBody ClassModel classes) {
         if (jwtService.ValidateTokenAdmin(token)) {
             classService.createClass(classes);
             return ResponseEntity.ok(true);
@@ -131,8 +123,7 @@ public class ClassControl {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Boolean> updateClass(@RequestHeader("Authorization") String token, @RequestBody ClassModel classes) {
-
+    public ResponseEntity<Boolean> updateClass(@CookieValue("token") String token, @RequestBody ClassModel classes) {
         if (jwtService.ValidateTokenAdmin(token)) {
             classService.updateClass(classes);
             return ResponseEntity.ok(true);
@@ -141,8 +132,7 @@ public class ClassControl {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> deleteClass(@RequestHeader("Authorization") String token,  @RequestHeader("id") int id) {
-
+    public ResponseEntity<Boolean> deleteClass(@CookieValue("token") String token, @RequestHeader("id") int id) {
         if (jwtService.ValidateTokenAdmin(token)) {
             classService.deleteClass(id);
             return ResponseEntity.ok(true);

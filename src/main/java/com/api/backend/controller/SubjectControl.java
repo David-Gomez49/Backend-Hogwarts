@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.api.backend.model.SubjectModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.SubjectService;
@@ -34,8 +34,7 @@ public class SubjectControl {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createSubject(@RequestHeader("Authorization") String token, @RequestBody SubjectModel subject) {
-
+    public ResponseEntity<Boolean> createSubject(@CookieValue("token") String token, @RequestBody SubjectModel subject) {
         if (jwtService.ValidateTokenAdmin(token)) {
             subjectService.createSubject(subject);
             return ResponseEntity.ok(true);
@@ -44,22 +43,20 @@ public class SubjectControl {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Boolean> updateSubject(@RequestHeader("Authorization") String token, @RequestBody SubjectModel subject) {
+    public ResponseEntity<Boolean> updateSubject(@CookieValue("token") String token, @RequestBody SubjectModel subject) {
         if (jwtService.ValidateTokenAdmin(token)) {
             subjectService.updateSubject(subject);
             return ResponseEntity.ok(true);
         }
-        return ResponseEntity.ok(false); 
+        return ResponseEntity.ok(false);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> deleSubject(@RequestHeader("Authorization") String token,  @RequestHeader("id") int id) {
-
+    public ResponseEntity<Boolean> deleteSubject(@CookieValue("token") String token, @RequestHeader("id") int id) {
         if (jwtService.ValidateTokenAdmin(token)) {
             subjectService.deleteSubject(id);
-            return ResponseEntity.ok(true); 
+            return ResponseEntity.ok(true);
         }
-        return ResponseEntity.ok(false); 
+        return ResponseEntity.ok(false);
     }
-
 }

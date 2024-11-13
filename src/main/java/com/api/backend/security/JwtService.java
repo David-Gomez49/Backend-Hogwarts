@@ -83,14 +83,12 @@ public class JwtService {
     }
 
     public boolean ValidateTokenAdmin(String token){
-        String actualToken = token.substring(7);
-        String email = extractEmailFromToken(actualToken);
+        String email = extractEmailFromToken(token);
         return userService.validateAdmin(email);
     }
 
     public boolean ValidateTokenAdminTeacher(String token){
-        String actualToken = token.substring(7);
-        String email = extractEmailFromToken(actualToken);
+        String email = extractEmailFromToken(token);
         return (userService.validateAdmin(email) ||  userService.validateTeacher(email));
     }
 

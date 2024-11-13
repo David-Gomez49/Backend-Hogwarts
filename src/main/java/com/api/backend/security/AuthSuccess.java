@@ -10,8 +10,10 @@ import org.springframework.stereotype.Component;
 
 import com.api.backend.model.UserModel;
 import com.api.backend.services.UserService;
+import com.api.backend.security.JwtService;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -29,49 +31,36 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("----------------------------------------------------------------");
-   
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("----------------------------------------------------------------");
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("given_name");
         String lastname = oAuth2User.getAttribute("family_name");
         String profilePictureUrl = oAuth2User.getAttribute("picture");
-        System.out.println("----------------------------------------------------------------");
-        System.out.println(email);
-        System.out.println("----------------------------------------------------------------");
-        
-        UserModel user = new UserModel(0,name,lastname,null,null,null,null,email,null,null,null,profilePictureUrl);
+
+        UserModel user = new UserModel(0, name, lastname, null, null, null, null, email, null, null, null, profilePictureUrl);
         boolean userValid = userService.existsByEmail(email);
 
         if (!userValid) {
             userService.createUser(user);
         } 
         String token = jwtService.generateToken(email);
-        System.out.println("----------------------------------------------------------------");
-        System.out.println("TOKEN " + token);
-        System.out.println("----------------------------------------------------------------");
+
+        Cookie jwtCookie = new Cookie("token", token);
+        jwtCookie.setHttpOnly(true); // Solo accesible vía HTTP
+        jwtCookie.setSecure(true);    // Solo en conexiones HTTPS en producción
+        jwtCookie.setPath("/");       // Hacerla accesible en toda la aplicación
+        jwtCookie.setMaxAge(24 * 60 * 60);
+
         String redirectUrl;
         if (userService.InfoCompleteByEmail(email)) {
-            redirectUrl = "http://localhost:5173/classes?token=" + token;
+            redirectUrl = "http://localhost:5173/classes";
         } else {
-            redirectUrl = "http://localhost:5173/register?token=" + token;
+            redirectUrl = "http://localhost:5173/register";
         }
-        System.out.println("/////////////////////////////////////////////////////7");
-        // Agregar logs para depuración
-        System.out.println("Redirigiendo a: " + redirectUrl);
-        System.out.println("Token generado: " + token);
 
-        System.out.println("Redirect URL: " + redirectUrl);
         response.setStatus(HttpStatus.OK.value());
+        response.addCookie(jwtCookie);
         response.sendRedirect(redirectUrl);
-        System.out.println("Redirect sent");
-        System.out.println("/////////////////////////////////////////////////////7");
     }
-
 }
