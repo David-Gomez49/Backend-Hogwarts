@@ -62,17 +62,15 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
         }
 
         //COOKIE----
-        // Crear una cookie con el token JWT
+        // Ajuste para permitir cookies cross-site
         Cookie jwtCookie = new Cookie("token", token);
-        jwtCookie.setHttpOnly(true);  // La cookie solo debe ser accesible a través de HTTP (no JavaScript)
-        jwtCookie.setSecure(false);   // No es necesario en HTTP (solo en HTTPS)
-        jwtCookie.setPath("/");       // Establecer la cookie para que esté disponible en toda la aplicación
-        jwtCookie.setMaxAge(24 * 60 * 60);  // La cookie expirará después de 1 día (24 horas)
-
-        // Añadir la cookie a la respuesta
+        jwtCookie.setHttpOnly(true);  
+        jwtCookie.setSecure(false); // Asegúrate de que esté en true si usas HTTPS en producción
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(24 * 60 * 60);
+        jwtCookie.setDomain("backend-hogwarts.onrender.com"); // Especifica tu dominio
+        jwtCookie.setAttribute("SameSite", "None"); // Esta es la forma correcta en Java >= 11
         response.addCookie(jwtCookie);
-        // Configurar el encabezado "Set-Cookie" manualmente si es necesario
-        response.setHeader("Set-Cookie", "token=" + token + "; HttpOnly; Path=/; Max-Age=" + (24 * 60 * 60) + "; SameSite=None");
         //----------
 
 
