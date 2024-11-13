@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -26,19 +27,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors().and() // Asegurarse de habilitar CORS explícitamente
-                .csrf().disable() // Deshabilitar CSRF (opcional, depende de tu caso)
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Rutas públicas
-                .requestMatchers("/login").permitAll() // Rutas públicas .requestMatchers("/rol/getPublicRoles").permitAll()()
-                .requestMatchers("/**").permitAll() // Rutas públicas
+            .cors().and()
+            .csrf().disable() // Deshabilitar CSRF (opcional, según tu caso de uso)
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Usar JWT en lugar de sesiones
+            .and()
+            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Permitir preflight requests de CORS
+                .requestMatchers("/login").permitAll() // Rutas públicas específicas
+                .requestMatchers("/**").permitAll() // Permitir todas las rutas públicas
                 .anyRequest().authenticated() // Las demás rutas requieren autenticación
-                )
-                .oauth2Login(oauth2Login
-                        -> oauth2Login
-                        .successHandler(successHandler) // Usar el handler personalizado para el éxito del login OAuth2
-                );
-
+            )
+            .oauth2Login(oauth2Login -> oauth2Login
+                .successHandler(successHandler) // Usar el handler personalizado para el éxito del login OAuth2
+            );
         return http.build();
     }
 
