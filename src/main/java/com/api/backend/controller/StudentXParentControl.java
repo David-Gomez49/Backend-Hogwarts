@@ -28,7 +28,7 @@ public class StudentXParentControl {
     private UserService userService;
 
     @GetMapping("/getAll")
-    public List<StudentsXParentsModel> obtainStudentXParentList(@CookieValue("token") String token) {
+    public List<StudentsXParentsModel> obtainStudentXParentList(@CookieValue(name = "token") String token) {
         
         if(jwtService.ValidateTokenAdmin(token)){
             return studentXParentService.obtainStudentXParentList();
@@ -37,20 +37,20 @@ public class StudentXParentControl {
     }
 
     @GetMapping("/getSons")
-    public List<StudentsXParentsModel> obtainSonsList(@CookieValue("token") String token) {
+    public List<StudentsXParentsModel> obtainSonsList(@CookieValue(name = "token") String token) {
         String email = jwtService.extractEmailFromToken(token);
         return studentXParentService.obtainSonsList(email);
         
     }
 
     @GetMapping("/getParents")
-    public List<StudentsXParentsModel> obtainParentsList(@CookieValue("token") String token) {
+    public List<StudentsXParentsModel> obtainParentsList(@CookieValue(name = "token") String token) {
         String email = jwtService.extractEmailFromToken(token);
         return studentXParentService.obtainParentList(email);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createSubject(@CookieValue("token") String token, @RequestBody StudentsXParentsModel studentxparent) {
+    public ResponseEntity<Boolean> createSubject(@CookieValue(name = "token") String token, @RequestBody StudentsXParentsModel studentxparent) {
         if (jwtService.ValidateTokenAdmin(token)) {
             studentXParentService.createStudentXParent(studentxparent);
             return ResponseEntity.ok(true);
@@ -59,7 +59,7 @@ public class StudentXParentControl {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Boolean> updateSubject(@CookieValue("token") String token, @RequestBody StudentsXParentsModel studentxparent) {
+    public ResponseEntity<Boolean> updateSubject(@CookieValue(name = "token") String token, @RequestBody StudentsXParentsModel studentxparent) {
         if (jwtService.ValidateTokenAdmin(token)) {
             studentXParentService.updateStudentXParent(studentxparent);
             return ResponseEntity.ok(true);
@@ -68,7 +68,7 @@ public class StudentXParentControl {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> deleSubject(@CookieValue("token") String token,  @RequestHeader("id") int id) {
+    public ResponseEntity<Boolean> deleSubject(@CookieValue(name = "token") String token,  @RequestHeader("id") int id) {
         if (jwtService.ValidateTokenAdmin(token)) {
             studentXParentService.deleteStudentXParent(id);
             return ResponseEntity.ok(true); 

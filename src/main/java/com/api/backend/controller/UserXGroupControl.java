@@ -25,7 +25,7 @@ public class UserXGroupControl {
     private JwtService jwtService;
 
     @GetMapping("/student-groups")
-    public ResponseEntity<?> getStudentsWithGroups(@CookieValue("token") String token) {
+    public ResponseEntity<?> getStudentsWithGroups(@CookieValue(name = "token") String token) {
         try {
             if (jwtService.ValidateTokenAdmin(token)) {
                 List<StudentWithGroupModel> studentsWithGroups = userXGroupService.getAllStudentsWithGroup();
@@ -40,7 +40,7 @@ public class UserXGroupControl {
     }
 
     @PutMapping("/updateGroupById")
-    public ResponseEntity<Boolean> updateGroupById(@CookieValue("token") String token, @RequestHeader("StudentId")int studentId,@RequestHeader("GroupId")int groupId) {
+    public ResponseEntity<Boolean> updateGroupById(@CookieValue(name = "token") String token, @RequestHeader("StudentId")int studentId,@RequestHeader("GroupId")int groupId) {
         if (jwtService.ValidateTokenAdmin(token)) {
             userXGroupService.assignOrUpdateGroup(studentId, groupId);
             return ResponseEntity.ok(true);

@@ -43,7 +43,7 @@ public class AssesmentControl {
     private JwtService jwtService;
 
     @GetMapping("/getMyAssesments")
-    public List<AssesmentModel> obtainMyAssesmentsList(@CookieValue("token") String token) {
+    public List<AssesmentModel> obtainMyAssesmentsList(@CookieValue(name = "token") String token) {
         String email = jwtService.extractEmailFromToken(token);
         RolModel rol = userService.GetRolByEmail(email);
 
@@ -80,7 +80,7 @@ public class AssesmentControl {
     }
 
     @GetMapping("/getAssesmentsByClass")
-    public List<AssesmentModel> obtainAssesmentsListByClass(@CookieValue("token") String token, @RequestHeader("ClassId") int id) {
+    public List<AssesmentModel> obtainAssesmentsListByClass(@CookieValue(name = "token") String token, @RequestHeader("ClassId") int id) {
         String email = jwtService.extractEmailFromToken(token);
         if (userService.existsByEmail(email)) {
             return assesmentService.obtainAssestmentsByClass(id);
@@ -89,7 +89,7 @@ public class AssesmentControl {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createClass(@CookieValue("token") String token, @RequestBody AssesmentModel assesment) {
+    public ResponseEntity<Boolean> createClass(@CookieValue(name = "token") String token, @RequestBody AssesmentModel assesment) {
         String email = jwtService.extractEmailFromToken(token);
         boolean valid_teacher = userService.validateTeacher(email);
         boolean valid_admin = userService.validateAdmin(email);

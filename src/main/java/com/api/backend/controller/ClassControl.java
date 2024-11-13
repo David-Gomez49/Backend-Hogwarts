@@ -45,7 +45,7 @@ public class ClassControl {
     private UserXGroupService userGroupService;
 
     @GetMapping("/getAll")
-    public List<ClassModel> obtainClassList(@CookieValue("token") String token) {
+    public List<ClassModel> obtainClassList(@CookieValue(name = "token") String token) {
         if (jwtService.ValidateTokenAdmin(token)) {
             return classService.obtainClassList();
         }
@@ -53,7 +53,7 @@ public class ClassControl {
     }
 
     @GetMapping("/getClassById")
-    public ClassModel obtainClassList(@CookieValue("token") String token, @RequestHeader("ClassId") int Id) {
+    public ClassModel obtainClassList(@CookieValue(name = "token") String token, @RequestHeader("ClassId") int Id) {
         String email = jwtService.extractEmailFromToken(token);
         RolModel rol = userService.GetRolByEmail(email);
         ClassModel classes = classService.getClassById(Id);
@@ -80,7 +80,7 @@ public class ClassControl {
     }
 
     @GetMapping("/getMyClasses")
-    public List<ClassModel> obtainMyClassList(@CookieValue("token") String token) {
+    public List<ClassModel> obtainMyClassList(@CookieValue(name = "token") String token) {
         String email = jwtService.extractEmailFromToken(token);
         RolModel rol = userService.GetRolByEmail(email);
         if ((rol.getName().equals("Admin"))) {
@@ -114,7 +114,7 @@ public class ClassControl {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createClass(@CookieValue("token") String token, @RequestBody ClassModel classes) {
+    public ResponseEntity<Boolean> createClass(@CookieValue(name = "token") String token, @RequestBody ClassModel classes) {
         if (jwtService.ValidateTokenAdmin(token)) {
             classService.createClass(classes);
             return ResponseEntity.ok(true);
@@ -123,7 +123,7 @@ public class ClassControl {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Boolean> updateClass(@CookieValue("token") String token, @RequestBody ClassModel classes) {
+    public ResponseEntity<Boolean> updateClass(@CookieValue(name = "token") String token, @RequestBody ClassModel classes) {
         if (jwtService.ValidateTokenAdmin(token)) {
             classService.updateClass(classes);
             return ResponseEntity.ok(true);
@@ -132,7 +132,7 @@ public class ClassControl {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> deleteClass(@CookieValue("token") String token, @RequestHeader("id") int id) {
+    public ResponseEntity<Boolean> deleteClass(@CookieValue(name = "token") String token, @RequestHeader("id") int id) {
         if (jwtService.ValidateTokenAdmin(token)) {
             classService.deleteClass(id);
             return ResponseEntity.ok(true);
