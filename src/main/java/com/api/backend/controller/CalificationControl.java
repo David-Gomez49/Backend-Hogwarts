@@ -32,7 +32,7 @@ public class CalificationControl {
     private StudentXParentService studentXParentService;
 
     @GetMapping("/getCalificationsListByClass")
-    public List<CalificationModel> getCalificationsListByClass(@CookieValue(name = "token") String token, @RequestHeader("ClassId") int Id) {
+    public List<CalificationModel> getCalificationsListByClass(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("ClassId") int Id) {
         if(jwtService.ValidateTokenAdminTeacher(token)){
             return calificationService.getCalificationsListByClass(Id);
         }
@@ -40,7 +40,7 @@ public class CalificationControl {
     }
 
     @GetMapping("/getCalificationsByEmail")
-    public List<CalificationModel> getCalificationsByEmail(@CookieValue(name = "token") String token) {
+    public List<CalificationModel> getCalificationsByEmail(@CookieValue(name = "JSESSIONID") String token) {
         String email = jwtService.extractEmailFromToken(token);
         RolModel rol = userService.GetRolByEmail(email);
         if ("Student".equals(rol.getName())) {
@@ -58,7 +58,7 @@ public class CalificationControl {
     }
 
     @PostMapping("/CreateUpdateCalifications")
-    public ResponseEntity<Boolean> CreateUpdateCalifications(@CookieValue(name = "token") String token, @RequestBody List<CalificationModel> califications) {
+    public ResponseEntity<Boolean> CreateUpdateCalifications(@CookieValue(name = "JSESSIONID") String token, @RequestBody List<CalificationModel> califications) {
         if(jwtService.ValidateTokenAdminTeacher(token)){
             try {
                 calificationService.saveOrUpdateCalifications(califications);

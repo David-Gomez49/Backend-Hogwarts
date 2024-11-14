@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.util.List;
 import com.api.backend.model.StudentWithGroupModel;
 
 @RestController
+@RequestMapping("/userXGroup")
 public class UserXGroupControl {
 
     @Autowired
@@ -27,7 +29,7 @@ public class UserXGroupControl {
     private JwtService jwtService;
 
     @GetMapping("/student-groups")
-    public ResponseEntity<?> getStudentsWithGroups(@CookieValue(name = "token") String token) {
+    public ResponseEntity<?> getStudentsWithGroups(@CookieValue(name = "JSESSIONID") String token) {
         try {
             if (jwtService.ValidateTokenAdmin(token)) {
                 List<StudentWithGroupModel> studentsWithGroups = userXGroupService.getAllStudentsWithGroup();
@@ -42,7 +44,7 @@ public class UserXGroupControl {
     }
 
     @PutMapping("/updateGroupById")
-    public ResponseEntity<Boolean> updateGroupById(@CookieValue(name = "token") String token, @RequestHeader("StudentId")int studentId,@RequestHeader("GroupId")int groupId) {
+    public ResponseEntity<Boolean> updateGroupById(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("StudentId")int studentId,@RequestHeader("GroupId")int groupId) {
         if (jwtService.ValidateTokenAdmin(token)) {
             userXGroupService.assignOrUpdateGroup(studentId, groupId);
             return ResponseEntity.ok(true);

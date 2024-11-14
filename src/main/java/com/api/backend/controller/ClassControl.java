@@ -1,7 +1,10 @@
 package com.api.backend.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -45,7 +48,7 @@ public class ClassControl {
     private UserXGroupService userGroupService;
 
     @GetMapping("/getAll")
-    public List<ClassModel> obtainClassList(@CookieValue(name = "token") String token) {
+    public List<ClassModel> obtainClassList(@CookieValue(name = "JSESSIONID") String token) {
         if (jwtService.ValidateTokenAdmin(token)) {
             return classService.obtainClassList();
         }
@@ -53,7 +56,7 @@ public class ClassControl {
     }
 
     @GetMapping("/getClassById")
-    public ClassModel obtainClassList(@CookieValue(name = "token") String token, @RequestHeader("ClassId") int Id) {
+    public ClassModel obtainClassList(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("ClassId") int Id) {
         String email = jwtService.extractEmailFromToken(token);
         RolModel rol = userService.GetRolByEmail(email);
         ClassModel classes = classService.getClassById(Id);
@@ -80,7 +83,7 @@ public class ClassControl {
     }
 
     @GetMapping("/getMyClasses")
-    public List<ClassModel> obtainMyClassList(@CookieValue(name = "token") String token) {
+    public List<ClassModel> obtainMyClassList(@CookieValue(name = "JSESSIONID") String token) {
         String email = jwtService.extractEmailFromToken(token);
         RolModel rol = userService.GetRolByEmail(email);
         if ((rol.getName().equals("Admin"))) {
@@ -97,7 +100,7 @@ public class ClassControl {
             }
         }
         if ("Parent".equals(rol.getName())) {
-            List<ClassModel> classes = new ArrayList<>();
+            Set<ClassModel> classes = new HashSet<>(); // Cambiamos a Set para evitar duplicados
             List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
 
             for (StudentsXParentsModel son : sons) {
@@ -105,16 +108,17 @@ public class ClassControl {
                 if (userGroup != null) {
                     GroupModel group = userGroup.getGroup();
                     List<ClassModel> classesByGroup = classService.obtainClassByGroup(group);
-                    classes.addAll(classesByGroup);
+                    classes.addAll(classesByGroup); // HashSet se encarga de evitar duplicados
                 }
             }
-            return classes;
-        }
-        return null;
+            return new ArrayList<>(classes); // Convertimos el Set a List si es necesario para el retorno
+    }
+    return null;
+
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createClass(@CookieValue(name = "token") String token, @RequestBody ClassModel classes) {
+    public ResponseEntity<Boolean> createClass(@CookieValue(name = "JSESSIONID") String token, @RequestBody ClassModel classes) {
         if (jwtService.ValidateTokenAdmin(token)) {
             classService.createClass(classes);
             return ResponseEntity.ok(true);
@@ -123,7 +127,7 @@ public class ClassControl {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Boolean> updateClass(@CookieValue(name = "token") String token, @RequestBody ClassModel classes) {
+    public ResponseEntity<Boolean> updateClass(@CookieValue(name = "JSESSIONID") String token, @RequestBody ClassModel classes) {
         if (jwtService.ValidateTokenAdmin(token)) {
             classService.updateClass(classes);
             return ResponseEntity.ok(true);
@@ -132,7 +136,7 @@ public class ClassControl {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> deleteClass(@CookieValue(name = "token") String token, @RequestHeader("id") int id) {
+    public ResponseEntity<Boolean> deleteClass(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("id") int id) {
         if (jwtService.ValidateTokenAdmin(token)) {
             classService.deleteClass(id);
             return ResponseEntity.ok(true);

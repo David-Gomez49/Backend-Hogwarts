@@ -1,12 +1,15 @@
 package com.api.backend.security;
 
 import java.io.IOException;
+import java.net.HttpCookie;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.WebUtils;
 
 import com.api.backend.model.UserModel;
 import com.api.backend.services.UserService;
@@ -62,14 +65,16 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
         }
 
         // Ajuste para permitir cookies cross-site
-        Cookie jwtCookie = new Cookie("token", token);
-        jwtCookie.setHttpOnly(true);  
-        jwtCookie.setSecure(false); // Asegúrate de que esté en true si usas HTTPS en producción
-        jwtCookie.setPath("/");
+        Cookie jwtCookie = new Cookie("JSESSIONID", token);
         jwtCookie.setMaxAge(24 * 60 * 60);
-        jwtCookie.setDomain("backend-hogwarts.onrender.com"); // Especifica tu dominio
-        jwtCookie.setAttribute("SameSite", "None"); // Esta es la forma correcta en Java >= 11
+        jwtCookie.setHttpOnly(true);  
+        jwtCookie.setPath("/");
         response.addCookie(jwtCookie);
+        
+        Cookie jsessionidCookie = WebUtils.getCookie(request, "JSESSIONID");
+        if (jsessionidCookie != null) {
+            System.out.println("JSESSIONID: " + jsessionidCookie.getValue());
+        }
 
         // Determinar la URL de redirección dependiendo de si el usuario tiene su perfil completo
         String redirectUrl;
@@ -86,6 +91,7 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
 
         // Redirigir al usuario a la URL correspondiente
         response.sendRedirect(redirectUrl);
+        // No need to return ResponseEntity as the method is now void
     }
 
 }

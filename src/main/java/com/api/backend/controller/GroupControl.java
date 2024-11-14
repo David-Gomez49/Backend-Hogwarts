@@ -22,7 +22,7 @@ public class GroupControl {
     private JwtService jwtService;
 
     @GetMapping("/getAll")
-    public List<GroupModel> obtainClasstList(@CookieValue(name = "token") String token) {
+    public List<GroupModel> obtainClasstList(@CookieValue(name = "JSESSIONID") String token) {
         if (jwtService.ValidateTokenAdmin(token)) {
             return groupService.obtainGroupList();
         }
@@ -30,7 +30,7 @@ public class GroupControl {
     }
     
     @PostMapping("/create")
-    public ResponseEntity<Boolean> obtainClasstList(@CookieValue(name = "token") String token, @RequestBody GroupModel group) {
+    public ResponseEntity<Boolean> obtainClasstList(@CookieValue(name = "JSESSIONID") String token, @RequestBody GroupModel group) {
         if (jwtService.ValidateTokenAdmin(token)) {
             groupService.createGroup(group);
             return ResponseEntity.ok(true);
