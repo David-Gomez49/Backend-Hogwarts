@@ -1,6 +1,8 @@
 package com.api.backend.model;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,13 +26,13 @@ public class AssesmentModel {
 
     private float percent;
     private String description;
-    private Timestamp date;
-    private Timestamp limit_date;
+    private LocalDate date;
+    private LocalDate limit_date;
 
     public AssesmentModel() {
     }
 
-    public AssesmentModel(int id, float percent, String description, Timestamp date, Timestamp limit_date, ClassModel classes) {
+    public AssesmentModel(int id, float percent, String description, LocalDate date, LocalDate limit_date, ClassModel classes) {
         this.Id = id;
         this.percent = percent;
         this.description = description;
@@ -71,19 +73,19 @@ public class AssesmentModel {
         this.description = description;
     }
 
-    public Timestamp getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Timestamp date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
-    public Timestamp getLimit_date() {
+    public LocalDate getLimit_date() {
         return limit_date;
     }
 
-    public void setLimit_date(Timestamp limit_date) {
+    public void setLimit_date(LocalDate limit_date) {
         this.limit_date = limit_date;
     }
     

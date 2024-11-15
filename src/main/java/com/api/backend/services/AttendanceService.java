@@ -1,7 +1,12 @@
 package com.api.backend.services;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +15,10 @@ import org.springframework.stereotype.Service;
 
 import com.api.backend.model.AttendanceModel;
 import com.api.backend.model.ClassModel;
+import com.api.backend.model.UserModel;
 import com.api.backend.repository.AttendanceRepo;
 import com.api.backend.repository.ClassRepo;
+import com.api.backend.repository.UserXGroupRepo;
 
 @Service
 public class AttendanceService {
@@ -20,6 +27,8 @@ public class AttendanceService {
     private AttendanceRepo attendanceRepo;
     @Autowired
     private ClassRepo classRepo;
+    @Autowired
+    private UserXGroupRepo userXGroupRepo;
 
     public List<AttendanceModel> obtainAttendanceList() {
         return (List<AttendanceModel>) attendanceRepo.findAll();
@@ -57,19 +66,68 @@ public class AttendanceService {
         return attendanceRepo.findAttendancesByStudent_Email(Email);
     }
     
-    public void saveAttendances(List<AttendanceModel> attendances) {
-        attendanceRepo.saveAll(attendances);
-    }
+   public List<AttendanceModel> saveAttendances(List<AttendanceModel> attendances) {
+    List<AttendanceModel> savedAttendances = new ArrayList<>();
     
-     public List<AttendanceModel> getAttendancesByClassIdAndDate(int classId, String date) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date parsedDate = null;
-        try {
-            parsedDate = new Date(format.parse(date).getTime());
-        } catch (Exception e) {
-            // Manejo de error si la fecha no se puede parsear
-            e.printStackTrace();
+    for (AttendanceModel attendance : attendances) {
+        // Verificar si la asistencia ya existe en la base de datos
+        AttendanceModel existingAttendance = attendanceRepo.findByStudent_IdAndClasses_IdAndDate(
+            attendance.getStudent().getId(), 
+            attendance.getClasses().getId(), 
+            attendance.getDate()
+        );
+        
+        if (existingAttendance != null) {
+            // Si la asistencia ya existe, actualizamos la información
+            existingAttendance.setStatus(attendance.getStatus());
+            savedAttendances.add(attendanceRepo.save(existingAttendance));
+        } else {
+            // Si no existe, creamos una nueva entrada
+            savedAttendances.add(attendanceRepo.save(attendance));
         }
-        return attendanceRepo.findByClasses_IdAndDate(classId, parsedDate);
     }
+
+    return savedAttendances;
+}
+
+
+public List<AttendanceModel> getAttendancesByClassIdAndDate(int classId, LocalDate date) {
+    int groupId = classRepo.findById(classId).getGroup().getId();
+    
+    System.out.println("---------------------------");
+    System.out.println("Original date: " + date);
+    System.out.println("classId: " + classId);
+    System.out.println("groupId: " + groupId);
+    System.out.println("---------------------------");
+
+    // Obtener los estudiantes de la clase (grupo)
+    List<UserModel> studentsInClass = userXGroupRepo.findStudentsByGroupId(groupId);
+    List<AttendanceModel> attendances = new ArrayList<>();
+
+    // Itera sobre los estudiantes para obtener su asistencia en la fecha específica
+    for (UserModel student : studentsInClass) {
+        List<AttendanceModel> studentAttendance = attendanceRepo.getAttendancesByStudent_IdAndClasses_IdAndDate(student.getId(), classId, date);
+
+        if (studentAttendance.isEmpty()) {
+            System.out.println("No attendance found for student: " + student.getName());
+            AttendanceModel emptyAttendance = new AttendanceModel();
+            emptyAttendance.setStudent(student);
+            emptyAttendance.setDate(date);
+            
+            // Asignar la clase correcta al objeto emptyAttendance
+            ClassModel classModel = new ClassModel();
+            classModel.setId(classId);
+            emptyAttendance.setClasses(classModel);
+
+            attendances.add(emptyAttendance);
+        } else {
+            System.out.println("Attendance found for student: " + student.getName());
+            attendances.addAll(studentAttendance);
+        }
+    }
+
+    return attendances;
+}
+
+
 }

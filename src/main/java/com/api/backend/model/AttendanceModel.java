@@ -1,6 +1,7 @@
 package com.api.backend.model;
 
-import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,20 +25,18 @@ public class AttendanceModel {
     @ManyToOne
     @JoinColumn(name = "id_class", referencedColumnName = "Id") // id es la columna en GroupModel
     private ClassModel classes;
-    private Date date;
-    private Boolean status;
-    private String description;
+    private LocalDate date;
+    private String status;
 
     public AttendanceModel() {
     }
 
-    public AttendanceModel(int id, UserModel student, ClassModel classes, Date date, Boolean status, String description) {
+    public AttendanceModel(int id, UserModel student, ClassModel classes, LocalDate date, String status ) {
         Id = id;
         this.student = student;
         this.classes = classes;
         this.date = date;
         this.status = status;
-        this.description = description;
     }
 
     public int getId() {
@@ -64,35 +63,19 @@ public class AttendanceModel {
         this.classes = classes;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
-    public Boolean getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(String status) {
         this.status = status;
     }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    
-
-    
-    
-    
-    
-    
 }

@@ -1,5 +1,9 @@
 package com.api.backend.controller;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,10 +56,11 @@ public class AttendanceControl {
     }
 
     @GetMapping("/getAttendancesByClassId_Date")
-    public List<AttendanceModel> getAttendancesByClassId_Date(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("ClassId") int Id, @RequestHeader("ClassId") String Date) {
-
+    public List<AttendanceModel> getAttendancesByClassId_Date(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("ClassId") int Id, @RequestHeader("SelectedDate") String SelectedDate) {
+        System.out.println(SelectedDate);
+        LocalDate date = LocalDate.parse(SelectedDate);
         if (jwtService.ValidateTokenAdminTeacher(token)) {
-            return attendanceService.getAttendancesByClassIdAndDate(Id, Date);
+            return attendanceService.getAttendancesByClassIdAndDate(Id, date);
         }
         return null;
     }
@@ -87,7 +92,7 @@ public class AttendanceControl {
     }
 
     @PostMapping("/createAttendances")
-     public ResponseEntity<Boolean> markAttendance(@RequestBody List<AttendanceModel> attendances) {
+     public ResponseEntity<Boolean> createAttendance(@RequestBody List<AttendanceModel> attendances) {
         try {
             attendanceService.saveAttendances(attendances);
             return ResponseEntity.ok(true);
