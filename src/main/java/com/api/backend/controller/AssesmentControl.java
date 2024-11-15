@@ -7,8 +7,10 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -95,6 +97,24 @@ public class AssesmentControl {
         boolean valid_admin = userService.validateAdmin(email);
         if (valid_teacher || valid_admin) {
             assesmentService.createAssesment(assesment);
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.ok(false);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<Boolean> updateAssesment(@CookieValue(name = "JSESSIONID") String token, @RequestBody AssesmentModel assesment) {
+        if (jwtService.ValidateTokenAdminTeacher(token)) {
+            assesmentService.updateAssesment(assesment);
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.ok(false);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Boolean> deleteClass(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("id") int id) {
+        if (jwtService.ValidateTokenAdminTeacher(token)) {
+            assesmentService.deleteAssesment(id);
             return ResponseEntity.ok(true);
         }
         return ResponseEntity.ok(false);
