@@ -39,8 +39,6 @@ public class AssesmentService  {
     public List<AssesmentModel> obtainAssestmentsByGroup(GroupModel group) {
         return assesmentRepo.findAssessmentsByGroup(group);
 }
-    
-
     public List<AssesmentModel> obtainAssestmentsByClass(int classId) {
         return assesmentRepo.findByClasses_Id(classId);
     }

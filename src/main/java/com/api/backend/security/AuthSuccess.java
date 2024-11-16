@@ -1,10 +1,8 @@
 package com.api.backend.security;
 
 import java.io.IOException;
-import java.net.HttpCookie;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -13,7 +11,6 @@ import org.springframework.web.util.WebUtils;
 
 import com.api.backend.model.UserModel;
 import com.api.backend.services.UserService;
-import com.api.backend.security.JwtService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

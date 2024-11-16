@@ -1,12 +1,6 @@
 package com.api.backend.services;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,11 +47,9 @@ public class AttendanceService {
     public List<AttendanceModel> obtainAttendancesByTeacher(String email) {
         List<ClassModel> classes = classRepo.findByTeacherEmail(email);
         List<AttendanceModel> allAttendances = new ArrayList<>();
-
-        for (ClassModel classModel : classes) {
-            List<AttendanceModel> attendances = attendanceRepo.findAttendanceByclasses_Id(classModel.getId());
-            allAttendances.addAll(attendances);
-        }
+        classes.forEach(classModel -> 
+            allAttendances.addAll(attendanceRepo.findAttendanceByclasses_Id(classModel.getId()))
+        );
         return allAttendances;
     }
 
@@ -66,68 +58,58 @@ public class AttendanceService {
         return attendanceRepo.findAttendancesByStudent_Email(Email);
     }
     
-   public List<AttendanceModel> saveAttendances(List<AttendanceModel> attendances) {
-    List<AttendanceModel> savedAttendances = new ArrayList<>();
-    
-    for (AttendanceModel attendance : attendances) {
-        // Verificar si la asistencia ya existe en la base de datos
-        AttendanceModel existingAttendance = attendanceRepo.findByStudent_IdAndClasses_IdAndDate(
-            attendance.getStudent().getId(), 
-            attendance.getClasses().getId(), 
-            attendance.getDate()
-        );
-        
-        if (existingAttendance != null) {
-            // Si la asistencia ya existe, actualizamos la información
-            existingAttendance.setStatus(attendance.getStatus());
-            savedAttendances.add(attendanceRepo.save(existingAttendance));
-        } else {
-            // Si no existe, creamos una nueva entrada
-            savedAttendances.add(attendanceRepo.save(attendance));
-        }
+    public List<AttendanceModel> saveAttendances(List<AttendanceModel> attendances) {
+        List<AttendanceModel> savedAttendances = new ArrayList<>();
+        attendances.forEach(attendance -> {
+            AttendanceModel existingAttendance = attendanceRepo.findByStudent_IdAndClasses_IdAndDate(
+                attendance.getStudent().getId(),
+                attendance.getClasses().getId(),
+                attendance.getDate()
+            );
+
+            if (existingAttendance != null) {
+                existingAttendance.setStatus(attendance.getStatus());
+                savedAttendances.add(attendanceRepo.save(existingAttendance));
+            } else {
+                savedAttendances.add(attendanceRepo.save(attendance));
+            }
+        });
+        return savedAttendances;
     }
 
-    return savedAttendances;
-}
 
+    public List<AttendanceModel> getAttendancesByClassIdAndDate(int classId, LocalDate date) {
+        int groupId = classRepo.findById(classId).getGroup().getId();
+        List<UserModel> studentsInClass = userXGroupRepo.findStudentsByGroupId(groupId);
+        List<AttendanceModel> attendances = new ArrayList<>();
 
-public List<AttendanceModel> getAttendancesByClassIdAndDate(int classId, LocalDate date) {
-    int groupId = classRepo.findById(classId).getGroup().getId();
-    
-    System.out.println("---------------------------");
-    System.out.println("Original date: " + date);
-    System.out.println("classId: " + classId);
-    System.out.println("groupId: " + groupId);
-    System.out.println("---------------------------");
+        studentsInClass.forEach(student -> {
+            List<AttendanceModel> studentAttendances = attendanceRepo.getAttendancesByStudent_IdAndClasses_IdAndDate(
+                student.getId(), classId, date
+            );
 
-    // Obtener los estudiantes de la clase (grupo)
-    List<UserModel> studentsInClass = userXGroupRepo.findStudentsByGroupId(groupId);
-    List<AttendanceModel> attendances = new ArrayList<>();
+            if (studentAttendances.isEmpty()) {
+                AttendanceModel emptyAttendance = createEmptyAttendance(student, classId, date);
+                attendances.add(emptyAttendance);
+            } else {
+                attendances.addAll(studentAttendances);
+            }
+        });
 
-    // Itera sobre los estudiantes para obtener su asistencia en la fecha específica
-    for (UserModel student : studentsInClass) {
-        List<AttendanceModel> studentAttendance = attendanceRepo.getAttendancesByStudent_IdAndClasses_IdAndDate(student.getId(), classId, date);
-
-        if (studentAttendance.isEmpty()) {
-            System.out.println("No attendance found for student: " + student.getName());
-            AttendanceModel emptyAttendance = new AttendanceModel();
-            emptyAttendance.setStudent(student);
-            emptyAttendance.setDate(date);
-            
-            // Asignar la clase correcta al objeto emptyAttendance
-            ClassModel classModel = new ClassModel();
-            classModel.setId(classId);
-            emptyAttendance.setClasses(classModel);
-
-            attendances.add(emptyAttendance);
-        } else {
-            System.out.println("Attendance found for student: " + student.getName());
-            attendances.addAll(studentAttendance);
-        }
+        return attendances;
     }
 
-    return attendances;
-}
+    private AttendanceModel createEmptyAttendance(UserModel student, int classId, LocalDate date) {
+        AttendanceModel emptyAttendance = new AttendanceModel();
+        emptyAttendance.setStudent(student);
+        emptyAttendance.setDate(date);
+
+        ClassModel classModel = new ClassModel();
+        classModel.setId(classId);
+        emptyAttendance.setClasses(classModel);
+
+        return emptyAttendance;
+    }
 
 
 }

@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.api.backend.model.SubjectModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.SubjectService;
-import com.api.backend.services.UserService;
 
 @RestController
 @RequestMapping("/subject")
@@ -25,8 +25,6 @@ public class SubjectControl {
     private SubjectService subjectService;
     @Autowired
     private JwtService jwtService;
-    @Autowired
-    private UserService userService;
 
     @GetMapping("/getAll")
     public List<SubjectModel> obtainSubjectList() {

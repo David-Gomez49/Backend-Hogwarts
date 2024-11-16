@@ -3,7 +3,6 @@ package com.api.backend.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.api.backend.model.AuxiliarUserModel;
@@ -37,11 +36,8 @@ public class UserService {
     }
     
     public List<AuxiliarUserModel> obtainUserListWithSpecificFields() {
-        List<AuxiliarUserModel> a = (List<AuxiliarUserModel> )userRepo.findAllUsersWithSpecificFields();
-        System.out.println("-----------list--------");
-        System.out.println(a);
-        System.out.println("-----------list--------");
-        return a ;
+        return (List<AuxiliarUserModel> )userRepo.findAllUsersWithSpecificFields();
+      
     }
     public UserModel obtainUserById(int studentId) {
         return userRepo.findById(studentId)
@@ -49,11 +45,7 @@ public class UserService {
     }
 
     public UserModel obtainUserByEmail(String email) {
-        UserModel user = userRepo.findByEmail(email);
-        System.out.println("-----------user--------");
-        System.out.println(user);
-        System.out.println("-----------user--------");
-        return user;
+        return userRepo.findByEmail(email);
     }
 
     public UserModel createUser(UserModel user) {
@@ -75,61 +67,60 @@ public class UserService {
 
     public UserModel editRolByEmail(String email, String roleName) {
         UserModel user = userRepo.findByEmail(email);
-        
-        if (user == null) {
-            throw new UsernameNotFoundException("Usuario no encontrado con el email: " + email);
-        }
-
         RolModel newRole = rolRepo.findByName(roleName);
-
-        if (newRole == null) {
-            throw new IllegalArgumentException("Rol no encontrado con el nombre: " + roleName);
-        }
-        user.setRol(newRole);
-        
+        user.setRol(newRole);      
         return userRepo.save(user); 
     }
 
 
 
 
-    public boolean InfoCompleteByEmail(String Email) {
-        UserModel user = userRepo.findByEmail(Email);
-        if (user.getName() == null || user.getName().isEmpty()
-                || user.getLastname() == null || user.getLastname().isEmpty()
-                || user.getPhone() == null || user.getPhone().isEmpty()
-                || user.getAddress() == null || user.getAddress().isEmpty()
-                || user.getBirthday() == null || user.getGender() == null
-                || user.getGender().isEmpty() || user.getPicture() == null
-                || user.getPicture().isEmpty() || user.getRol() == null
-                || user.getDocument_type() == null || user.getDocument_type().isEmpty()
-                || user.getDocument_number() == null || user.getDocument_number().isEmpty()) {
-            return false;
-        } else {
-            return true;
+    public boolean InfoCompleteByEmail(String email) {
+        UserModel user = userRepo.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("Usuario no encontrado con el email: " + email);
         }
+        List<Object> requiredFields = List.of(
+            user.getName(), user.getLastname(), user.getPhone(), user.getAddress(),
+            user.getBirthday(), user.getGender(), user.getPicture(), user.getRol(),
+            user.getDocument_type(), user.getDocument_number()
+        );
+        return requiredFields.stream().allMatch(field -> field != null && !field.toString().isEmpty());
     }
-
+    
     public UserModel updateUserByEmail(String email, UserModel updatedUser) {
         // Buscar el usuario actual por email
         UserModel existingUser = userRepo.findByEmail(email);
-
         if (existingUser == null) {
             throw new RuntimeException("Usuario no encontrado con el email: " + email);
         }
-
-        // Actualizar los campos restantes del usuario
-        existingUser.setRol(updatedUser.getRol());  // Ejemplo
-        existingUser.setPhone(updatedUser.getPhone());  // Ejemplo
-        existingUser.setBirthday(updatedUser.getBirthday());  // Ejemplo
-        existingUser.setAddress(updatedUser.getAddress());  // Ejemplo
-        existingUser.setGender(updatedUser.getGender());  // Ejemplo
-        existingUser.setDocument_type(updatedUser.getDocument_type());  // Ejemplo
-        existingUser.setDocument_number(updatedUser.getDocument_number());  // Ejemplo
-
-        // Guardar los cambios
+    
+        // Actualizar solo los campos no nulos en updatedUser
+        if (updatedUser.getRol() != null) {
+            existingUser.setRol(updatedUser.getRol());
+        }
+        if (updatedUser.getPhone() != null) {
+            existingUser.setPhone(updatedUser.getPhone());
+        }
+        if (updatedUser.getBirthday() != null) {
+            existingUser.setBirthday(updatedUser.getBirthday());
+        }
+        if (updatedUser.getAddress() != null) {
+            existingUser.setAddress(updatedUser.getAddress());
+        }
+        if (updatedUser.getGender() != null) {
+            existingUser.setGender(updatedUser.getGender());
+        }
+        if (updatedUser.getDocument_type() != null) {
+            existingUser.setDocument_type(updatedUser.getDocument_type());
+        }
+        if (updatedUser.getDocument_number() != null) {
+            existingUser.setDocument_number(updatedUser.getDocument_number());
+        }
+    
         return userRepo.save(existingUser);
     }
+    
 
     public boolean existsByEmail(String Email) {
         return userRepo.existsByEmail(Email);
@@ -140,16 +131,14 @@ public class UserService {
     }
     
     public RolModel GetRolByEmail(String Email) {
-        UserModel user = userRepo.findByEmail(Email);
-        return user.getRol();
+        return userRepo.findByEmail(Email).getRol();
     }
 
     public boolean  validateAdmin(String Email) {
-        UserModel user = userRepo.findByEmail(Email);
-        return user.getRol().getName().equals("Admin");
+        return (userRepo.findByEmail(Email).getRol().getName()).equals("Admin");
+         
     }    
     public boolean  validateTeacher(String Email) {
-        UserModel user = userRepo.findByEmail(Email);
-        return user.getRol().getName().equals("Teacher");
+        return  userRepo.findByEmail(Email).getRol().getName().equals("Teacher");
     }    
 }

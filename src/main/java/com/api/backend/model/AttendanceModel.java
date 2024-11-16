@@ -1,6 +1,5 @@
 package com.api.backend.model;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;

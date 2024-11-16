@@ -13,9 +13,15 @@ import org.springframework.stereotype.Service;
 import com.api.backend.services.UserService;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.InvalidKeyException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import io.jsonwebtoken.security.WeakKeyException;
 
 @Service
 public class JwtService {
@@ -33,12 +39,7 @@ public class JwtService {
             // Verifica que la clave tenga el tamaño adecuado
             SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
-            // Depuración de la generación del token
-            System.out.println("------------------------------------------------");
-            System.out.println("Generando token con email: " + email);
-            System.out.println("------------------------------------------------");
-
-            // Construcción del token JWT
+      
             return Jwts.builder()
                     .setClaims(claims)
                     .setSubject(email)
@@ -46,12 +47,7 @@ public class JwtService {
                     .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Expiración en 1 día
                     .signWith(key, SignatureAlgorithm.HS256) // Firma con la clave y algoritmo HS256
                     .compact();
-        } catch (Exception e) {
-            // Captura y muestra el error si algo falla
-            System.out.println("------------------------------------------------");
-            System.out.println("Error al generar el token: " + e.getMessage());
-            System.out.println("------------------------------------------------");
-            e.printStackTrace();
+        } catch (InvalidKeyException e) {
             return null;
         }
     }
@@ -59,25 +55,17 @@ public class JwtService {
 // Método para decodificar el token y obtener el email
     public String extractEmailFromToken(String token) {
         try {
-            // Clave secreta usada para firmar el token
             SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-
-            // Parseo del token JWT para obtener las claims (información dentro del token)
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key) // Configura la clave de firma
                     .build()
                     .parseClaimsJws(token) // Parsea y valida el token
                     .getBody(); // Obtiene el cuerpo del token (claims)
 
-            // Retorna el valor del subject, que es el email en este caso
             return claims.getSubject();
 
-        } catch (Exception e) {
-            // Captura el error si ocurre algún problema durante la validación
-            System.out.println("------------------------------------------------");
-            System.out.println("Error al decodificar el token: " + e.getMessage());
-            System.out.println("------------------------------------------------");
-            e.printStackTrace();
+        } catch (ExpiredJwtException | MalformedJwtException | UnsupportedJwtException | SignatureException | WeakKeyException | IllegalArgumentException e) {
+            
             return null;
         }
     }
@@ -91,5 +79,6 @@ public class JwtService {
         String email = extractEmailFromToken(token);
         return (userService.validateAdmin(email) ||  userService.validateTeacher(email));
     }
+
 
 }

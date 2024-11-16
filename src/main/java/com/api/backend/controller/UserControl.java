@@ -1,6 +1,7 @@
 package com.api.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.api.backend.model.AuxiliarUserModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.security.JwtService;
@@ -61,9 +63,7 @@ public class UserControl {
 
     @GetMapping("/getByEmail")
     public ResponseEntity<UserModel> obtainUserByEmail(@CookieValue(name = "JSESSIONID") String token) {
-        String email = jwtService.extractEmailFromToken(token);
-        UserModel user = userService.obtainUserByEmail(email);
-
+        UserModel user = userService.obtainUserByEmail(jwtService.extractEmailFromToken(token));
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
@@ -84,7 +84,6 @@ public class UserControl {
     @GetMapping("/validateUser")
     public ResponseEntity<Boolean> validateUser(@CookieValue(name = "JSESSIONID") String token) {
         String email = jwtService.extractEmailFromToken(token);
-
         if (email == null || email.isEmpty()) {
             return ResponseEntity.badRequest().body(false);
         }
@@ -121,14 +120,12 @@ public class UserControl {
 
     @GetMapping("/infoCompleteByEmail")
     public ResponseEntity<Boolean> infoCompleteByEmail(@CookieValue(name = "JSESSIONID") String token) {
-        String email = jwtService.extractEmailFromToken(token);
-        return ResponseEntity.ok(userService.InfoCompleteByEmail(email));
+        return ResponseEntity.ok(userService.InfoCompleteByEmail(jwtService.extractEmailFromToken(token)));
     }
 
     @GetMapping("/getInfoByEmail")
     public AuxiliarUserModel getInfoByEmail(@CookieValue(name = "JSESSIONID") String token) {
-        String email = jwtService.extractEmailFromToken(token);
-        return userService.getInfoByEmail(email);
+        return userService.getInfoByEmail(jwtService.extractEmailFromToken(token));
     }
 
     @GetMapping("/listUserInfo")
@@ -145,17 +142,11 @@ public class UserControl {
         @RequestHeader("user") String email) {
 
         try {
-            String emailAdmin = jwtService.extractEmailFromToken(token);
-            
-            boolean valid = userService.validateAdmin(emailAdmin);
-            boolean userValid = userService.existsByEmail(email);
-            if ((!valid || !userValid) || emailAdmin.equals(email)) {
+            if (!jwtService.ValidateTokenAdmin(token)) {
                 return ResponseEntity.ok(false);
             }
-          
             userService.deleteByEmail(email);
             return ResponseEntity.ok(true);
-    
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
         }
@@ -168,11 +159,7 @@ public class UserControl {
         @RequestHeader("role") String newrole) {
 
         try {
-            String emailAdmin = jwtService.extractEmailFromToken(token);
-            
-            boolean valid = userService.validateAdmin(emailAdmin);
-            boolean userValid = userService.existsByEmail(email);
-            if ((!valid || !userValid) || emailAdmin.equals(email)) {
+            if (!jwtService.ValidateTokenAdmin(token)) {
                 return ResponseEntity.ok(false);
             }
             userService.editRolByEmail(email, newrole);

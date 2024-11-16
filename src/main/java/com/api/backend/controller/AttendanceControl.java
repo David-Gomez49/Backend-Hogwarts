@@ -1,9 +1,6 @@
 package com.api.backend.controller;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.backend.model.AttendanceModel;
-import com.api.backend.model.RolModel;
 import com.api.backend.model.StudentsXParentsModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.AttendanceService;
@@ -47,19 +43,17 @@ public class AttendanceControl {
 
     @GetMapping("/getAttendancesByClassId")
     public List<AttendanceModel> getAttendancesByClassId(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("ClassId") int Id) {
-        
-        List<AttendanceModel> attendances = attendanceService.getAttendanceByClassId(Id);
+       
         if (jwtService.ValidateTokenAdminTeacher(token)) {
-            return attendances;
+            return attendanceService.getAttendanceByClassId(Id);
         }
         return null;
     }
 
     @GetMapping("/getAttendancesByClassId_Date")
-    public List<AttendanceModel> getAttendancesByClassId_Date(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("ClassId") int Id, @RequestHeader("SelectedDate") String SelectedDate) {
-        System.out.println(SelectedDate);
-        LocalDate date = LocalDate.parse(SelectedDate);
+    public List<AttendanceModel> getAttendancesByClassId_Date(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("ClassId") int Id, @RequestHeader("SelectedDate") String SelectedDate) {       
         if (jwtService.ValidateTokenAdminTeacher(token)) {
+            LocalDate date = LocalDate.parse(SelectedDate);
             return attendanceService.getAttendancesByClassIdAndDate(Id, date);
         }
         return null;
@@ -68,20 +62,19 @@ public class AttendanceControl {
     @GetMapping("/getMyAttendances")
     public List<AttendanceModel> obtainMyClassList(@CookieValue(name = "JSESSIONID") String token) {
         String email = jwtService.extractEmailFromToken(token);
-        RolModel rol = userService.GetRolByEmail(email);
-        if ((rol.getName().equals("Admin"))) {
+        String rolName = userService.GetRolByEmail(email).getName();
+        if ((rolName.equals("Admin"))) {
             return attendanceService.obtainAttendanceList();
         }
-        if ((rol.getName().equals("Teacher"))) {
+        if ((rolName.equals("Teacher"))) {
             return attendanceService.obtainAttendancesByTeacher(email);
         }
-        if (rol.getName().equals("Student")) {
+        if (rolName.equals("Student")) {
             return attendanceService.obtainAttendancesByStudent(email);
         }
-        if ("Parent".equals(rol.getName())) {
+        if ("Parent".equals(rolName)) {
             List<AttendanceModel> attendances = new ArrayList<>(); // Cambiamos a Set para evitar duplicados
             List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
-
             for (StudentsXParentsModel son : sons) {
                 attendances.addAll(attendanceService.obtainAttendancesByStudent(son.getStudent().getEmail())); // HashSet se encarga de evitar duplicados
             }

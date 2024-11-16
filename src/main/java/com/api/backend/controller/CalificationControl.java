@@ -2,22 +2,23 @@ package com.api.backend.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.api.backend.model.CalificationModel;
-import com.api.backend.model.RolModel;
 import com.api.backend.model.StudentsXParentsModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.CalificationService;
 import com.api.backend.services.StudentXParentService;
 import com.api.backend.services.UserService;
-import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/calification")
@@ -42,11 +43,12 @@ public class CalificationControl {
     @GetMapping("/getCalificationsByEmail")
     public List<CalificationModel> getCalificationsByEmail(@CookieValue(name = "JSESSIONID") String token) {
         String email = jwtService.extractEmailFromToken(token);
-        RolModel rol = userService.GetRolByEmail(email);
-        if ("Student".equals(rol.getName())) {
+        String rolName = userService.GetRolByEmail(email).getName();
+
+        if ("Student".equals(rolName)) {
             return calificationService.getCalificationsByEmail(email);
         }
-        if ("Parent".equals(rol.getName())) {
+        if ("Parent".equals(rolName)) {
             List<CalificationModel> califications = new ArrayList<>();
             List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
             for (StudentsXParentsModel son : sons) {

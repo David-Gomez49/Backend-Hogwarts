@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -15,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.api.backend.model.AssesmentModel;
 import com.api.backend.model.GroupModel;
-import com.api.backend.model.RolModel;
 import com.api.backend.model.StudentsXParentsModel;
 import com.api.backend.model.UserxGroupModel;
 import com.api.backend.security.JwtService;
@@ -47,17 +48,16 @@ public class AssesmentControl {
     @GetMapping("/getMyAssesments")
     public List<AssesmentModel> obtainMyAssesmentsList(@CookieValue(name = "JSESSIONID") String token) {
         String email = jwtService.extractEmailFromToken(token);
-        RolModel rol = userService.GetRolByEmail(email);
-
-        if ("Admin".equals(rol.getName())) {
+        String nameRol = userService.GetRolByEmail(email).getName();
+        if ("Admin".equals(nameRol)) {
             return assesmentService.obtainAssesmentList();
         }
 
-        if ("Teacher".equals(rol.getName())) {
+        if ("Teacher".equals(nameRol)) {
             return assesmentService.obtainAssestmentsByTeacher(email);
         }
 
-        if ("Student".equals(rol.getName())) {
+        if ("Student".equals(nameRol)) {
             UserxGroupModel userGroup = userXGroupService.findByStudent(userService.obtainUserByEmail(email));
             if (userGroup != null) {
                 GroupModel group = userGroup.getGroup();
@@ -65,7 +65,7 @@ public class AssesmentControl {
             }
         }
 
-        if ("Parent".equals(rol.getName())) {
+        if ("Parent".equals(nameRol)) {
             Set<AssesmentModel> assesments = new HashSet<>();
             List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
             for (StudentsXParentsModel son : sons) {
@@ -92,10 +92,7 @@ public class AssesmentControl {
 
     @PostMapping("/create")
     public ResponseEntity<Boolean> createClass(@CookieValue(name = "JSESSIONID") String token, @RequestBody AssesmentModel assesment) {
-        String email = jwtService.extractEmailFromToken(token);
-        boolean valid_teacher = userService.validateTeacher(email);
-        boolean valid_admin = userService.validateAdmin(email);
-        if (valid_teacher || valid_admin) {
+        if (jwtService.ValidateTokenAdminTeacher(token)) {
             assesmentService.createAssesment(assesment);
             return ResponseEntity.ok(true);
         }

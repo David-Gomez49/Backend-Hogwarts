@@ -33,90 +33,75 @@ public class CalificationService {
         return (List<CalificationModel>) calificationRepo.findAll();
     }
 
-    public List<CalificationModel> getCalificationsListByClass(int id) {
-        int id_group=classRepo.findById(id).getGroup().getId();
-        List<UserModel> studentsInClass = userXGroupRepo.findStudentsByGroupId(id_group); 
-    
+    public List<CalificationModel> getCalificationsListByClass(int classId) {
+        int groupId = classRepo.findById(classId).getGroup().getId();
+        List<UserModel> studentsInClass = userXGroupRepo.findStudentsByGroupId(groupId);
+
         List<CalificationModel> califications = new ArrayList<>();
-    
-        for (UserModel student : studentsInClass) {
-            List<CalificationModel> studentCalifications = calificationRepo.findByStudent_IdAndAssesment_Classes_Id(student.getId(), id);
-    
+        studentsInClass.forEach(student -> {
+            List<CalificationModel> studentCalifications = calificationRepo.findByStudent_IdAndAssesment_Classes_Id(student.getId(), classId);
+
             if (studentCalifications.isEmpty()) {
-                CalificationModel emptyCalification = new CalificationModel();
-                emptyCalification.setStudent(student);  
-                califications.add(emptyCalification);   
+                califications.add(createEmptyCalification(student, null));
             } else {
                 califications.addAll(studentCalifications);
             }
-        }
-    
+        });
+
         return califications;
     }
     
 
     public List<CalificationModel> getCalificationsByEmail(String email) {
-    // Obtener todos los estudiantes
-    UserModel student = userRepo.findByEmail(email); // Asumiendo que tienes un repositorio de estudiantes
-    UserxGroupModel userGroup = userXGroupRepo.findByStudent(student);
-    GroupModel group = new GroupModel();
-    if (userGroup != null) {
-        group = userGroup.getGroup();
-    }
-    else{
-        return null;
-    }
-    List<ClassModel> classesList = classRepo.findByGroup(group);
-    List<CalificationModel> califications = new ArrayList<>();
+        UserModel student = userRepo.findByEmail(email);
+        UserxGroupModel userGroup = userXGroupRepo.findByStudent(student);
 
-    // Para cada estudiante, obtener las calificaciones
-    for (ClassModel classes : classesList) {
-        
-        List<CalificationModel> studentCalifications = calificationRepo.findByStudent_EmailAndAssesment_Classes_Id(email, classes.getId());
-
-        // Si el estudiante no tiene calificaciones para esta clase, devolver una calificación vacía
-        if (studentCalifications.isEmpty()) {
-            CalificationModel emptyCalification = new CalificationModel();
-            emptyCalification.setStudent(student);
-            AssesmentModel emptyaAssesment = new AssesmentModel();
-            emptyaAssesment.setClasses(classes); // Asignar el estudiante
-            emptyCalification.setAssesment(emptyaAssesment); // Asignar la clase
-            califications.add(emptyCalification);   // Añadir la calificación vacía a la lista
-        } else {
-            califications.addAll(studentCalifications);
+        if (userGroup == null) {
+            return List.of(); // Devuelve una lista vacía si el estudiante no pertenece a un grupo.
         }
+
+        GroupModel group = userGroup.getGroup();
+        List<ClassModel> classesList = classRepo.findByGroup(group);
+
+        List<CalificationModel> califications = new ArrayList<>();
+        classesList.forEach(classModel -> {
+            List<CalificationModel> studentCalifications = calificationRepo.findByStudent_EmailAndAssesment_Classes_Id(email, classModel.getId());
+
+            if (studentCalifications.isEmpty()) {
+                AssesmentModel emptyAssesment = new AssesmentModel();
+                emptyAssesment.setClasses(classModel);
+                califications.add(createEmptyCalification(student, emptyAssesment));
+            } else {
+                califications.addAll(studentCalifications);
+            }
+        });
+
+        return califications;
     }
 
-    return califications;
-}
 
-
-public void saveOrUpdateCalifications(List<CalificationModel> califications) {
-    for (CalificationModel calification : califications) {
-        try {
-            // Buscar calificación existente basada en estudiante y evaluación
-            CalificationModel existingCalification = calificationRepo
-                .findByStudent_IdAndAssesment_Id(
+    public void saveOrUpdateCalifications(List<CalificationModel> califications) {
+        califications.forEach(calification -> {
+            try {
+                CalificationModel existingCalification = calificationRepo.findByStudent_IdAndAssesment_Id(
                     calification.getStudent().getId(),
                     calification.getAssesment().getId()
                 );
 
-            if (existingCalification != null) {
-                // Si existe, actualiza la calificación
-                existingCalification.setCalification(calification.getCalification());
-                calificationRepo.save(existingCalification);
-            } else {
-                // Si no existe, crea una nueva entrada
-                calificationRepo.save(calification);
+                if (existingCalification != null) {
+                    existingCalification.setCalification(calification.getCalification());
+                    calificationRepo.save(existingCalification);
+                } else {
+                    calificationRepo.save(calification);
+                }
+            } catch (Exception e) {
+                // Puedes usar un logger como SLF4J en lugar de `System.err`.
+                System.err.println("Error procesando calificación para el estudiante: "
+                        + calification.getStudent().getId() + " y evaluación: "
+                        + calification.getAssesment().getId());
             }
-        } catch (Exception e) {
-            System.err.println("Error procesando calificación para el estudiante: " 
-                + calification.getStudent().getId() 
-                + " y evaluación: " + calification.getAssesment().getId());
-            e.printStackTrace();
-        }
+        });
     }
-}
 
 
 
@@ -130,5 +115,12 @@ public void saveOrUpdateCalifications(List<CalificationModel> califications) {
 
     public void deleteCalification(int id) {
         calificationRepo.deleteById(id);
+    }
+
+    private CalificationModel createEmptyCalification(UserModel student, AssesmentModel assesment) {
+        CalificationModel emptyCalification = new CalificationModel();
+        emptyCalification.setStudent(student);
+        emptyCalification.setAssesment(assesment);
+        return emptyCalification;
     }
 }

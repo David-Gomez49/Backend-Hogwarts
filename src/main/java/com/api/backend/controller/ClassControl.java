@@ -16,10 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.api.backend.model.AssesmentModel;
+
 import com.api.backend.model.ClassModel;
 import com.api.backend.model.GroupModel;
-import com.api.backend.model.RolModel;
 import com.api.backend.model.StudentsXParentsModel;
 import com.api.backend.model.UserxGroupModel;
 import com.api.backend.security.JwtService;
@@ -58,19 +57,19 @@ public class ClassControl {
     @GetMapping("/getClassById")
     public ClassModel obtainClassList(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("ClassId") int Id) {
         String email = jwtService.extractEmailFromToken(token);
-        RolModel rol = userService.GetRolByEmail(email);
+        String rolName = userService.GetRolByEmail(email).getName();
         ClassModel classes = classService.getClassById(Id);
-        if ("Admin".equals(rol.getName()) || "Teacher".equals(rol.getName())) {
+        if (jwtService.ValidateTokenAdminTeacher(token)) {
             return classes;
         }
 
-        if ("Student".equals(rol.getName())) {
+        if ("Student".equals(rolName)) {
             UserxGroupModel userGroup = userGroupService.findByStudent(userService.obtainUserByEmail(email));
             if (userGroup != null && userGroup.getGroup().equals(classes.getGroup())) {
                 return classes;
             }
         }
-        if ("Parent".equals(rol.getName())) {
+        if ("Parent".equals(rolName)) {
             List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
             for (StudentsXParentsModel son : sons) {
                 UserxGroupModel userGroup = userGroupService.findByStudent(son.getStudent());
@@ -85,21 +84,22 @@ public class ClassControl {
     @GetMapping("/getMyClasses")
     public List<ClassModel> obtainMyClassList(@CookieValue(name = "JSESSIONID") String token) {
         String email = jwtService.extractEmailFromToken(token);
-        RolModel rol = userService.GetRolByEmail(email);
-        if ((rol.getName().equals("Admin"))) {
+        String rolName = userService.GetRolByEmail(email).getName();
+
+        if ((rolName.equals("Admin"))) {
             return classService.obtainClassList();
         }
-        if ((rol.getName().equals("Teacher"))) {
+        if ((rolName.equals("Teacher"))) {
             return classService.obtainClassByTeacher(email);
         }
-        if (rol.getName().equals("Student")) {
+        if (rolName.equals("Student")) {
             UserxGroupModel userGroup = userGroupService.findByStudent(userService.obtainUserByEmail(email));
             if (userGroup != null) {
                 GroupModel group = userGroup.getGroup();
                 return classService.obtainClassByGroup(group);
             }
         }
-        if ("Parent".equals(rol.getName())) {
+        if ("Parent".equals(rolName)) {
             Set<ClassModel> classes = new HashSet<>(); // Cambiamos a Set para evitar duplicados
             List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
 

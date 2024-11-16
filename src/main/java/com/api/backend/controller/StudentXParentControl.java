@@ -1,6 +1,7 @@
 package com.api.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -12,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.api.backend.model.StudentsXParentsModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.StudentXParentService;
-import com.api.backend.services.UserService;
 
 @RestController
 @RequestMapping("/studentXParent")
@@ -24,12 +25,10 @@ public class StudentXParentControl {
     private StudentXParentService studentXParentService;
     @Autowired
     private JwtService jwtService;
-    @Autowired
-    private UserService userService;
+    
 
     @GetMapping("/getAll")
     public List<StudentsXParentsModel> obtainStudentXParentList(@CookieValue(name = "JSESSIONID") String token) {
-        
         if(jwtService.ValidateTokenAdmin(token)){
             return studentXParentService.obtainStudentXParentList();
         }
@@ -38,15 +37,15 @@ public class StudentXParentControl {
 
     @GetMapping("/getSons")
     public List<StudentsXParentsModel> obtainSonsList(@CookieValue(name = "JSESSIONID") String token) {
-        String email = jwtService.extractEmailFromToken(token);
-        return studentXParentService.obtainSonsList(email);
+        
+        return studentXParentService.obtainSonsList( jwtService.extractEmailFromToken(token));
         
     }
 
     @GetMapping("/getParents")
     public List<StudentsXParentsModel> obtainParentsList(@CookieValue(name = "JSESSIONID") String token) {
-        String email = jwtService.extractEmailFromToken(token);
-        return studentXParentService.obtainParentList(email);
+        
+        return studentXParentService.obtainParentList( jwtService.extractEmailFromToken(token));
     }
 
     @PostMapping("/create")
