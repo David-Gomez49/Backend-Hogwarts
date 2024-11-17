@@ -89,30 +89,42 @@ public class AssesmentControl {
         }
         return null;
     }
-
+    
     @PostMapping("/create")
     public ResponseEntity<Boolean> createClass(@CookieValue(name = "JSESSIONID") String token, @RequestBody AssesmentModel assesment) {
-        if (jwtService.ValidateTokenAdminTeacher(token)) {
-            assesmentService.createAssesment(assesment);
-            return ResponseEntity.ok(true);
+        try {
+            if (jwtService.ValidateTokenAdminTeacher(token)) {
+                assesmentService.createAssesment(assesment);
+                return ResponseEntity.ok(true);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
         }
         return ResponseEntity.ok(false);
     }
 
     @PutMapping("/update")
     public ResponseEntity<Boolean> updateAssesment(@CookieValue(name = "JSESSIONID") String token, @RequestBody AssesmentModel assesment) {
-        if (jwtService.ValidateTokenAdminTeacher(token)) {
-            assesmentService.updateAssesment(assesment);
-            return ResponseEntity.ok(true);
+        try {
+            if (jwtService.ValidateTokenAdminTeacher(token)) {
+                assesmentService.updateAssesment(assesment);
+                return ResponseEntity.ok(true);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
         }
         return ResponseEntity.ok(false);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> deleteClass(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("id") int id) {
-        if (jwtService.ValidateTokenAdminTeacher(token)) {
-            assesmentService.deleteAssesment(id);
-            return ResponseEntity.ok(true);
+        try {
+            if (jwtService.ValidateTokenAdminTeacher(token)) {
+                assesmentService.deleteAssesment(id);
+                return ResponseEntity.ok(true);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
         }
         return ResponseEntity.ok(false);
     }

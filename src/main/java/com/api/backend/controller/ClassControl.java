@@ -115,31 +115,41 @@ public class ClassControl {
     }
     return null;
 
-    }
-
-    @PostMapping("/create")
+    }@PostMapping("/create")
     public ResponseEntity<Boolean> createClass(@CookieValue(name = "JSESSIONID") String token, @RequestBody ClassModel classes) {
-        if (jwtService.ValidateTokenAdmin(token)) {
-            classService.createClass(classes);
-            return ResponseEntity.ok(true);
+        try {
+            if (jwtService.ValidateTokenAdmin(token)) {
+                classService.createClass(classes);
+                return ResponseEntity.ok(true);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
         }
         return ResponseEntity.ok(false);
     }
 
     @PutMapping("/update")
     public ResponseEntity<Boolean> updateClass(@CookieValue(name = "JSESSIONID") String token, @RequestBody ClassModel classes) {
-        if (jwtService.ValidateTokenAdmin(token)) {
-            classService.updateClass(classes);
-            return ResponseEntity.ok(true);
+        try {
+            if (jwtService.ValidateTokenAdmin(token)) {
+                classService.updateClass(classes);
+                return ResponseEntity.ok(true);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
         }
         return ResponseEntity.ok(false);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> deleteClass(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("id") int id) {
-        if (jwtService.ValidateTokenAdmin(token)) {
-            classService.deleteClass(id);
-            return ResponseEntity.ok(true);
+        try {
+            if (jwtService.ValidateTokenAdmin(token)) {
+                classService.deleteClass(id);
+                return ResponseEntity.ok(true);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
         }
         return ResponseEntity.ok(false);
     }

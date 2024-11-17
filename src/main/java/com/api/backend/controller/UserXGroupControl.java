@@ -41,10 +41,14 @@ public class UserXGroupControl {
 
     @PutMapping("/updateGroupById")
     public ResponseEntity<Boolean> updateGroupById(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("StudentId")int studentId,@RequestHeader("GroupId")int groupId) {
-        if (jwtService.ValidateTokenAdmin(token)) {
+        try {
+            if (jwtService.ValidateTokenAdmin(token)) {
             userXGroupService.assignOrUpdateGroup(studentId, groupId);
             return ResponseEntity.ok(true);
         }
+        } catch (Exception e) {
         return ResponseEntity.ok(false);
+        }
+    return ResponseEntity.ok(false);
     }
 }
