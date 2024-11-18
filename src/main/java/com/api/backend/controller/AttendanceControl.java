@@ -85,7 +85,7 @@ public class AttendanceControl {
     }
 
     @PostMapping("/createAttendances")
-     public ResponseEntity<Boolean> createAttendance(@CookieValue(name = "JSESSIONID") String token, @RequestBody List<AttendanceModel> attendances) {
+     public ResponseEntity<Boolean> createAttendance(@CookieValue(name = "JWT") String token, @RequestBody List<AttendanceModel> attendances) {
         try {
             if (jwtService.ValidateTokenAdminTeacher(token)) {
             attendanceService.saveAttendances(attendances);

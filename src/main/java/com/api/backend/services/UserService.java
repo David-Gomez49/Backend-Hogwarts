@@ -73,29 +73,28 @@ public class UserService {
     }
 
 
-
-
-    public boolean InfoCompleteByEmail(String email) {
-        UserModel user = userRepo.findByEmail(email);
-        if (user == null) {
-            throw new RuntimeException("Usuario no encontrado con el email: " + email);
+    public boolean InfoCompleteByEmail(String Email) {
+        UserModel user = userRepo.findByEmail(Email);
+        if (user.getName() == null || user.getName().isEmpty()
+                || user.getLastname() == null || user.getLastname().isEmpty()
+                || user.getPhone() == null || user.getPhone().isEmpty()
+                || user.getAddress() == null || user.getAddress().isEmpty()
+                || user.getBirthday() == null || user.getGender() == null
+                || user.getGender().isEmpty() || user.getPicture() == null
+                || user.getPicture().isEmpty() || user.getRol() == null
+                || user.getDocument_type() == null || user.getDocument_type().isEmpty()
+                || user.getDocument_number() == null || user.getDocument_number().isEmpty()) {
+            return false;
+        } else {
+            return true;
         }
-        List<Object> requiredFields = List.of(
-            user.getName(), user.getLastname(), user.getPhone(), user.getAddress(),
-            user.getBirthday(), user.getGender(), user.getPicture(), user.getRol(),
-            user.getDocument_type(), user.getDocument_number()
-        );
-        return requiredFields.stream().allMatch(field -> field != null && !field.toString().isEmpty());
     }
     
     public UserModel updateUserByEmail(String email, UserModel updatedUser) {
-        // Buscar el usuario actual por email
         UserModel existingUser = userRepo.findByEmail(email);
         if (existingUser == null) {
             throw new RuntimeException("Usuario no encontrado con el email: " + email);
         }
-    
-        // Actualizar solo los campos no nulos en updatedUser
         if (updatedUser.getRol() != null) {
             existingUser.setRol(updatedUser.getRol());
         }

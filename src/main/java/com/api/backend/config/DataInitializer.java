@@ -44,14 +44,17 @@ public class DataInitializer {
 
     private static final String DEFAULT_PICTURE = "https://i.gifer.com/XOsX.gif";
 
+    Boolean si=false;
     @PostConstruct
     public void init() {
+        if (si){
         initializeRoles();
         initializeUsers();
         initializeGroups();
         initializeStudents();
         initializeSubjects();
         initializeClasses();
+}
     }
 
     private void initializeRoles() {
