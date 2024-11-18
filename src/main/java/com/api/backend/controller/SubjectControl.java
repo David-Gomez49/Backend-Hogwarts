@@ -32,7 +32,7 @@ public class SubjectControl {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createSubject(@CookieValue(name = "JSESSIONID") String token, @RequestBody SubjectModel subject) {
+    public ResponseEntity<Boolean> createSubject(@CookieValue(name = "JWT") String token, @RequestBody SubjectModel subject) {
         try {
             if (jwtService.ValidateTokenAdmin(token)) {
                 subjectService.createSubject(subject);
@@ -45,7 +45,7 @@ public class SubjectControl {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Boolean> updateSubject(@CookieValue(name = "JSESSIONID") String token, @RequestBody SubjectModel subject) {
+    public ResponseEntity<Boolean> updateSubject(@CookieValue(name = "JWT") String token, @RequestBody SubjectModel subject) {
         try {
             if (jwtService.ValidateTokenAdmin(token)) {
                 subjectService.updateSubject(subject);
@@ -58,7 +58,7 @@ public class SubjectControl {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> deleteSubject(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("id") int id) {
+    public ResponseEntity<Boolean> deleteSubject(@CookieValue(name = "JWT") String token, @RequestHeader("id") int id) {
         try {
             if (jwtService.ValidateTokenAdmin(token)) {
                 subjectService.deleteSubject(id);

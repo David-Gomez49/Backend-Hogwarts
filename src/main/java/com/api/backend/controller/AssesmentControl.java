@@ -46,7 +46,7 @@ public class AssesmentControl {
     private JwtService jwtService;
 
     @GetMapping("/getMyAssesments")
-    public List<AssesmentModel> obtainMyAssesmentsList(@CookieValue(name = "JSESSIONID") String token) {
+    public List<AssesmentModel> obtainMyAssesmentsList(@CookieValue(name = "JWT") String token) {
         String email = jwtService.extractEmailFromToken(token);
         String nameRol = userService.GetRolByEmail(email).getName();
         if ("Admin".equals(nameRol)) {
@@ -82,7 +82,7 @@ public class AssesmentControl {
     }
 
     @GetMapping("/getAssesmentsByClass")
-    public List<AssesmentModel> obtainAssesmentsListByClass(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("ClassId") int id) {
+    public List<AssesmentModel> obtainAssesmentsListByClass(@CookieValue(name = "JWT") String token, @RequestHeader("ClassId") int id) {
         String email = jwtService.extractEmailFromToken(token);
         if (userService.existsByEmail(email)) {
             return assesmentService.obtainAssestmentsByClass(id);
@@ -91,7 +91,7 @@ public class AssesmentControl {
     }
     
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createClass(@CookieValue(name = "JSESSIONID") String token, @RequestBody AssesmentModel assesment) {
+    public ResponseEntity<Boolean> createClass(@CookieValue(name = "JWT") String token, @RequestBody AssesmentModel assesment) {
         try {
             if (jwtService.ValidateTokenAdminTeacher(token)) {
                 assesmentService.createAssesment(assesment);
@@ -104,7 +104,7 @@ public class AssesmentControl {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Boolean> updateAssesment(@CookieValue(name = "JSESSIONID") String token, @RequestBody AssesmentModel assesment) {
+    public ResponseEntity<Boolean> updateAssesment(@CookieValue(name = "JWT") String token, @RequestBody AssesmentModel assesment) {
         try {
             if (jwtService.ValidateTokenAdminTeacher(token)) {
                 assesmentService.updateAssesment(assesment);
@@ -117,7 +117,7 @@ public class AssesmentControl {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> deleteClass(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("id") int id) {
+    public ResponseEntity<Boolean> deleteClass(@CookieValue(name = "JWT") String token, @RequestHeader("id") int id) {
         try {
             if (jwtService.ValidateTokenAdminTeacher(token)) {
                 assesmentService.deleteAssesment(id);
