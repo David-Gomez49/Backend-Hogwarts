@@ -34,6 +34,11 @@ public class SecurityConfig {
                 .oauth2Login(oauth2Login
                         -> oauth2Login
                         .successHandler(successHandler) // Usar el handler personalizado para el éxito del login OAuth2
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout") // Ruta para cerrar sesión
+                        .deleteCookies("JWT") // Eliminar la cookie del token JWT
+                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200)) // Responder con un 200 al cerrar sesión
                 );
 
         return http.build();

@@ -62,16 +62,11 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
         }
 
         // Ajuste para permitir cookies cross-site
-        Cookie jwtCookie = new Cookie("JSESSIONID", token);
+        Cookie jwtCookie = new Cookie("JWT", token);
         jwtCookie.setMaxAge(24 * 60 * 60);
         jwtCookie.setHttpOnly(true);  
         jwtCookie.setPath("/");
         response.addCookie(jwtCookie);
-        
-        Cookie jsessionidCookie = WebUtils.getCookie(request, "JSESSIONID");
-        if (jsessionidCookie != null) {
-            System.out.println("JSESSIONID: " + jsessionidCookie.getValue());
-        }
 
         // Determinar la URL de redirección dependiendo de si el usuario tiene su perfil completo
         String redirectUrl;

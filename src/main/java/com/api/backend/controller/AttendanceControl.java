@@ -34,7 +34,7 @@ public class AttendanceControl {
     private StudentXParentService studentXParentService;
 
     @GetMapping("/getAll")
-    public List<AttendanceModel> obtainAttendancesList(@CookieValue(name = "JSESSIONID") String token) {
+    public List<AttendanceModel> obtainAttendancesList(@CookieValue(name = "JWT") String token) {
         if (jwtService.ValidateTokenAdmin(token)) {
             return attendanceService.obtainAttendanceList();
         }
@@ -42,7 +42,7 @@ public class AttendanceControl {
     }
 
     @GetMapping("/getAttendancesByClassId")
-    public List<AttendanceModel> getAttendancesByClassId(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("ClassId") int Id) {
+    public List<AttendanceModel> getAttendancesByClassId(@CookieValue(name = "JWT") String token, @RequestHeader("ClassId") int Id) {
        
         if (jwtService.ValidateTokenAdminTeacher(token)) {
             return attendanceService.getAttendanceByClassId(Id);
@@ -51,7 +51,7 @@ public class AttendanceControl {
     }
 
     @GetMapping("/getAttendancesByClassId_Date")
-    public List<AttendanceModel> getAttendancesByClassId_Date(@CookieValue(name = "JSESSIONID") String token, @RequestHeader("ClassId") int Id, @RequestHeader("SelectedDate") String SelectedDate) {       
+    public List<AttendanceModel> getAttendancesByClassId_Date(@CookieValue(name = "JWT") String token, @RequestHeader("ClassId") int Id, @RequestHeader("SelectedDate") String SelectedDate) {       
         if (jwtService.ValidateTokenAdminTeacher(token)) {
             LocalDate date = LocalDate.parse(SelectedDate);
             return attendanceService.getAttendancesByClassIdAndDate(Id, date);
@@ -60,7 +60,7 @@ public class AttendanceControl {
     }
 
     @GetMapping("/getMyAttendances")
-    public List<AttendanceModel> obtainMyClassList(@CookieValue(name = "JSESSIONID") String token) {
+    public List<AttendanceModel> obtainMyClassList(@CookieValue(name = "JWT") String token) {
         String email = jwtService.extractEmailFromToken(token);
         String rolName = userService.GetRolByEmail(email).getName();
         if ((rolName.equals("Admin"))) {

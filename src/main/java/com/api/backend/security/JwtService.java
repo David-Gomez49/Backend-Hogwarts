@@ -39,7 +39,6 @@ public class JwtService {
             // Verifica que la clave tenga el tamaño adecuado
             SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
-      
             return Jwts.builder()
                     .setClaims(claims)
                     .setSubject(email)

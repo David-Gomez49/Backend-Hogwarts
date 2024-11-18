@@ -31,7 +31,7 @@ public class RolControl {
     }
 
     @PostMapping("/create")
-    public RolModel createRol(@CookieValue(name = "JSESSIONID") String token, @RequestBody RolModel rol) {
+    public RolModel createRol(@CookieValue(name = "JWT") String token, @RequestBody RolModel rol) {
         if(jwtService.ValidateTokenAdmin(token)){
             return rolService.createRol(rol);
         }

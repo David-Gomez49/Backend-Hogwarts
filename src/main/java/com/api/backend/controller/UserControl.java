@@ -30,7 +30,7 @@ public class UserControl {
     private JwtService jwtService;
 
     @GetMapping("/getAll")
-    public List<UserModel> obtainUserList(@CookieValue(name = "JSESSIONID") String token) {
+    public List<UserModel> obtainUserList(@CookieValue(name = "JWT") String token) {
         if (jwtService.ValidateTokenAdmin(token)) {
             return userService.obtainUserList();
         }
@@ -38,7 +38,7 @@ public class UserControl {
     }
 
     @GetMapping("/getTeachers")
-    public List<UserModel> obtainTeacherList(@CookieValue(name = "JSESSIONID") String token) {
+    public List<UserModel> obtainTeacherList(@CookieValue(name = "JWT") String token) {
         if (jwtService.ValidateTokenAdmin(token)) {
             return userService.obtainTeacherList();
         }
@@ -46,7 +46,7 @@ public class UserControl {
     }
 
     @GetMapping("/getParents")
-    public List<UserModel> obtainParentsList(@CookieValue(name = "JSESSIONID") String token) {
+    public List<UserModel> obtainParentsList(@CookieValue(name = "JWT") String token) {
         if (jwtService.ValidateTokenAdmin(token)) {
             return userService.obtainParentsList();
         }
@@ -54,7 +54,7 @@ public class UserControl {
     }
 
     @GetMapping("/getStudents")
-    public List<UserModel> obtainStudentsList(@CookieValue(name = "JSESSIONID") String token) {
+    public List<UserModel> obtainStudentsList(@CookieValue(name = "JWT") String token) {
         if (jwtService.ValidateTokenAdmin(token)) {
             return userService.obtainStudentsList();
         }
@@ -62,7 +62,7 @@ public class UserControl {
     }
 
     @GetMapping("/getByEmail")
-    public ResponseEntity<UserModel> obtainUserByEmail(@CookieValue(name = "JSESSIONID") String token) {
+    public ResponseEntity<UserModel> obtainUserByEmail(@CookieValue(name = "JWT") String token) {
         UserModel user = userService.obtainUserByEmail(jwtService.extractEmailFromToken(token));
         if (user != null) {
             return ResponseEntity.ok(user);
@@ -82,7 +82,7 @@ public class UserControl {
     }
 
     @GetMapping("/validateUser")
-    public ResponseEntity<Boolean> validateUser(@CookieValue(name = "JSESSIONID") String token) {
+    public ResponseEntity<Boolean> validateUser(@CookieValue(name = "JWT") String token) {
         String email = jwtService.extractEmailFromToken(token);
         if (email == null || email.isEmpty()) {
             return ResponseEntity.badRequest().body(false);
@@ -92,7 +92,7 @@ public class UserControl {
     }
 
     @GetMapping("/validateAdmin")
-    public ResponseEntity<Boolean> validateAdmin(@CookieValue(name = "JSESSIONID") String token) {
+    public ResponseEntity<Boolean> validateAdmin(@CookieValue(name = "JWT") String token) {
         String email = jwtService.extractEmailFromToken(token);
         if (email == null || email.isEmpty()) {
             return ResponseEntity.badRequest().body(false);
@@ -102,7 +102,7 @@ public class UserControl {
     }
 
     @GetMapping("/validateTeachersAdmins")
-    public ResponseEntity<Boolean> validateTeachersAdmins(@CookieValue(name = "JSESSIONID") String token) {
+    public ResponseEntity<Boolean> validateTeachersAdmins(@CookieValue(name = "JWT") String token) {
         String email = jwtService.extractEmailFromToken(token);
         if (email == null || email.isEmpty()) {
             return ResponseEntity.badRequest().body(false);
@@ -113,23 +113,23 @@ public class UserControl {
     }
 
     @PutMapping("/updateByEmail")
-    public UserModel updateUserByEmail(@CookieValue(name = "JSESSIONID") String token, @RequestBody UserModel user) {
+    public UserModel updateUserByEmail(@CookieValue(name = "JWT") String token, @RequestBody UserModel user) {
         String email = jwtService.extractEmailFromToken(token);
         return userService.updateUserByEmail(email, user);
     }
 
     @GetMapping("/infoCompleteByEmail")
-    public ResponseEntity<Boolean> infoCompleteByEmail(@CookieValue(name = "JSESSIONID") String token) {
+    public ResponseEntity<Boolean> infoCompleteByEmail(@CookieValue(name = "JWT") String token) {
         return ResponseEntity.ok(userService.InfoCompleteByEmail(jwtService.extractEmailFromToken(token)));
     }
 
     @GetMapping("/getInfoByEmail")
-    public AuxiliarUserModel getInfoByEmail(@CookieValue(name = "JSESSIONID") String token) {
+    public AuxiliarUserModel getInfoByEmail(@CookieValue(name = "JWT") String token) {
         return userService.getInfoByEmail(jwtService.extractEmailFromToken(token));
     }
 
     @GetMapping("/listUserInfo")
-    public List<AuxiliarUserModel> getUsersWithSpecificFields(@CookieValue(name = "JSESSIONID") String token) {
+    public List<AuxiliarUserModel> getUsersWithSpecificFields(@CookieValue(name = "JWT") String token) {
         if (jwtService.ValidateTokenAdmin(token)) {
             return userService.obtainUserListWithSpecificFields();
         }
@@ -138,7 +138,7 @@ public class UserControl {
 
     @DeleteMapping("/deleteUserByEmail")
     public ResponseEntity<Boolean> deleteUserByEmail(
-        @CookieValue(name = "JSESSIONID") String token, 
+        @CookieValue(name = "JWT") String token, 
         @RequestHeader("user") String email) {
 
         try {
@@ -154,7 +154,7 @@ public class UserControl {
 
     @PutMapping("/editRolByEmail")
     public ResponseEntity<Boolean> EditRolByEmail(
-        @CookieValue(name = "JSESSIONID") String token, 
+        @CookieValue(name = "JWT") String token, 
         @RequestHeader("user") String email,
         @RequestHeader("role") String newrole) {
 
