@@ -66,14 +66,15 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
         jwtCookie.setHttpOnly(true);  
         jwtCookie.setPath("/");
         jwtCookie.setSecure(true);
+        jwtCookie.setDomain("frontend-hogwarts.vercel.app");
         response.addCookie(jwtCookie);
 
         // Determinar la URL de redirección dependiendo de si el usuario tiene su perfil completo
         String redirectUrl;
         if (userService.InfoCompleteByEmail(email)) {
-            redirectUrl = "http://localhost:5173/classes";
+            redirectUrl = "https://frontend-hogwarts.vercel.app/classes";
         } else {
-            redirectUrl = "http://localhost:5173/register";
+            redirectUrl = "https://frontend-hogwarts.vercel.app/register";
         }
 
         // Configurar la respuesta y agregar la cookie
