@@ -7,7 +7,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.WebUtils;
 
 import com.api.backend.model.UserModel;
 import com.api.backend.services.UserService;
@@ -66,15 +65,14 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
         jwtCookie.setMaxAge(24 * 60 * 60);
         jwtCookie.setHttpOnly(true);  
         jwtCookie.setPath("/");
+        jwtCookie.setSecure(true);
         response.addCookie(jwtCookie);
 
         // Determinar la URL de redirección dependiendo de si el usuario tiene su perfil completo
         String redirectUrl;
         if (userService.InfoCompleteByEmail(email)) {
-            // Redirigir al usuario a la página de clases si el perfil está completo
             redirectUrl = "http://localhost:5173/classes";
         } else {
-            // Si no está completo, redirigir a la página de registro
             redirectUrl = "http://localhost:5173/register";
         }
 
