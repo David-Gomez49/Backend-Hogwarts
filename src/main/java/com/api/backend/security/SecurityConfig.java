@@ -38,7 +38,11 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout") // Ruta para cerrar sesión
                         .deleteCookies("JWT") // Eliminar la cookie del token JWT
-                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200)) // Responder con un 200 al cerrar sesión
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            String cookieValue = String.format("JWT=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None", null, 0);
+                            response.addHeader("Set-Cookie", cookieValue);
+                            response.setStatus(200);
+                        }) // Responder con un 200 al cerrar sesión
                 );
 
         return http.build();
