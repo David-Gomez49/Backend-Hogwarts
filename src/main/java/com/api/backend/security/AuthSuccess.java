@@ -61,13 +61,10 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
         }
 
         // Ajuste para permitir cookies cross-site
-        Cookie jwtCookie = new Cookie("JWT", token);
-        jwtCookie.setMaxAge(24 * 60 * 60);
-        jwtCookie.setHttpOnly(true);  
-        jwtCookie.setPath("/");
-        jwtCookie.setSecure(true);
-        jwtCookie.setDomain("frontend-hogwarts.vercel.app");
-        response.addCookie(jwtCookie);
+        // Formato completo de la cookie en el encabezado
+        String cookieValue = String.format("JWT=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None", token, 24 * 60 * 60);
+        response.addHeader("Set-Cookie", cookieValue);
+
 
         // Determinar la URL de redirección dependiendo de si el usuario tiene su perfil completo
         String redirectUrl;
