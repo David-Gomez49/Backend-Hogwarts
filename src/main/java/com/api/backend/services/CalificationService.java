@@ -67,6 +67,7 @@ public class CalificationService {
         List<ClassModel> classesList = classRepo.findByGroup(group);
         
         Map<String, List<Double>> subjectGrades = new HashMap<>();
+        Map<String, Integer> subjectIds = new HashMap<>();
         for (ClassModel classModel : classesList) {
             List<CalificationModel> studentCalifications = 
                 Optional.ofNullable(calificationRepo.findByStudent_EmailAndAssesment_Classes_Id(email, classModel.getId()))
@@ -74,21 +75,20 @@ public class CalificationService {
             
             String subjectName = classModel.getSubject().getName();
             subjectGrades.putIfAbsent(subjectName, new ArrayList<>());
+            subjectIds.putIfAbsent(subjectName, classModel.getSubject().getId());
             
             for (CalificationModel calification : studentCalifications) {
-                
                 subjectGrades.get(subjectName).add((double) calification.getCalification());
-                
             }
         }
         
         List<Map<String, Object>> subjects = new ArrayList<>();
         for (Map.Entry<String, List<Double>> entry : subjectGrades.entrySet()) {
             double average = entry.getValue().stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-            subjects.add(Map.of("subject", entry.getKey(), "average", average));
+            subjects.add(Map.of("subject", entry.getKey(), "average", average, "id", subjectIds.get(entry.getKey())));
         }
         
-        return Map.of("student", student.getName() + " " + student.getLastname(), "subjects", subjects);
+        return Map.of("student", student, "subjects", subjects);
     }
     
 
