@@ -20,6 +20,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws") // Endpoint para conectar al WebSocket
                 .setAllowedOrigins("https://frontend-hogwarts.vercel.app") // Permitir solicitudes desde el frontend
+                .setAllowedOrigins("http://localhost:5173") // Permitir solicitudes desde el frontend                            
                 .withSockJS(); // Uso de SockJS para compatibilidad
     }
 }
