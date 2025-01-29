@@ -1,7 +1,11 @@
 package com.api.backend.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +55,43 @@ public class CalificationService {
         return califications;
     }
     
+    public Map<String, Object> getCalificationsSummary(String email) {
+        UserModel student = userRepo.findByEmail(email);
+        UserxGroupModel userGroup = userXGroupRepo.findByStudent(student);
+        
+        if (userGroup == null) {
+            return Map.of("student", student.getName() + " " + student.getLastname(), "subjects", List.of());
+        }
+        
+        GroupModel group = userGroup.getGroup();
+        List<ClassModel> classesList = classRepo.findByGroup(group);
+        
+        Map<String, List<Double>> subjectGrades = new HashMap<>();
+        for (ClassModel classModel : classesList) {
+            List<CalificationModel> studentCalifications = 
+                Optional.ofNullable(calificationRepo.findByStudent_EmailAndAssesment_Classes_Id(email, classModel.getId()))
+                        .orElse(Collections.emptyList());
+            
+            String subjectName = classModel.getSubject().getName();
+            subjectGrades.putIfAbsent(subjectName, new ArrayList<>());
+            
+            for (CalificationModel calification : studentCalifications) {
+                
+                subjectGrades.get(subjectName).add((double) calification.getCalification());
+                
+            }
+        }
+        
+        List<Map<String, Object>> subjects = new ArrayList<>();
+        for (Map.Entry<String, List<Double>> entry : subjectGrades.entrySet()) {
+            double average = entry.getValue().stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+            subjects.add(Map.of("subject", entry.getKey(), "average", average));
+        }
+        
+        return Map.of("student", student.getName() + " " + student.getLastname(), "subjects", subjects);
+    }
+    
+
 
     public List<CalificationModel> getCalificationsByEmail(String email) {
         UserModel student = userRepo.findByEmail(email);

@@ -2,6 +2,7 @@ package com.api.backend.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,28 @@ public class CalificationControl {
             return calificationService.getCalificationsListByClass(Id);
         }
         return null;
+    }
+
+    @GetMapping("/getCalificationsSummaryByEmail")
+    public List<Map<String, Object>> getCalificationsSummaryByEmail(@CookieValue(name = "JWT") String token) {
+        String email = jwtService.extractEmailFromToken(token);
+        String rolName = userService.GetRolByEmail(email).getName();
+        
+        List<String> emails = new ArrayList<>();
+        if ("Student".equals(rolName)) {
+            emails.add(email);
+        } else if ("Parent".equals(rolName)) {
+            List<StudentsXParentsModel> sons = studentXParentService.obtainSonsList(email);
+            for (StudentsXParentsModel son : sons) {
+                emails.add(son.getStudent().getEmail());
+            }
+        }
+        
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (String studentEmail : emails) {
+            result.add(calificationService.getCalificationsSummary(studentEmail));
+        }
+        return result;
     }
 
     @GetMapping("/getCalificationsByEmail")
