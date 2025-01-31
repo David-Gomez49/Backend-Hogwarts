@@ -14,6 +14,8 @@ import com.api.backend.repository.AttendanceRepo;
 import com.api.backend.repository.ClassRepo;
 import com.api.backend.repository.UserXGroupRepo;
 
+import jakarta.mail.MessagingException;
+
 @Service
 public class AttendanceService {
 
@@ -23,6 +25,9 @@ public class AttendanceService {
     private ClassRepo classRepo;
     @Autowired
     private UserXGroupRepo userXGroupRepo;
+
+    @Autowired
+    private AlertService alertService;
 
     public List<AttendanceModel> obtainAttendanceList() {
         return (List<AttendanceModel>) attendanceRepo.findAll();
@@ -68,11 +73,30 @@ public class AttendanceService {
             );
 
             if (existingAttendance != null) {
+                if (!existingAttendance.getStatus().equals(attendance.getStatus())) {
                 existingAttendance.setStatus(attendance.getStatus());
                 savedAttendances.add(attendanceRepo.save(existingAttendance));
+                if(attendance.getStatus().equals("ausente")){
+                try {
+                    alertService.addCounter(attendance.getStudent().getEmail(),attendance.getClasses());
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+            }
+            }
+                
             } else {
+                if(attendance.getStatus().equals("ausente")){
+                    try {
+                        alertService.addCounter(attendance.getStudent().getEmail(),attendance.getClasses());
+                    } catch (MessagingException e) {
+                        e.printStackTrace();
+                    }
+                }
                 savedAttendances.add(attendanceRepo.save(attendance));
             }
+
+            
         });
         return savedAttendances;
     }

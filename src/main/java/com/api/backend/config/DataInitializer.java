@@ -13,6 +13,7 @@ import com.api.backend.model.SubjectModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.model.UserxGroupModel;
 import com.api.backend.services.ClassService;
+import com.api.backend.services.EmailService;
 import com.api.backend.services.GroupService;
 import com.api.backend.services.RolService;
 import com.api.backend.services.SubjectService;
@@ -34,6 +35,9 @@ public class DataInitializer {
     private GroupService groupService;
 
     @Autowired
+    private EmailService emailService;
+
+    @Autowired
     private UserXGroupService userXGroupService;
 
     @Autowired
@@ -46,7 +50,8 @@ public class DataInitializer {
 
     Boolean si=false;
     @PostConstruct
-    public void init() {
+    public void init()  {
+
         if (si){
         initializeRoles();
         initializeUsers();

@@ -33,6 +33,9 @@ public class CalificationService {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private AlertService alertService;
+
     public List<CalificationModel> obtainCalificationList() {
         return (List<CalificationModel>) calificationRepo.findAll();
     }
@@ -121,28 +124,37 @@ public class CalificationService {
     }
 
 
-    public void saveOrUpdateCalifications(List<CalificationModel> califications) {
+    public void saveOrUpdateCalifications(List<CalificationModel> califications) { 
         califications.forEach(calification -> {
             try {
                 CalificationModel existingCalification = calificationRepo.findByStudent_IdAndAssesment_Id(
                     calification.getStudent().getId(),
                     calification.getAssesment().getId()
                 );
-
+    
                 if (existingCalification != null) {
-                    existingCalification.setCalification(calification.getCalification());
-                    calificationRepo.save(existingCalification);
+                    // Verificar si la calificación es diferente antes de actualizar
+                    if (existingCalification.getCalification() != calification.getCalification() ){
+                        if(calification.getCalification()<3){
+                            alertService.addCounter(calification.getStudent().getEmail(), calification.getAssesment().getClasses());
+                        }
+                        existingCalification.setCalification(calification.getCalification()); // Actualizar calificación
+                        calificationRepo.save(existingCalification);
+                    }
                 } else {
+                    if(calification.getCalification()<3){
+                        alertService.addCounter(calification.getStudent().getEmail(), calification.getAssesment().getClasses());
+                    }
                     calificationRepo.save(calification);
                 }
             } catch (Exception e) {
-                // Puedes usar un logger como SLF4J en lugar de `System.err`.
                 System.err.println("Error procesando calificación para el estudiante: "
                         + calification.getStudent().getId() + " y evaluación: "
                         + calification.getAssesment().getId());
             }
         });
     }
+    
 
 
 
