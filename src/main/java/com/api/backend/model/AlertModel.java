@@ -7,8 +7,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 @Entity
-@Table(name= "Assesments")
+@Table(name= "Alert")
 public class AlertModel {
     
     @Id

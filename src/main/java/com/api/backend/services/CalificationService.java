@@ -133,14 +133,14 @@ public class CalificationService {
                 );
     
                 if (existingCalification != null) {
-                    // Verificar si la calificación es diferente antes de actualizar
+                    existingCalification.setCalification(calification.getCalification()); // Actualizar calificación
+                    calificationRepo.save(existingCalification);
                     if (existingCalification.getCalification() != calification.getCalification() ){
                         if(calification.getCalification()<3){
                             alertService.addCounter(calification.getStudent().getEmail(), calification.getAssesment().getClasses());
                         }
-                        existingCalification.setCalification(calification.getCalification()); // Actualizar calificación
-                        calificationRepo.save(existingCalification);
                     }
+                    
                 } else {
                     if(calification.getCalification()<3){
                         alertService.addCounter(calification.getStudent().getEmail(), calification.getAssesment().getClasses());

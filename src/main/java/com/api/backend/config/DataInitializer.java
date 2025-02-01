@@ -50,7 +50,7 @@ public class DataInitializer {
 
     Boolean si=false;
     @PostConstruct
-    public void init()  {
+    public void init(){
 
         if (si){
         initializeRoles();

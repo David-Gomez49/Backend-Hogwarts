@@ -91,7 +91,7 @@ public class AssesmentControl {
     }
     
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createClass(@CookieValue(name = "JWT") String token, @RequestBody AssesmentModel assesment) {
+    public ResponseEntity<Boolean> createAssesment(@CookieValue(name = "JWT") String token, @RequestBody AssesmentModel assesment) {
         try {
             if (jwtService.ValidateTokenAdminTeacher(token)) {
                 assesmentService.createAssesment(assesment);
@@ -117,7 +117,7 @@ public class AssesmentControl {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> deleteClass(@CookieValue(name = "JWT") String token, @RequestHeader("id") int id) {
+    public ResponseEntity<Boolean> deleteAssesment(@CookieValue(name = "JWT") String token, @RequestHeader("id") int id) {
         try {
             if (jwtService.ValidateTokenAdminTeacher(token)) {
                 assesmentService.deleteAssesment(id);
