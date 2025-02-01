@@ -70,7 +70,7 @@ public class AlertModel {
     }
 
     public void incrementCounter() {
-        this.counter++ ;
+        this.counter = this.counter + 1;
     }
 
     public void resetCounter() {

@@ -19,4 +19,6 @@ public interface AssesmentRepo extends JpaRepository<AssesmentModel, Integer>{
 
 
     public List<AssesmentModel> findByClasses_Id(int classId);
+
+    public AssesmentModel findById(int Id);
 }

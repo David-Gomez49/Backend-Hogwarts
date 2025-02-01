@@ -3,6 +3,7 @@ package com.api.backend.services;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,44 +62,56 @@ public class AttendanceService {
     public List<AttendanceModel> obtainAttendancesByStudent(String Email){
         return attendanceRepo.findAttendancesByStudent_Email(Email);
     }
+
+public void saveAttendances(List<AttendanceModel> attendances) throws MessagingException {
+    List<AttendanceModel> savedAttendances = new ArrayList<>();
     
-    public void saveAttendances(List<AttendanceModel> attendances) throws MessagingException {
-        List<AttendanceModel> savedAttendances = new ArrayList<>();
-        attendances.forEach(attendance -> {
-            AttendanceModel existingAttendance = attendanceRepo.findByStudent_IdAndClasses_IdAndDate(
-                attendance.getStudent().getId(),
-                attendance.getClasses().getId(),
-                attendance.getDate()
-            );
-    
-            if (existingAttendance != null) {
-                existingAttendance.setStatus(attendance.getStatus());
-                savedAttendances.add(attendanceRepo.save(existingAttendance));
-    
-                if (!existingAttendance.getStatus().equals(attendance.getStatus())) {
-                    if(attendance.getStatus().equals("ausente")){
-                        try {
-                            alertService.addCounter(attendance.getStudent().getId(), attendance.getClasses());
-                        } catch (MessagingException e) {
-                            // Maneja el error aquí
-                            e.printStackTrace(); // O cualquier otra forma de manejarlo
-                        }
-                    }
-                }
-            } else {
-                savedAttendances.add(attendanceRepo.save(attendance));
-    
-                if(attendance.getStatus().equals("ausente")){
+    for (AttendanceModel attendance : attendances) {
+
+        AttendanceModel existingAttendance = attendanceRepo.findByStudent_IdAndClasses_IdAndDate(
+            attendance.getStudent().getId(),
+            attendance.getClasses().getId(),
+            attendance.getDate()
+        );
+
+        if (existingAttendance != null) {
+            String oldStatus = existingAttendance.getStatus(); // Guardamos el estado anterior
+            String newStatus = attendance.getStatus();
+
+            existingAttendance.setStatus(newStatus);
+            AttendanceModel saved = attendanceRepo.save(existingAttendance);
+            savedAttendances.add(saved);
+
+            if (!Objects.equals(oldStatus, newStatus)) {
+                if ("ausente".equals(newStatus)) {
                     try {
                         alertService.addCounter(attendance.getStudent().getId(), attendance.getClasses());
                     } catch (MessagingException e) {
-                        // Maneja el error aquí
-                        e.printStackTrace(); // O cualquier otra forma de manejarlo
+                        e.printStackTrace();
                     }
+                } else {
                 }
+            } else {
             }
-        });
+        } else {
+            AttendanceModel saved = attendanceRepo.save(attendance);
+            savedAttendances.add(saved);
+
+            if ("ausente".equals(attendance.getStatus())) {
+                
+                try {
+                    alertService.addCounter(attendance.getStudent().getId(), attendance.getClasses());
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+            } else {
+            }
+        }
     }
+    
+}
+
+
     
 
 

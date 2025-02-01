@@ -11,6 +11,7 @@ import com.api.backend.model.ClassModel;
 import com.api.backend.model.StudentsXParentsModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.repository.AlertRepo;
+import com.api.backend.services.ClassService;
 
 import jakarta.mail.MessagingException;
 
@@ -25,18 +26,21 @@ public class AlertService {
 
     @Autowired
     private EmailService emailService;
-    
+
     @Autowired
     private StudentXParentService studentXparentService;
-    
-    public void addCounter(int studentId,ClassModel classes) throws MessagingException {
+
+    @Autowired
+    private ClassService classService;
+
+    public void addCounter(int studentId, ClassModel classes) throws MessagingException {
         UserModel user = userService.obtainUserById(studentId);
-        Optional<AlertModel> alertOpt = alertRepo.findByUser_IdAndClasses_Id(user.getId(),classes.getId());
-        
+        Optional<AlertModel> alertOpt = alertRepo.findOptionalByUser_IdAndClasses_Id(user.getId(), classes.getId());
+
         if (alertOpt.isPresent()) {
             AlertModel alert = alertOpt.get();
-            alertRepo.save(alert);
             alert.incrementCounter();
+            alertRepo.save(alert);
         } else {
             AlertModel newAlert = new AlertModel();
             newAlert.setUser(user);
@@ -44,33 +48,32 @@ public class AlertService {
             newAlert.incrementCounter();
             alertRepo.save(newAlert);
         }
-        validCounter(user.getEmail(),classes,3);
+        validCounter(user.getEmail(), classes, 3);
     }
 
-    public void resetCounter(String email,ClassModel classes) {
-        UserModel user= userService.obtainUserByEmail(email);
-        Optional<AlertModel> alertOpt = alertRepo.findByUser_IdAndClasses_Id(user.getId(),classes.getId());
-        alertOpt.ifPresent(alert -> {
-            alert.resetCounter();
-            alertRepo.save(alert);
-        });
+    public void resetCounter(String email, ClassModel classes) {
+        UserModel user = userService.obtainUserByEmail(email);
+        AlertModel alert = alertRepo.findByUser_IdAndClasses_Id(user.getId(), classes.getId());
+        alert.resetCounter();
+        alertRepo.save(alert);
+
     }
 
-    public void validCounter(String email,ClassModel classes, int threshold) throws MessagingException{
-        UserModel user= userService.obtainUserByEmail(email);
-        Optional<AlertModel> alertOpt = alertRepo.findByUser_IdAndClasses_Id(user.getId(),classes.getId());
-        if (alertOpt.isPresent() && alertOpt.get().getCounter() > threshold) {
-            UserModel student = userService.obtainUserByEmail(email);
-            String studentName = student.getName()+" "+student.getLastname();
-            String clase = classes.getSubject().getName();
-            
+    public void validCounter(String email, ClassModel classes, int threshold) throws MessagingException {
+        UserModel user = userService.obtainUserByEmail(email);
+        AlertModel alert = alertRepo.findByUser_IdAndClasses_Id(user.getId(), classes.getId());
+        if (alert.getCounter() >= threshold) {
+            String studentName = user.getName() + " " + user.getLastname();
+            ClassModel clase = classService.getClassById(classes.getId());
+            String className = clase.getSubject().getName();
+
             List<StudentsXParentsModel> parents = studentXparentService.obtainParentList(email);
 
             for (var parent : parents) {
-                emailService.sendEmail(parent.getParent().getEmail(), studentName, clase);
+                emailService.sendEmail(parent.getParent().getEmail(), studentName, className);
             }
 
-            resetCounter(email,classes);
+            resetCounter(email, classes);
         }
     }
 }

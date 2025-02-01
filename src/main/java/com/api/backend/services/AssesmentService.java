@@ -42,6 +42,10 @@ public class AssesmentService  {
     public List<AssesmentModel> obtainAssestmentsByClass(int classId) {
         return assesmentRepo.findByClasses_Id(classId);
     }
+
+    public AssesmentModel obtainAssestmentsById(int Id) {
+        return assesmentRepo.findById(Id);
+    }
 }
 
 

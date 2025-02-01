@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.api.backend.model.AlertModel;
 
-public interface AlertRepo extends JpaRepository<AlertModel, Integer>{
+public interface AlertRepo extends JpaRepository<AlertModel, Integer> {
 
-    Optional<AlertModel> findByUser_IdAndClasses_Id(int User_Id,int Classes_Id);
+    Optional<AlertModel> findOptionalByUser_IdAndClasses_Id(int userId, int classesId);
+
+    AlertModel findByUser_IdAndClasses_Id(int userId, int classesId);
 }

@@ -34,6 +34,10 @@ public class CalificationService {
     private UserRepo userRepo;
     @Autowired
     private AlertService alertService;
+    @Autowired
+    private ClassService classService;
+    @Autowired
+    private AssesmentService assesmentService;
 
     public List<CalificationModel> obtainCalificationList() {
         return (List<CalificationModel>) calificationRepo.findAll();
@@ -45,7 +49,8 @@ public class CalificationService {
 
         List<CalificationModel> califications = new ArrayList<>();
         studentsInClass.forEach(student -> {
-            List<CalificationModel> studentCalifications = calificationRepo.findByStudent_IdAndAssesment_Classes_Id(student.getId(), classId);
+            List<CalificationModel> studentCalifications = calificationRepo
+                    .findByStudent_IdAndAssesment_Classes_Id(student.getId(), classId);
 
             if (studentCalifications.isEmpty()) {
                 califications.add(createEmptyCalification(student, null));
@@ -56,44 +61,42 @@ public class CalificationService {
 
         return califications;
     }
-    
+
     public Map<String, Object> getCalificationsSummary(String email) {
         UserModel student = userRepo.findByEmail(email);
         UserxGroupModel userGroup = userXGroupRepo.findByStudent(student);
-        
+
         if (userGroup == null) {
             return Map.of("student", student.getName() + " " + student.getLastname(), "subjects", List.of());
         }
-        
+
         GroupModel group = userGroup.getGroup();
         List<ClassModel> classesList = classRepo.findByGroup(group);
-        
+
         Map<String, List<Double>> subjectGrades = new HashMap<>();
         Map<String, Integer> subjectIds = new HashMap<>();
         for (ClassModel classModel : classesList) {
-            List<CalificationModel> studentCalifications = 
-                Optional.ofNullable(calificationRepo.findByStudent_EmailAndAssesment_Classes_Id(email, classModel.getId()))
-                        .orElse(Collections.emptyList());
-            
+            List<CalificationModel> studentCalifications = Optional
+                    .ofNullable(calificationRepo.findByStudent_EmailAndAssesment_Classes_Id(email, classModel.getId()))
+                    .orElse(Collections.emptyList());
+
             String subjectName = classModel.getSubject().getName();
             subjectGrades.putIfAbsent(subjectName, new ArrayList<>());
             subjectIds.putIfAbsent(subjectName, classModel.getSubject().getId());
-            
+
             for (CalificationModel calification : studentCalifications) {
                 subjectGrades.get(subjectName).add((double) calification.getCalification());
             }
         }
-        
+
         List<Map<String, Object>> subjects = new ArrayList<>();
         for (Map.Entry<String, List<Double>> entry : subjectGrades.entrySet()) {
             double average = entry.getValue().stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
             subjects.add(Map.of("subject", entry.getKey(), "average", average, "id", subjectIds.get(entry.getKey())));
         }
-        
+
         return Map.of("student", student, "subjects", subjects);
     }
-    
-
 
     public List<CalificationModel> getCalificationsByEmail(String email) {
         UserModel student = userRepo.findByEmail(email);
@@ -108,7 +111,8 @@ public class CalificationService {
 
         List<CalificationModel> califications = new ArrayList<>();
         classesList.forEach(classModel -> {
-            List<CalificationModel> studentCalifications = calificationRepo.findByStudent_EmailAndAssesment_Classes_Id(email, classModel.getId());
+            List<CalificationModel> studentCalifications = calificationRepo
+                    .findByStudent_EmailAndAssesment_Classes_Id(email, classModel.getId());
 
             if (studentCalifications.isEmpty()) {
                 AssesmentModel emptyAssesment = new AssesmentModel();
@@ -122,38 +126,44 @@ public class CalificationService {
         return califications;
     }
 
+public void saveOrUpdateCalifications(List<CalificationModel> califications) { 
+    ClassModel clase = assesmentService.obtainAssestmentsById(califications.get(0).getAssesment().getId()).getClasses();
+    califications.forEach(calification -> {
+        try {
+            CalificationModel existingCalification = calificationRepo.findByStudent_IdAndAssesment_Id(
+                calification.getStudent().getId(),
+                calification.getAssesment().getId()
+            );
 
-    public void saveOrUpdateCalifications(List<CalificationModel> califications) { 
-        califications.forEach(calification -> {
-            try {
-                CalificationModel existingCalification = calificationRepo.findByStudent_IdAndAssesment_Id(
-                    calification.getStudent().getId(),
-                    calification.getAssesment().getId()
-                );
-    
-                if (existingCalification != null) {
-                    existingCalification.setCalification(calification.getCalification()); // Actualizar calificación
-                    calificationRepo.save(existingCalification);
-                    if (existingCalification.getCalification() != calification.getCalification() ){
-                        if(calification.getCalification()<3){
-                            alertService.addCounter(calification.getStudent().getId(), calification.getAssesment().getClasses());
-                        }
-                    }
-                    
-                } else {
+            if (existingCalification != null) {
+                float oldCalification = existingCalification.getCalification();
+                float newCalification = calification.getCalification();
+                
+                existingCalification.setCalification(newCalification); // Actualizar calificación
+                calificationRepo.save(existingCalification);
+                
+                if (Float.compare(oldCalification, newCalification) != 0) {
 
-                    calificationRepo.save(calification);
-                    if(calification.getCalification()<3){
-                        alertService.addCounter(calification.getStudent().getId(), calification.getAssesment().getClasses());
+                    if (newCalification < 3) {
+                        alertService.addCounter(calification.getStudent().getId(), clase);
                     }
                 }
-            } catch (Exception e) {
-                System.err.println("Error procesando calificación para el estudiante: "
-                        + calification.getStudent().getId() + " y evaluación: "
-                        + calification.getAssesment().getId());
+
+            } else {
+                calificationRepo.save(calification);
+
+                if (calification.getCalification() < 3) {
+                    alertService.addCounter(calification.getStudent().getId(), clase);
+                }
             }
-        });
-    }
+        } catch (Exception e) {
+            System.err.println("Error procesando calificación para el estudiante: "
+                    + calification.getStudent().getId() + " y evaluación: "
+                    + calification.getAssesment().getId());
+        }
+    });
+}
+
     
 
 
