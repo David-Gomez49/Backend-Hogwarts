@@ -29,8 +29,8 @@ public class AlertService {
     @Autowired
     private StudentXParentService studentXparentService;
     
-    public void addCounter(String email,ClassModel classes) throws MessagingException {
-        UserModel user= userService.obtainUserByEmail(email);
+    public void addCounter(int studentId,ClassModel classes) throws MessagingException {
+        UserModel user = userService.obtainUserById(studentId);
         Optional<AlertModel> alertOpt = alertRepo.findByUser_IdAndClasses_Id(user.getId(),classes.getId());
         
         if (alertOpt.isPresent()) {
@@ -44,7 +44,7 @@ public class AlertService {
             newAlert.incrementCounter();
             alertRepo.save(newAlert);
         }
-        validCounter(email,classes,3);
+        validCounter(user.getEmail(),classes,3);
     }
 
     public void resetCounter(String email,ClassModel classes) {

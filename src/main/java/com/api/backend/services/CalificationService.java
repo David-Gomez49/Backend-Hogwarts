@@ -136,7 +136,7 @@ public class CalificationService {
                     calificationRepo.save(existingCalification);
                     if (existingCalification.getCalification() != calification.getCalification() ){
                         if(calification.getCalification()<3){
-                            alertService.addCounter(calification.getStudent().getEmail(), calification.getAssesment().getClasses());
+                            alertService.addCounter(calification.getStudent().getId(), calification.getAssesment().getClasses());
                         }
                     }
                     
@@ -144,7 +144,7 @@ public class CalificationService {
 
                     calificationRepo.save(calification);
                     if(calification.getCalification()<3){
-                        alertService.addCounter(calification.getStudent().getEmail(), calification.getAssesment().getClasses());
+                        alertService.addCounter(calification.getStudent().getId(), calification.getAssesment().getClasses());
                     }
                 }
             } catch (Exception e) {

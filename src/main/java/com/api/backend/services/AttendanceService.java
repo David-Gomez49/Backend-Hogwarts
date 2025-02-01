@@ -78,7 +78,7 @@ public class AttendanceService {
                 if (!existingAttendance.getStatus().equals(attendance.getStatus())) {
                     if(attendance.getStatus().equals("ausente")){
                         try {
-                            alertService.addCounter(attendance.getStudent().getEmail(), attendance.getClasses());
+                            alertService.addCounter(attendance.getStudent().getId(), attendance.getClasses());
                         } catch (MessagingException e) {
                             // Maneja el error aquí
                             e.printStackTrace(); // O cualquier otra forma de manejarlo
@@ -90,7 +90,7 @@ public class AttendanceService {
     
                 if(attendance.getStatus().equals("ausente")){
                     try {
-                        alertService.addCounter(attendance.getStudent().getEmail(), attendance.getClasses());
+                        alertService.addCounter(attendance.getStudent().getId(), attendance.getClasses());
                     } catch (MessagingException e) {
                         // Maneja el error aquí
                         e.printStackTrace(); // O cualquier otra forma de manejarlo
