@@ -8,6 +8,5 @@ import com.api.backend.model.AlertModel;
 
 public interface AlertRepo extends JpaRepository<AlertModel, Integer>{
 
-    Optional<AlertModel> findByUser_Email(String email);
-    Optional<AlertModel> findByUser_EmailAndClasses_Id(String Email,int Id);
+    Optional<AlertModel> findByUser_IdAndClasses_Id(int User_Id,int Classes_Id);
 }

@@ -32,7 +32,6 @@ public class CalificationService {
     private UserXGroupRepo userXGroupRepo;
     @Autowired
     private UserRepo userRepo;
-
     @Autowired
     private AlertService alertService;
 
@@ -142,10 +141,11 @@ public class CalificationService {
                     }
                     
                 } else {
+
+                    calificationRepo.save(calification);
                     if(calification.getCalification()<3){
                         alertService.addCounter(calification.getStudent().getEmail(), calification.getAssesment().getClasses());
                     }
-                    calificationRepo.save(calification);
                 }
             } catch (Exception e) {
                 System.err.println("Error procesando calificación para el estudiante: "

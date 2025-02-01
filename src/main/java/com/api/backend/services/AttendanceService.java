@@ -25,7 +25,6 @@ public class AttendanceService {
     private ClassRepo classRepo;
     @Autowired
     private UserXGroupRepo userXGroupRepo;
-
     @Autowired
     private AlertService alertService;
 
@@ -63,7 +62,7 @@ public class AttendanceService {
         return attendanceRepo.findAttendancesByStudent_Email(Email);
     }
     
-    public List<AttendanceModel> saveAttendances(List<AttendanceModel> attendances) {
+    public void saveAttendances(List<AttendanceModel> attendances) throws MessagingException {
         List<AttendanceModel> savedAttendances = new ArrayList<>();
         attendances.forEach(attendance -> {
             AttendanceModel existingAttendance = attendanceRepo.findByStudent_IdAndClasses_IdAndDate(
@@ -71,33 +70,36 @@ public class AttendanceService {
                 attendance.getClasses().getId(),
                 attendance.getDate()
             );
-
+    
             if (existingAttendance != null) {
                 existingAttendance.setStatus(attendance.getStatus());
                 savedAttendances.add(attendanceRepo.save(existingAttendance));
+    
                 if (!existingAttendance.getStatus().equals(attendance.getStatus())) {
-                if(attendance.getStatus().equals("ausente")){
-                    try {
-                        alertService.addCounter(attendance.getStudent().getEmail(),attendance.getClasses());
-                    } catch (MessagingException e) {
-                        e.printStackTrace();
+                    if(attendance.getStatus().equals("ausente")){
+                        try {
+                            alertService.addCounter(attendance.getStudent().getEmail(), attendance.getClasses());
+                        } catch (MessagingException e) {
+                            // Maneja el error aquí
+                            e.printStackTrace(); // O cualquier otra forma de manejarlo
+                        }
                     }
                 }
-            }
-                
             } else {
                 savedAttendances.add(attendanceRepo.save(attendance));
+    
                 if(attendance.getStatus().equals("ausente")){
                     try {
-                        alertService.addCounter(attendance.getStudent().getEmail(),attendance.getClasses());
+                        alertService.addCounter(attendance.getStudent().getEmail(), attendance.getClasses());
                     } catch (MessagingException e) {
-                        e.printStackTrace();
+                        // Maneja el error aquí
+                        e.printStackTrace(); // O cualquier otra forma de manejarlo
                     }
                 }
             }
         });
-        return savedAttendances;
     }
+    
 
 
     public List<AttendanceModel> getAttendancesByClassIdAndDate(int classId, LocalDate date) {

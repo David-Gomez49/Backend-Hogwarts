@@ -30,7 +30,8 @@ public class AlertService {
     private StudentXParentService studentXparentService;
     
     public void addCounter(String email,ClassModel classes) throws MessagingException {
-        Optional<AlertModel> alertOpt = alertRepo.findByUser_EmailAndClasses_Id(email,classes.getId());
+        UserModel user= userService.obtainUserByEmail(email);
+        Optional<AlertModel> alertOpt = alertRepo.findByUser_IdAndClasses_Id(user.getId(),classes.getId());
         
         if (alertOpt.isPresent()) {
             AlertModel alert = alertOpt.get();
@@ -38,7 +39,7 @@ public class AlertService {
             alert.incrementCounter();
         } else {
             AlertModel newAlert = new AlertModel();
-            newAlert.setUser(userService.obtainUserByEmail(email));
+            newAlert.setUser(user);
             newAlert.setClasses(classes);
             newAlert.incrementCounter();
             alertRepo.save(newAlert);
@@ -47,7 +48,8 @@ public class AlertService {
     }
 
     public void resetCounter(String email,ClassModel classes) {
-        Optional<AlertModel> alertOpt = alertRepo.findByUser_EmailAndClasses_Id(email,classes.getId());
+        UserModel user= userService.obtainUserByEmail(email);
+        Optional<AlertModel> alertOpt = alertRepo.findByUser_IdAndClasses_Id(user.getId(),classes.getId());
         alertOpt.ifPresent(alert -> {
             alert.resetCounter();
             alertRepo.save(alert);
@@ -55,7 +57,8 @@ public class AlertService {
     }
 
     public void validCounter(String email,ClassModel classes, int threshold) throws MessagingException{
-        Optional<AlertModel> alertOpt = alertRepo.findByUser_EmailAndClasses_Id(email,classes.getId());
+        UserModel user= userService.obtainUserByEmail(email);
+        Optional<AlertModel> alertOpt = alertRepo.findByUser_IdAndClasses_Id(user.getId(),classes.getId());
         if (alertOpt.isPresent() && alertOpt.get().getCounter() > threshold) {
             UserModel student = userService.obtainUserByEmail(email);
             String studentName = student.getName()+" "+student.getLastname();

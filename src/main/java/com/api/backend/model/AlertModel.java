@@ -21,7 +21,7 @@ public class AlertModel {
     private ClassModel classes;
 
     @ManyToOne
-    @JoinColumn(name = "id_Student", referencedColumnName = "Id") // id es la columna en GroupModel
+    @JoinColumn(name = "id_user", referencedColumnName = "Id") // id es la columna en GroupModel
     private UserModel user;
 
     private int counter;
