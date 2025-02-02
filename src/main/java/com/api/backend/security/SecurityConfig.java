@@ -48,9 +48,19 @@ public class SecurityConfig {
                             response.setStatus(200);
                             if (authentication != null && authentication.getPrincipal() instanceof org.springframework.security.oauth2.core.user.OAuth2User) {
                                 org.springframework.security.oauth2.core.user.OAuth2User oauth2User = (org.springframework.security.oauth2.core.user.OAuth2User) authentication.getPrincipal();
-                                String email = oauth2User.getAttribute("email");
+                                String email = oauth2User.getAttribute("email").toString();
+                                String email2 = oauth2User.getAttribute("email");
+                                System.out.println("==========================");
+                                System.out.println("========="+email+"==========");
+                                System.out.println("========="+email2+"==========");
+                                System.out.println("==========================");
                                 if (email != null) {
+                                    System.out.println("---------------if----------");
                                     activeUserService.removeUserGeneral(email);
+                                }
+                                else{
+                               System.out.println("---------------else----------");
+
                                 }
                             }
                         }) // Responder con un 200 al cerrar sesión
