@@ -21,6 +21,7 @@ import com.api.backend.services.UserService;
 import com.api.backend.services.UserXGroupService;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.mail.MessagingException;
 
 @Component
 public class DataInitializer {
@@ -50,7 +51,9 @@ public class DataInitializer {
 
     Boolean si=false;
     @PostConstruct
-    public void init(){
+    public void init() throws MessagingException{
+
+        
 
         if (si){
         initializeRoles();
@@ -59,7 +62,9 @@ public class DataInitializer {
         initializeStudents();
         initializeSubjects();
         initializeClasses();
-}
+        }
+
+        emailService.deployNotification("santiagot3p@gmail.com");
     }
 
     private void initializeRoles() {
