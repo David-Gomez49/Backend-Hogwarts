@@ -1,7 +1,7 @@
 package com.api.backend.services;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -37,6 +37,22 @@ public class EmailService {
         helper.setFrom("hogwarts.academy.udea@gmail.com");
 
         mailSender.send(message);
+    }
+
+    public void deployNotification(String to) throws MessagingException {
+        String body = "<p>El servicio se encuentra Desplegado,</p> "
+                + "<p>Cordialmente,<br>Hogwarts Academy</p>";
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setTo(to);
+        helper.setSubject("Hogwarts Academy - Despliegue Exitoso ");
+        helper.setText(body, true); // `true` indica que es HTML
+        helper.setFrom("hogwarts.academy.udea@gmail.com");
+
+        mailSender.send(message);
+        System.out.println("Correo enviado correctamente a " + to);
     }
 
     public static String capitalizeWords(String input) {
