@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -42,6 +43,8 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout") // Ruta para cerrar sesión
+                        .invalidateHttpSession(true) // Invalidar la sesión HTTP
+                        .clearAuthentication(true) // Limpia la autenticación manualmente
                         .deleteCookies("JWT") // Eliminar la cookie del token JWT
                         .logoutSuccessHandler((request, response, authentication) -> {
                             Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
@@ -49,6 +52,7 @@ public class SecurityConfig {
 
                             // Verificar si la autenticación es nula
                             if (authentication == null) {
+                                logger.info("==== ENTRANDO NULL ====");
                                 authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
                             } 
 
@@ -67,6 +71,8 @@ public class SecurityConfig {
                                     if (email != null) {
                                         logger.info("User found in session, attempting to remove...");
                                         activeUserService.removeUserGeneral(email);
+                                        SecurityContextHolder.getContext().setAuthentication(null);
+                                        SecurityContextHolder.clearContext();
                                     } else {
                                         logger.warn("Email attribute is null!");
                                     }
@@ -74,6 +80,8 @@ public class SecurityConfig {
                                     logger.warn("Principal is not an OAuth2User instance.");
                                 }
                             }
+
+                            logger.info("==== NINGUN IF ====");
 
                             // Eliminar la cookie JWT correctamente
                             String cookieValue = "JWT=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=None";
