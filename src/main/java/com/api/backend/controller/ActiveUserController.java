@@ -7,6 +7,7 @@ import com.api.backend.security.JwtService;
 import com.api.backend.services.ActiveUserService;
 
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 @RestController
@@ -21,12 +22,12 @@ public class ActiveUserController {
     private JwtService jwtService;
 
     @GetMapping("/general")
-    public List<String> getActiveUsers(@CookieValue(name = "JWT") String token) {
+    public Set<String> getActiveUsers(@CookieValue(name = "JWT") String token) {
 
         if (jwtService.ValidateTokenAdmin(token)) {
-            List<String> users = activeUserService.getActiveUsersGeneral();
+            Set<String> users = activeUserService.getActiveUsersGeneral();
             return users;
         }
-        return List.of();
+        return Set.of();
     }
 }

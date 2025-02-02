@@ -2,6 +2,7 @@
 package com.api.backend.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -55,7 +56,7 @@ public class MessageWSControl {
 
     @MessageMapping("/activeUsers/general")
     @SendTo("/topic/activeUsers/general")
-    public List<String> getActiveUsers() {
+    public Set<String> getActiveUsers() {
         return activeUserService.getActiveUsersGeneral();
     }
 

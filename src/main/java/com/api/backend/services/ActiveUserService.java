@@ -4,33 +4,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.ArrayList;
-
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Logger;
 
 @Service
 public class ActiveUserService {
 
-    private final List<String> activeUsersGeneral = new ArrayList<>();
+    private static final Logger logger = Logger.getLogger(ActiveUserService.class.getName());
+
+    private final Set<String> activeUsersGeneral = new HashSet<>();
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
     public void addUserGeneral(String email) {
-        if (!activeUsersGeneral.contains(email)) {
-            activeUsersGeneral.add(email);
+        logger.info("Adding user to general: " + email);
+        boolean added = activeUsersGeneral.add(email);
+        if (added) {
             messagingTemplate.convertAndSend("/topic/activeUsers/general", activeUsersGeneral);
         }
+        logger.info("User " + email + " added to general: " + added);
     }
 
     public void removeUserGeneral(String email) {
-        if (activeUsersGeneral.contains(email)) {
-            activeUsersGeneral.remove(email);
-            messagingTemplate.convertAndSend("/topic/activeUsers/general", activeUsersGeneral);
-        }
+    logger.info("Attempting to remove user: " + email + " from activeUsersGeneral.");
+    logger.info("Current users before removal: " + activeUsersGeneral);
+
+    boolean removed = activeUsersGeneral.remove(email);
+
+    if (removed) {
+        logger.info("User " + email + " successfully removed.");
+        messagingTemplate.convertAndSend("/topic/activeUsers/general", activeUsersGeneral);
+    } else {
+        logger.warning("User " + email + " was NOT found in activeUsersGeneral.");
     }
 
-    public List<String> getActiveUsersGeneral() {
+    logger.info("Current users after removal: " + activeUsersGeneral);
+}
+
+    public Set<String> getActiveUsersGeneral() {
+        logger.info("Getting active users general: " + activeUsersGeneral.size());
         return activeUsersGeneral;
     }
 }
