@@ -46,9 +46,12 @@ public class SecurityConfig {
                             String cookieValue = String.format("JWT=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None", null, 0);
                             response.addHeader("Set-Cookie", cookieValue);
                             response.setStatus(200);
-                            if (authentication != null && authentication.getName() != null) {
-                                String email = ((org.springframework.security.oauth2.core.user.OAuth2User) authentication.getPrincipal()).getAttributes().get("email").toString();
-                                activeUserService.removeUserGeneral(email);
+                            if (authentication != null && authentication.getPrincipal() instanceof org.springframework.security.oauth2.core.user.OAuth2User) {
+                                org.springframework.security.oauth2.core.user.OAuth2User oauth2User = (org.springframework.security.oauth2.core.user.OAuth2User) authentication.getPrincipal();
+                                String email = oauth2User.getAttribute("email");
+                                if (email != null) {
+                                    activeUserService.removeUserGeneral(email);
+                                }
                             }
                         }) // Responder con un 200 al cerrar sesión
                 );
