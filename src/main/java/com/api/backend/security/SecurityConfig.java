@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -19,11 +18,9 @@ import com.api.backend.services.ActiveUserService;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final ActiveUserService activeUserService;
     private final AuthSuccess successHandler;
 
-    public SecurityConfig(AuthSuccess successHandler, ActiveUserService activeUserService) {
-        this.activeUserService = activeUserService;
+    public SecurityConfig(AuthSuccess successHandler) {
         this.successHandler = successHandler;
     }
 
@@ -40,54 +37,7 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2Login -> oauth2Login
                         .successHandler(successHandler) // Usar el handler personalizado para el éxito del login OAuth2
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout") // Ruta para cerrar sesión
-                        .invalidateHttpSession(true) // Invalidar la sesión HTTP
-                        .clearAuthentication(true) // Limpia la autenticación manualmente
-                        .deleteCookies("JWT") // Eliminar la cookie del token JWT
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
-                            logger.info("==== LogoutSuccessHandler triggered ====");
-
-                            // Verificar si la autenticación es nula
-                            if (authentication == null) {
-                                logger.info("==== ENTRANDO NULL ====");
-                                authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-                            } 
-
-                            if (authentication != null) {
-                                Object principal = authentication.getPrincipal();
-                                logger.info("Authentication principal: " + principal);
-
-                                if (principal instanceof org.springframework.security.oauth2.core.user.OAuth2User) {
-                                    org.springframework.security.oauth2.core.user.OAuth2User oauth2User = (org.springframework.security.oauth2.core.user.OAuth2User) principal;
-                                    String email = oauth2User.getAttribute("email");
-
-                                    logger.info("==========================");
-                                    logger.info("Logging out user: " + email);
-                                    logger.info("==========================");
-
-                                    if (email != null) {
-                                        logger.info("User found in session, attempting to remove...");
-                                        activeUserService.removeUserGeneral(email);
-                                        SecurityContextHolder.getContext().setAuthentication(null);
-                                        SecurityContextHolder.clearContext();
-                                    } else {
-                                        logger.warn("Email attribute is null!");
-                                    }
-                                } else {
-                                    logger.warn("Principal is not an OAuth2User instance.");
-                                }
-                            }
-
-                            logger.info("==== NINGUN IF ====");
-
-                            // Eliminar la cookie JWT correctamente
-                            String cookieValue = "JWT=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=None";
-                            response.addHeader("Set-Cookie", cookieValue);
-                            response.setStatus(200);
-                        }));
+                );
 
         return http.build();
     }
