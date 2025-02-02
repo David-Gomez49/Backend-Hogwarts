@@ -3,9 +3,11 @@ package com.api.backend.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.api.backend.model.AuxiliarUserModel;
+import com.api.backend.model.NotificationModel;
 import com.api.backend.model.RolModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.repository.RolRepo;
@@ -20,6 +22,8 @@ public class UserService {
     private UserRepo userRepo;
     @Autowired
     private RolRepo rolRepo;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     public List<UserModel> obtainUserList() {
         return (List<UserModel>) userRepo.findAll();
@@ -69,9 +73,25 @@ public class UserService {
         UserModel user = userRepo.findByEmail(email);
         RolModel newRole = rolRepo.findByName(roleName);
         user.setRol(newRole);      
-        return userRepo.save(user); 
+        UserModel updatedUser = userRepo.save(user);
+
+        NotificationModel notification = new NotificationModel();
+        notification.setEmail(email);
+        notification.setTitle("Cambio de rol");
+        notification.setMessage("Tu rol ha sido cambiado a " + roleName);
+        
+        messagingTemplate.convertAndSend("/topic/roleChange/" + email, notification);
+        return updatedUser;
     }
 
+    public void sendCustomMessage(String email, String title, String message) {
+        NotificationModel notification = new NotificationModel();
+        notification.setEmail(email);
+        notification.setTitle(title);
+        notification.setMessage(message);
+        
+        messagingTemplate.convertAndSend("/topic/message/" + email, notification);
+    }
 
     public boolean InfoCompleteByEmail(String Email) {
         UserModel user = userRepo.findByEmail(Email);
@@ -139,5 +159,5 @@ public class UserService {
     }    
     public boolean  validateTeacher(String Email) {
         return  userRepo.findByEmail(Email).getRol().getName().equals("Teacher");
-    }    
+    }
 }

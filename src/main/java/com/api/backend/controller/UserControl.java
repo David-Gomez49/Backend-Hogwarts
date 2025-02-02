@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.backend.model.AuxiliarUserModel;
+import com.api.backend.model.MessageModel;
+import com.api.backend.model.NotificationModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.security.JwtService;
 import com.api.backend.services.UserService;
@@ -163,6 +165,23 @@ public class UserControl {
                 return ResponseEntity.ok(false);
             }
             userService.editRolByEmail(email, newrole);
+            return ResponseEntity.ok(true);
+    
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+    }
+
+    @PutMapping("/sendCustomMessage")
+    public ResponseEntity<Boolean> sendCustomMessage(
+        @CookieValue(name = "JWT") String token, 
+        @RequestBody NotificationModel message) {
+
+        try {
+            if (!jwtService.ValidateTokenAdmin(token)) {
+                return ResponseEntity.ok(false);
+            }
+            userService.sendCustomMessage(message.getEmail(), message.getTitle(), message.getMessage());
             return ResponseEntity.ok(true);
     
         } catch (Exception e) {

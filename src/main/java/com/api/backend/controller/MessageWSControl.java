@@ -9,12 +9,16 @@ import org.springframework.stereotype.Controller;
 
 import com.api.backend.model.MessageModel;
 import com.api.backend.services.MessageService;
+import com.api.backend.services.UserService;
 
 @Controller
 public class MessageWSControl {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private UserService userService;
 
     @MessageMapping("/send")
     @SendTo("/topic/group")
@@ -25,4 +29,17 @@ public class MessageWSControl {
         // Retornar el mensaje guardado para que sea enviado a los suscriptores
         return savedMessage;
     }
+
+    @MessageMapping("/changeRole")
+    @SendTo("/topic/roleChange")
+    public String notifyRoleChange(String message) {
+        return message;
+    }
+
+    @MessageMapping("/sendCustomMessage")
+    @SendTo("/topic/message/{email}")
+    public void sendCustomMessage(String email, String title, String message) {
+        userService.sendCustomMessage(email, title, message);
+    }
+
 }
