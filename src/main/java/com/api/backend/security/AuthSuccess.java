@@ -2,6 +2,7 @@ package com.api.backend.security;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.api.backend.model.UserModel;
 import com.api.backend.services.UserService;
+import com.api.backend.services.ActiveUserService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -19,12 +21,17 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class AuthSuccess implements AuthenticationSuccessHandler {
 
+    @Autowired
     private final JwtService jwtService;
+    @Autowired
     private final UserService userService;
+    @Autowired
+    private final ActiveUserService activeUserService;
 
-    public AuthSuccess(UserService userService, JwtService jwtService) {
+    public AuthSuccess(UserService userService, JwtService jwtService, ActiveUserService activeUserService) {
         this.userService = userService;
         this.jwtService = jwtService;
+        this.activeUserService = activeUserService;
     }
 
     @Override
@@ -70,6 +77,7 @@ public class AuthSuccess implements AuthenticationSuccessHandler {
         String redirectUrl;
         if (userService.InfoCompleteByEmail(email)) {
             redirectUrl = "https://frontend-hogwarts.vercel.app/classes";
+            activeUserService.addUserGeneral(email);
         } else {
             redirectUrl = "https://frontend-hogwarts.vercel.app/register";
         }

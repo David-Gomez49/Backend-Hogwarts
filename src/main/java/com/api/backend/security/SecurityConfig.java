@@ -10,13 +10,17 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import com.api.backend.services.ActiveUserService;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final ActiveUserService activeUserService;
     private final AuthSuccess successHandler;
 
-    public SecurityConfig(AuthSuccess successHandler) {
+    public SecurityConfig(AuthSuccess successHandler, ActiveUserService activeUserService) {
+        this.activeUserService = activeUserService;
         this.successHandler = successHandler;
     }
 
@@ -42,6 +46,10 @@ public class SecurityConfig {
                             String cookieValue = String.format("JWT=%s; Max-Age=%d; Path=/; HttpOnly; Secure; SameSite=None", null, 0);
                             response.addHeader("Set-Cookie", cookieValue);
                             response.setStatus(200);
+                            String email = ((org.springframework.security.oauth2.core.user.OAuth2User) authentication.getPrincipal()).getAttributes().get("email").toString();
+                            if (authentication != null && authentication.getName() != null) {
+                                activeUserService.removeUserGeneral(email);
+                            }
                         }) // Responder con un 200 al cerrar sesión
                 );
 
