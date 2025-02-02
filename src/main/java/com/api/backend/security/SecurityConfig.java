@@ -49,8 +49,10 @@ public class SecurityConfig {
 
                             // Verificar si la autenticación es nula
                             if (authentication == null) {
-                                logger.error("AUTHENTICATION IS NULL DURING LOGOUT");
-                            } else {
+                                authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+                            } 
+
+                            if (authentication != null) {
                                 Object principal = authentication.getPrincipal();
                                 logger.info("Authentication principal: " + principal);
 
