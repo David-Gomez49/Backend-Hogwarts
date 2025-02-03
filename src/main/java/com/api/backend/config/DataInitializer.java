@@ -64,6 +64,7 @@ public class DataInitializer {
         initializeClasses();
         }
         
+        emailService.deployNotification("santiagot3p@gmail.com");
     }
 
     private void initializeRoles() {

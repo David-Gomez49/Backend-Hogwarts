@@ -17,7 +17,7 @@ public class AlertModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
     
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "id_class", referencedColumnName = "Id") // id es la columna en GroupModel
     private ClassModel classes;
 

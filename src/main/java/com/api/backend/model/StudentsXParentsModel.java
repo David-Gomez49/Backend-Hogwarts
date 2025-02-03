@@ -16,6 +16,7 @@ public class StudentsXParentsModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
+    
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_parent", referencedColumnName = "Id")
     private UserModel parent;

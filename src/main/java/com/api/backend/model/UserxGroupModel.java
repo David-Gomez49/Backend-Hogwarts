@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -20,8 +22,8 @@ public class UserxGroupModel {
     @JoinColumn(name = "id_student", referencedColumnName = "Id")
     private UserModel student;
 
-    @OneToOne
-    @JoinColumn(name = "id_group", referencedColumnName = "Id")
+    @ManyToOne
+    @JoinColumn(name = "id_group", referencedColumnName = "Id",unique = false)
     private GroupModel group;
 
     public UserxGroupModel() {

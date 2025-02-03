@@ -1,7 +1,9 @@
 package com.api.backend.model;
 
 import java.sql.Date;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -34,6 +37,27 @@ public class UserModel {
     private String document_type;
     private String document_number;
     private String picture;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.REMOVE)
+    private List<UserxGroupModel> userGroups;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.REMOVE)
+    private List<AttendanceModel> attendances;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.REMOVE)
+    private List<CalificationModel> califications;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE)
+    private List<StudentsXParentsModel> parentRelations;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.REMOVE)
+    private List<StudentsXParentsModel> studentRelations;
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE)
+    private List<MessageModel> messages;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<AlertModel> alerts;
 
     public UserModel() {
     }

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import com.api.backend.model.MessageModel;
 
-@Repository
 public interface MessageRepo extends JpaRepository<MessageModel, Integer> {
     List<MessageModel> findByClasses_Id(int chatGroupId);  // Para obtener los mensajes de un grupo
 }

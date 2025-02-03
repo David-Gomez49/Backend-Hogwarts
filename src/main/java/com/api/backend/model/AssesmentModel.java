@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -19,7 +20,7 @@ public class AssesmentModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
     
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "id_class", referencedColumnName = "Id") // id es la columna en GroupModel
     private ClassModel classes;
 

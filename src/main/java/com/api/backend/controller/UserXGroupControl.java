@@ -35,20 +35,23 @@ public class UserXGroupControl {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener los estudiantes con grupo");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener los estudiantes con grupo");
         }
     }
 
     @PutMapping("/updateGroupById")
-    public ResponseEntity<Boolean> updateGroupById(@CookieValue(name = "JWT") String token, @RequestHeader("StudentId")int studentId,@RequestHeader("GroupId")int groupId) {
+    public ResponseEntity<Boolean> updateGroupById(@CookieValue(name = "JWT") String token,
+            @RequestHeader("StudentId") int studentId, @RequestHeader("GroupId") int groupId) {
         try {
-            if (jwtService.ValidateTokenAdmin(token)) {
+            if (!jwtService.ValidateTokenAdmin(token)) {
+                return ResponseEntity.ok(false);
+            }
             userXGroupService.assignOrUpdateGroup(studentId, groupId);
             return ResponseEntity.ok(true);
-        }
+
         } catch (Exception e) {
-        return ResponseEntity.ok(false);
+            return ResponseEntity.ok(false);
         }
-    return ResponseEntity.ok(false);
     }
 }

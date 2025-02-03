@@ -20,6 +20,7 @@ import com.api.backend.model.MessageModel;
 import com.api.backend.model.NotificationModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.security.JwtService;
+import com.api.backend.services.ActiveUserService;
 import com.api.backend.services.UserService;
 
 @RestController
@@ -30,6 +31,8 @@ public class UserControl {
     private UserService userService;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private ActiveUserService activeUserService;
 
     @GetMapping("/getAll")
     public List<UserModel> obtainUserList(@CookieValue(name = "JWT") String token) {
@@ -117,6 +120,9 @@ public class UserControl {
     @PutMapping("/updateByEmail")
     public UserModel updateUserByEmail(@CookieValue(name = "JWT") String token, @RequestBody UserModel user) {
         String email = jwtService.extractEmailFromToken(token);
+        if (email != null){
+            activeUserService.addUserGeneral(email);
+        }
         return userService.updateUserByEmail(email, user);
     }
 

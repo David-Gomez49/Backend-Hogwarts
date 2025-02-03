@@ -17,13 +17,17 @@ public class CalificationModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private float calification;
+
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_Student", referencedColumnName = "Id")
     private UserModel student;
-    @ManyToOne(cascade = CascadeType.REMOVE)
+
+    @ManyToOne
     @JoinColumn(name = "id_assesment", referencedColumnName = "Id")
     private AssesmentModel assesment;
+
     @Column(name = "state")
     private String state ; 
 

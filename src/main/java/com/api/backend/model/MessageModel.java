@@ -17,12 +17,15 @@ public class MessageModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
+
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_sender", referencedColumnName = "Id")
     private UserModel sender;
-    @ManyToOne(cascade = CascadeType.REMOVE)
+
+    @ManyToOne
     @JoinColumn(name = "id_class", referencedColumnName = "Id")
     private ClassModel classes;
+
     private String content;
     private Instant send_date;
 
