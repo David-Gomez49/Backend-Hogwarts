@@ -2,6 +2,7 @@ package com.api.backend.model;
 
 import java.time.Instant;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,10 +17,10 @@ public class MessageModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_sender", referencedColumnName = "Id")
     private UserModel sender;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_class", referencedColumnName = "Id")
     private ClassModel classes;
     private String content;

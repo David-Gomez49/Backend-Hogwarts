@@ -1,5 +1,6 @@
 package com.api.backend.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,10 +18,10 @@ public class CalificationModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private float calification;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_Student", referencedColumnName = "Id")
     private UserModel student;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_assesment", referencedColumnName = "Id")
     private AssesmentModel assesment;
     @Column(name = "state")

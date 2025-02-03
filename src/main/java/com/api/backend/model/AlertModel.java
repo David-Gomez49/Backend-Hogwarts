@@ -1,5 +1,6 @@
 package com.api.backend.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,11 +17,11 @@ public class AlertModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
     
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_class", referencedColumnName = "Id") // id es la columna en GroupModel
     private ClassModel classes;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_user", referencedColumnName = "Id") // id es la columna en GroupModel
     private UserModel user;
 

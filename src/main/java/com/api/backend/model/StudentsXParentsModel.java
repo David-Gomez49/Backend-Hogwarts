@@ -1,5 +1,6 @@
 package com.api.backend.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,11 +16,11 @@ public class StudentsXParentsModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_parent", referencedColumnName = "Id")
     private UserModel parent;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_student", referencedColumnName = "Id")
     private UserModel student;
 

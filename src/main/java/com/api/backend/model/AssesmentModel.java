@@ -2,6 +2,7 @@ package com.api.backend.model;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,7 +19,7 @@ public class AssesmentModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
     
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_class", referencedColumnName = "Id") // id es la columna en GroupModel
     private ClassModel classes;
 
