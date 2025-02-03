@@ -56,9 +56,9 @@ public class DataInitializer {
         
 
         if (si){
+        initializeGroups();
         initializeRoles();
         initializeUsers();
-        initializeGroups();
         initializeStudents();
         initializeSubjects();
         initializeClasses();

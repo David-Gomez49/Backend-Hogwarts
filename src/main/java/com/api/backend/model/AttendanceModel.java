@@ -18,11 +18,11 @@ public class AttendanceModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
     
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_student", referencedColumnName = "Id") // id es la columna en GroupModel
     private UserModel student;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_class", referencedColumnName = "Id") // id es la columna en GroupModel
     private ClassModel classes;
     private LocalDate date;

@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name= "ClassGroups")
 public class GroupModel {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;

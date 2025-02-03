@@ -1,6 +1,5 @@
 package com.api.backend.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,7 +23,7 @@ public class ClassModel {
     @JoinColumn(name = "id_teacher", referencedColumnName = "Id") // id es la columna en GroupModel
     private UserModel teacher;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "id_subject", referencedColumnName = "Id") // id es la columna en GroupModel
     private SubjectModel subject;
 

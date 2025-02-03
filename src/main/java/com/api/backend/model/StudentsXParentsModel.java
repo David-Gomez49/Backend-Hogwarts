@@ -16,11 +16,11 @@ public class StudentsXParentsModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_parent", referencedColumnName = "Id")
     private UserModel parent;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_student", referencedColumnName = "Id")
     private UserModel student;
 

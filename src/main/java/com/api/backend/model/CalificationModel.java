@@ -18,10 +18,10 @@ public class CalificationModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private float calification;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_Student", referencedColumnName = "Id")
     private UserModel student;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_assesment", referencedColumnName = "Id")
     private AssesmentModel assesment;
     @Column(name = "state")

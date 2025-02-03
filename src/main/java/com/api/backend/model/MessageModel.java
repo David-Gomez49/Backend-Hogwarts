@@ -17,10 +17,10 @@ public class MessageModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_sender", referencedColumnName = "Id")
     private UserModel sender;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_class", referencedColumnName = "Id")
     private ClassModel classes;
     private String content;
