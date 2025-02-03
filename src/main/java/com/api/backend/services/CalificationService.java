@@ -1,12 +1,18 @@
 package com.api.backend.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +26,8 @@ import com.api.backend.repository.CalificationRepo;
 import com.api.backend.repository.ClassRepo;
 import com.api.backend.repository.UserRepo;
 import com.api.backend.repository.UserXGroupRepo;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class CalificationService {
@@ -185,5 +193,82 @@ public void saveOrUpdateCalifications(List<CalificationModel> califications) {
         emptyCalification.setStudent(student);
         emptyCalification.setAssesment(assesment);
         return emptyCalification;
+    }
+
+
+
+    public void generarExcel(HttpServletResponse response,boolean Admin,String Email) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        List<CalificationModel> allDatos=null;
+        if(Admin){
+             allDatos = calificationRepo.findAll();
+        }else{
+             allDatos = calificationRepo.findByAssesment_Classes_Teacher_Email(Email);
+        }
+        // 🔹 Agrupar calificaciones por grupo
+        Map<String, List<CalificationModel>> datos = allDatos
+                .stream()
+                .collect(Collectors.groupingBy(nota -> nota.getAssesment().getClasses().getGroup().getGrade()+"-"+nota.getAssesment().getClasses().getGroup().getVariant()));
+
+        // 🔹 Crear una hoja por cada grupo
+        for (String grupo : datos.keySet()) {
+            Sheet sheet = workbook.createSheet("Grupo " + grupo);
+            int rowNum = 0;
+
+            // 🔹 Agrupar notas por materia dentro del grupo
+            Map<String, List<CalificationModel>> materias = datos.get(grupo)
+                    .stream()
+                    .collect(Collectors.groupingBy(nota -> nota.getAssesment().getClasses().getSubject().getName()));
+
+            for (String materia : materias.keySet()) {
+                // 🔹 Dejar 2 filas vacías antes de cada materia
+                rowNum += 2;
+
+                // 🔹 Agregar título de materia
+                Row materiaRow = sheet.createRow(rowNum++);
+                materiaRow.createCell(0).setCellValue("Materia: " + materia);
+
+                // 🔹 Crear fila de descripciones y porcentajes
+                Row descripcionRow = sheet.createRow(rowNum++);
+                Row porcentajeRow = sheet.createRow(rowNum++);
+                porcentajeRow.createCell(0).setCellValue("Porcentaje");
+
+                // 🔹 Obtener evaluaciones únicas
+                List<CalificationModel> notasMateria = materias.get(materia);
+                List<String> evaluaciones = notasMateria.stream()
+                        .map(nota -> nota.getAssesment().getDescription())  // Usamos el nombre de la evaluación
+                        .distinct()
+                        .collect(Collectors.toList());
+
+                int colIndex = 1;
+                for (String evaluacion : evaluaciones) {
+                    descripcionRow.createCell(colIndex).setCellValue(evaluacion);
+                    porcentajeRow.createCell(colIndex).setCellValue(notasMateria.get(0).getAssesment().getPercent());
+                    colIndex++;
+                }
+                descripcionRow.createCell(colIndex).setCellValue("Total Ponderado");
+
+                // 🔹 Insertar notas de estudiantes
+                for (CalificationModel nota : notasMateria) {
+                    Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(nota.getStudent().getName());
+
+                    colIndex = 1;
+                    double totalPonderado = 0;
+                    for (String evaluacion : evaluaciones) {
+                        double notaValor = nota.getCalification(); // Valor de la nota
+                        row.createCell(colIndex).setCellValue(notaValor);
+                        totalPonderado += notaValor * nota.getAssesment().getPercent()/100;
+                        colIndex++;
+                    }
+
+                    row.createCell(colIndex).setCellValue(totalPonderado);
+                }
+            }
+        }
+
+        // 🔹 Escribir el archivo en la respuesta HTTP
+        workbook.write(response.getOutputStream());
+        workbook.close();
     }
 }

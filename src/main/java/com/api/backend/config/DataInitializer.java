@@ -63,7 +63,7 @@ public class DataInitializer {
         initializeSubjects();
         initializeClasses();
         }
-
+        
         emailService.deployNotification("santiagot3p@gmail.com");
     }
 

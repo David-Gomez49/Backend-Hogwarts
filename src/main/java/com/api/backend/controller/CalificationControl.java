@@ -1,5 +1,8 @@
 package com.api.backend.controller;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +23,8 @@ import com.api.backend.security.JwtService;
 import com.api.backend.services.CalificationService;
 import com.api.backend.services.StudentXParentService;
 import com.api.backend.services.UserService;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/calification")
@@ -94,4 +99,21 @@ public class CalificationControl {
             }
         return ResponseEntity.ok(false); 
     }
+
+
+    @GetMapping("/downloadCalifications")
+    public void descargarExcel(@CookieValue(name = "JWT") String token,HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        if(jwtService.ValidateTokenAdminTeacher(token)){
+            String Email = jwtService.extractEmailFromToken(token);
+            String rolName = userService.GetRolByEmail(Email).getName();
+            boolean admin = "Admin".equals(rolName);
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd - HH:mm"));
+            String name = "notas - " + timestamp;
+            response.setHeader("Content-Disposition", "attachment; filename="+name+".xlsx");
+            calificationService.generarExcel(response,admin,Email);
+            
+        }
+    }
+
 }
