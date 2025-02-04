@@ -11,6 +11,7 @@ import com.api.backend.model.NotificationModel;
 import com.api.backend.model.RolModel;
 import com.api.backend.model.UserModel;
 import com.api.backend.repository.RolRepo;
+import com.api.backend.repository.StudentXParentRepo;
 import com.api.backend.repository.UserRepo;
 
 import jakarta.transaction.Transactional;
@@ -24,6 +25,8 @@ public class UserService {
     private RolRepo rolRepo;
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private StudentXParentRepo studentXParentRepo;
 
     public List<UserModel> obtainUserList() {
         return (List<UserModel>) userRepo.findAll();
@@ -66,7 +69,11 @@ public class UserService {
 
     @Transactional
     public void deleteByEmail(String email) {
+        
+        studentXParentRepo.deleteByParent_Email(email);
+        studentXParentRepo.deleteByStudent_Email(email);
         userRepo.deleteByEmail(email);
+
     }
 
     public UserModel editRolByEmail(String email, String roleName) {

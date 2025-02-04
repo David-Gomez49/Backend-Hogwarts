@@ -47,10 +47,10 @@ public class UserModel {
     @OneToMany(mappedBy = "student", cascade = CascadeType.REMOVE)
     private List<CalificationModel> califications;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
     private List<StudentsXParentsModel> parentRelations;
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "student", orphanRemoval = true)
     private List<StudentsXParentsModel> studentRelations;
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE)

@@ -11,4 +11,8 @@ public interface StudentXParentRepo extends JpaRepository<StudentsXParentsModel,
     List<StudentsXParentsModel> findByParent_Email(String Email);
 
     List<StudentsXParentsModel> findByStudent_Email(String Email);
+
+    void deleteByParent_Email(String Email);
+
+    void deleteByStudent_Email(String Email);
 }
