@@ -71,40 +71,49 @@ public class CalificationService {
     }
 
     public Map<String, Object> getCalificationsSummary(String email) {
-        UserModel student = userRepo.findByEmail(email);
-        UserxGroupModel userGroup = userXGroupRepo.findByStudent(student);
+    UserModel student = userRepo.findByEmail(email);
+    UserxGroupModel userGroup = userXGroupRepo.findByStudent(student);
 
-        if (userGroup == null) {
-            return Map.of("student", student.getName() + " " + student.getLastname(), "subjects", List.of());
-        }
-
-        GroupModel group = userGroup.getGroup();
-        List<ClassModel> classesList = classRepo.findByGroup(group);
-
-        Map<String, List<Double>> subjectGrades = new HashMap<>();
-        Map<String, Integer> subjectIds = new HashMap<>();
-        for (ClassModel classModel : classesList) {
-            List<CalificationModel> studentCalifications = Optional
-                    .ofNullable(calificationRepo.findByStudent_EmailAndAssesment_Classes_Id(email, classModel.getId()))
-                    .orElse(Collections.emptyList());
-
-            String subjectName = classModel.getSubject().getName();
-            subjectGrades.putIfAbsent(subjectName, new ArrayList<>());
-            subjectIds.putIfAbsent(subjectName, classModel.getSubject().getId());
-
-            for (CalificationModel calification : studentCalifications) {
-                subjectGrades.get(subjectName).add((double) calification.getCalification());
-            }
-        }
-
-        List<Map<String, Object>> subjects = new ArrayList<>();
-        for (Map.Entry<String, List<Double>> entry : subjectGrades.entrySet()) {
-            double average = entry.getValue().stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-            subjects.add(Map.of("subject", entry.getKey(), "average", average, "id", subjectIds.get(entry.getKey())));
-        }
-
-        return Map.of("student", student, "subjects", subjects);
+    if (userGroup == null) {
+        return Map.of("student", student.getName() + " " + student.getLastname(), "subjects", List.of());
     }
+
+    GroupModel group = userGroup.getGroup();
+    List<ClassModel> classesList = classRepo.findByGroup(group);
+
+    Map<String, Double> weightedSum = new HashMap<>();
+    Map<String, Double> totalWeight = new HashMap<>();
+    Map<String, Integer> subjectIds = new HashMap<>();
+
+    for (ClassModel classModel : classesList) {
+        List<CalificationModel> studentCalifications = Optional
+                .ofNullable(calificationRepo.findByStudent_EmailAndAssesment_Classes_Id(email, classModel.getId()))
+                .orElse(Collections.emptyList());
+
+        String subjectName = classModel.getSubject().getName();
+        weightedSum.putIfAbsent(subjectName, 0.0);
+        totalWeight.putIfAbsent(subjectName, 0.0);
+        subjectIds.putIfAbsent(subjectName, classModel.getSubject().getId());
+
+        for (CalificationModel calification : studentCalifications) {
+            double grade = calification.getCalification();
+            double weight = calification.getWeight();  // Se asume que existe este campo
+            weightedSum.put(subjectName, weightedSum.get(subjectName) + (grade * weight));
+            totalWeight.put(subjectName, totalWeight.get(subjectName) + weight);
+        }
+    }
+
+    List<Map<String, Object>> subjects = new ArrayList<>();
+    for (String subject : weightedSum.keySet()) {
+        double average = totalWeight.get(subject) != 0 
+                        ? weightedSum.get(subject) / totalWeight.get(subject)
+                        : 0.0;
+        subjects.add(Map.of("subject", subject, "average", average, "id", subjectIds.get(subject)));
+    }
+
+    return Map.of("student", student, "subjects", subjects);
+}
+
 
     public List<CalificationModel> getCalificationsByEmail(String email) {
         UserModel student = userRepo.findByEmail(email);
@@ -197,68 +206,75 @@ public void saveOrUpdateCalifications(List<CalificationModel> califications) {
 
 
 
-    public void generarExcel(HttpServletResponse response,boolean Admin,String Email) throws IOException {
+    public void generarExcel(HttpServletResponse response, boolean Admin, String Email) throws IOException {
         Workbook workbook = new XSSFWorkbook();
-        List<CalificationModel> allDatos=null;
-        if(Admin){
-             allDatos = calificationRepo.findAll();
-        }else{
-             allDatos = calificationRepo.findByAssesment_Classes_Teacher_Email(Email);
-        }
-        // 🔹 Agrupar calificaciones por grupo
-        Map<String, List<CalificationModel>> datos = allDatos
-                .stream()
-                .collect(Collectors.groupingBy(nota -> nota.getAssesment().getClasses().getGroup().getGrade()+"-"+nota.getAssesment().getClasses().getGroup().getVariant()));
+        List<CalificationModel> allDatos = Admin 
+            ? calificationRepo.findAll() 
+            : calificationRepo.findByAssesment_Classes_Teacher_Email(Email);
 
-        // 🔹 Crear una hoja por cada grupo
+        Map<String, List<CalificationModel>> datos = allDatos.stream()
+            .collect(Collectors.groupingBy(nota -> 
+                nota.getAssesment().getClasses().getGroup().getGrade() + 
+                "-" + nota.getAssesment().getClasses().getGroup().getVariant()
+            ));
+
         for (String grupo : datos.keySet()) {
             Sheet sheet = workbook.createSheet("Grupo " + grupo);
             int rowNum = 0;
 
-            // 🔹 Agrupar notas por materia dentro del grupo
-            Map<String, List<CalificationModel>> materias = datos.get(grupo)
-                    .stream()
-                    .collect(Collectors.groupingBy(nota -> nota.getAssesment().getClasses().getSubject().getName()));
+            Map<String, List<CalificationModel>> materias = datos.get(grupo).stream()
+                .collect(Collectors.groupingBy(nota -> 
+                    nota.getAssesment().getClasses().getSubject().getName()
+                ));
 
             for (String materia : materias.keySet()) {
-                // 🔹 Dejar 2 filas vacías antes de cada materia
                 rowNum += 2;
-
-                // 🔹 Agregar título de materia
                 Row materiaRow = sheet.createRow(rowNum++);
                 materiaRow.createCell(0).setCellValue("Materia: " + materia);
 
-                // 🔹 Crear fila de descripciones y porcentajes
                 Row descripcionRow = sheet.createRow(rowNum++);
                 Row porcentajeRow = sheet.createRow(rowNum++);
                 porcentajeRow.createCell(0).setCellValue("Porcentaje");
 
-                // 🔹 Obtener evaluaciones únicas
                 List<CalificationModel> notasMateria = materias.get(materia);
+
                 List<String> evaluaciones = notasMateria.stream()
-                        .map(nota -> nota.getAssesment().getDescription())  // Usamos el nombre de la evaluación
-                        .distinct()
-                        .collect(Collectors.toList());
+                    .map(nota -> nota.getAssesment().getDescription())
+                    .distinct()
+                    .collect(Collectors.toList());
 
                 int colIndex = 1;
                 for (String evaluacion : evaluaciones) {
                     descripcionRow.createCell(colIndex).setCellValue(evaluacion);
-                    porcentajeRow.createCell(colIndex).setCellValue(notasMateria.get(0).getAssesment().getPercent());
+                    porcentajeRow.createCell(colIndex).setCellValue(
+                        notasMateria.stream()
+                            .filter(nota -> nota.getAssesment().getDescription().equals(evaluacion))
+                            .findFirst().get().getAssesment().getPercent()
+                    );
                     colIndex++;
                 }
                 descripcionRow.createCell(colIndex).setCellValue("Total Ponderado");
 
-                // 🔹 Insertar notas de estudiantes
-                for (CalificationModel nota : notasMateria) {
+                Map<String, List<CalificationModel>> notasPorEstudiante = notasMateria.stream()
+                    .collect(Collectors.groupingBy(nota -> nota.getStudent().getName()));
+
+                for (String estudiante : notasPorEstudiante.keySet()) {
                     Row row = sheet.createRow(rowNum++);
-                    row.createCell(0).setCellValue(nota.getStudent().getName());
+                    row.createCell(0).setCellValue(estudiante);
 
                     colIndex = 1;
                     double totalPonderado = 0;
+
                     for (String evaluacion : evaluaciones) {
-                        double notaValor = nota.getCalification(); // Valor de la nota
+                        double notaValor = notasPorEstudiante.get(estudiante).stream()
+                            .filter(nota -> nota.getAssesment().getDescription().equals(evaluacion))
+                            .mapToDouble(CalificationModel::getCalification)
+                            .findFirst().orElse(0.0);
+
                         row.createCell(colIndex).setCellValue(notaValor);
-                        totalPonderado += notaValor * nota.getAssesment().getPercent()/100;
+                        totalPonderado += notaValor * notasPorEstudiante.get(estudiante).stream()
+                            .filter(nota -> nota.getAssesment().getDescription().equals(evaluacion))
+                            .findFirst().get().getAssesment().getPercent() / 100;
                         colIndex++;
                     }
 
@@ -267,8 +283,8 @@ public void saveOrUpdateCalifications(List<CalificationModel> califications) {
             }
         }
 
-        // 🔹 Escribir el archivo en la respuesta HTTP
         workbook.write(response.getOutputStream());
         workbook.close();
     }
+
 }
