@@ -97,7 +97,7 @@ public class CalificationService {
 
         for (CalificationModel calification : studentCalifications) {
             double grade = calification.getCalification();
-            double weight = calification.getWeight();  // Se asume que existe este campo
+            double weight = calification.getAssesment().getPercent();  // Se asume que existe este campo
             weightedSum.put(subjectName, weightedSum.get(subjectName) + (grade * weight));
             totalWeight.put(subjectName, totalWeight.get(subjectName) + weight);
         }
