@@ -68,6 +68,11 @@ public void saveAttendances(List<AttendanceModel> attendances) throws MessagingE
     
     for (AttendanceModel attendance : attendances) {
 
+        // Asignar "presente" si el status es null
+        if (attendance.getStatus() == null) {
+            attendance.setStatus("presente");
+        }
+
         AttendanceModel existingAttendance = attendanceRepo.findByStudent_IdAndClasses_IdAndDate(
             attendance.getStudent().getId(),
             attendance.getClasses().getId(),
@@ -89,27 +94,23 @@ public void saveAttendances(List<AttendanceModel> attendances) throws MessagingE
                     } catch (MessagingException e) {
                         e.printStackTrace();
                     }
-                } else {
                 }
-            } else {
             }
         } else {
             AttendanceModel saved = attendanceRepo.save(attendance);
             savedAttendances.add(saved);
 
             if ("ausente".equals(attendance.getStatus())) {
-                
                 try {
                     alertService.addCounter(attendance.getStudent().getId(), attendance.getClasses());
                 } catch (MessagingException e) {
                     e.printStackTrace();
                 }
-            } else {
             }
         }
     }
-    
 }
+
 
 
     

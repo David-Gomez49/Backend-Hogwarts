@@ -207,84 +207,94 @@ public void saveOrUpdateCalifications(List<CalificationModel> califications) {
 
 
     public void generarExcel(HttpServletResponse response, boolean Admin, String Email) throws IOException {
-        Workbook workbook = new XSSFWorkbook();
-        List<CalificationModel> allDatos = Admin 
-            ? calificationRepo.findAll() 
-            : calificationRepo.findByAssesment_Classes_Teacher_Email(Email);
+    Workbook workbook = new XSSFWorkbook();
+    List<CalificationModel> allDatos = Admin
+        ? calificationRepo.findAll()
+        : calificationRepo.findByAssesment_Classes_Teacher_Email(Email);
 
-        Map<String, List<CalificationModel>> datos = allDatos.stream()
-            .collect(Collectors.groupingBy(nota -> 
-                nota.getAssesment().getClasses().getGroup().getGrade() + 
-                "-" + nota.getAssesment().getClasses().getGroup().getVariant()
+    Map<String, List<CalificationModel>> datos = allDatos.stream()
+        .collect(Collectors.groupingBy(nota ->
+            nota.getAssesment().getClasses().getGroup().getGrade() +
+            "-" + nota.getAssesment().getClasses().getGroup().getVariant()
+        ));
+
+    for (String grupo : datos.keySet()) {
+        Sheet sheet = workbook.createSheet("Grupo " + grupo);
+        int rowNum = 0;
+
+        Map<String, List<CalificationModel>> materias = datos.get(grupo).stream()
+            .collect(Collectors.groupingBy(nota ->
+                nota.getAssesment().getClasses().getSubject().getName()
             ));
 
-        for (String grupo : datos.keySet()) {
-            Sheet sheet = workbook.createSheet("Grupo " + grupo);
-            int rowNum = 0;
+        for (String materia : materias.keySet()) {
+            rowNum += 2;
+            Row materiaRow = sheet.createRow(rowNum++);
+            materiaRow.createCell(0).setCellValue("Materia: " + materia);
 
-            Map<String, List<CalificationModel>> materias = datos.get(grupo).stream()
-                .collect(Collectors.groupingBy(nota -> 
-                    nota.getAssesment().getClasses().getSubject().getName()
-                ));
+            Row descripcionRow = sheet.createRow(rowNum++);
+            Row porcentajeRow = sheet.createRow(rowNum++);
+            porcentajeRow.createCell(0).setCellValue("Porcentaje");
 
-            for (String materia : materias.keySet()) {
-                rowNum += 2;
-                Row materiaRow = sheet.createRow(rowNum++);
-                materiaRow.createCell(0).setCellValue("Materia: " + materia);
+            List<CalificationModel> notasMateria = materias.get(materia);
 
-                Row descripcionRow = sheet.createRow(rowNum++);
-                Row porcentajeRow = sheet.createRow(rowNum++);
-                porcentajeRow.createCell(0).setCellValue("Porcentaje");
+            List<String> evaluaciones = notasMateria.stream()
+                .map(nota -> nota.getAssesment().getDescription())
+                .distinct()
+                .collect(Collectors.toList());
 
-                List<CalificationModel> notasMateria = materias.get(materia);
+            double totalPorcentaje = evaluaciones.stream()
+                .mapToDouble(evaluacion -> 
+                    notasMateria.stream()
+                        .filter(nota -> nota.getAssesment().getDescription().equals(evaluacion))
+                        .findFirst().get().getAssesment().getPercent()
+                ).sum();
 
-                List<String> evaluaciones = notasMateria.stream()
-                    .map(nota -> nota.getAssesment().getDescription())
-                    .distinct()
-                    .collect(Collectors.toList());
+            int colIndex = 1;
+            for (String evaluacion : evaluaciones) {
+                descripcionRow.createCell(colIndex).setCellValue(evaluacion);
+                porcentajeRow.createCell(colIndex).setCellValue(
+                    notasMateria.stream()
+                        .filter(nota -> nota.getAssesment().getDescription().equals(evaluacion))
+                        .findFirst().get().getAssesment().getPercent()
+                );
+                colIndex++;
+            }
+            descripcionRow.createCell(colIndex).setCellValue("Total Ponderado");
 
-                int colIndex = 1;
+            Map<String, List<CalificationModel>> notasPorEstudiante = notasMateria.stream()
+                .collect(Collectors.groupingBy(nota -> nota.getStudent().getName()));
+
+            for (String estudiante : notasPorEstudiante.keySet()) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(estudiante);
+
+                colIndex = 1;
+                double totalPonderado = 0;
+
                 for (String evaluacion : evaluaciones) {
-                    descripcionRow.createCell(colIndex).setCellValue(evaluacion);
-                    porcentajeRow.createCell(colIndex).setCellValue(
-                        notasMateria.stream()
-                            .filter(nota -> nota.getAssesment().getDescription().equals(evaluacion))
-                            .findFirst().get().getAssesment().getPercent()
-                    );
+                    double notaValor = notasPorEstudiante.get(estudiante).stream()
+                        .filter(nota -> nota.getAssesment().getDescription().equals(evaluacion))
+                        .mapToDouble(CalificationModel::getCalification)
+                        .findFirst().orElse(0.0);
+
+                    row.createCell(colIndex).setCellValue(notaValor);
+                    totalPonderado += notaValor * notasPorEstudiante.get(estudiante).stream()
+                        .filter(nota -> nota.getAssesment().getDescription().equals(evaluacion))
+                        .findFirst().get().getAssesment().getPercent() / totalPorcentaje;
                     colIndex++;
                 }
-                descripcionRow.createCell(colIndex).setCellValue("Total Ponderado");
 
-                Map<String, List<CalificationModel>> notasPorEstudiante = notasMateria.stream()
-                    .collect(Collectors.groupingBy(nota -> nota.getStudent().getName()));
+                totalPonderado *= 100;
 
-                for (String estudiante : notasPorEstudiante.keySet()) {
-                    Row row = sheet.createRow(rowNum++);
-                    row.createCell(0).setCellValue(estudiante);
-
-                    colIndex = 1;
-                    double totalPonderado = 0;
-
-                    for (String evaluacion : evaluaciones) {
-                        double notaValor = notasPorEstudiante.get(estudiante).stream()
-                            .filter(nota -> nota.getAssesment().getDescription().equals(evaluacion))
-                            .mapToDouble(CalificationModel::getCalification)
-                            .findFirst().orElse(0.0);
-
-                        row.createCell(colIndex).setCellValue(notaValor);
-                        totalPonderado += notaValor * notasPorEstudiante.get(estudiante).stream()
-                            .filter(nota -> nota.getAssesment().getDescription().equals(evaluacion))
-                            .findFirst().get().getAssesment().getPercent() / 100;
-                        colIndex++;
-                    }
-
-                    row.createCell(colIndex).setCellValue(totalPonderado);
-                }
+                row.createCell(colIndex).setCellValue(totalPonderado);
             }
         }
-
-        workbook.write(response.getOutputStream());
-        workbook.close();
     }
+
+    workbook.write(response.getOutputStream());
+    workbook.close();
+}
+
 
 }
